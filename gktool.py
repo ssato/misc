@@ -36,8 +36,8 @@ Advanced example:
 It enables mutt to get mail account passwords in the gnome-keyring database.
 For example, there is the following line in my muttrc:
 
-  source "~/.mutt/gksearch.py -f 'set imap_pass = \"%(password)s\"' \
-    -t network -a user:ssato,server:xxx.xxxxx.com,protocol:imaps|"
+  source "~/.mutt/gktool.py -f 'set imap_pass = \"%(password)s\"' \
+    -t network -a user:ssato,server:xxx.xxxxx.com,protocol:imaps get|"
 """
 
 
