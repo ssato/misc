@@ -1,5 +1,8 @@
 #! /usr/bin/python
 #
+# Author: Satoru SATOH <satoru.satoh at gmail.com>
+# License: MIT
+#
 """Generate a Excel file from CSV files
 
 CSV file format:
