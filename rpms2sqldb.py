@@ -268,6 +268,7 @@ class RpmDB(object):
         conn = sqlite.connect(db)
         cur = conn.cursor()
         cur.executescript(sql)
+        conn.commit()
         cur.execute('INSERT INTO db_info(dbversion) VALUES (1)')
         conn.commit()
         conn.close()
