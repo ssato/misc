@@ -3,6 +3,8 @@
 # Author: Satoru SATOH <satoru.satoh at gmail.com>
 # License: MIT
 #
+# Requirements: python, python-xlwt (http://pypi.python.org/pypi/xlwt/)
+#
 """Generate a Excel file from CSV files
 
 CSV file format:
@@ -111,7 +113,12 @@ class CsvsWorkbook(object):
 
 ## main:
 def opts_parser():
-    parser = optparse.OptionParser("%prog [OPTION ...] CSVFILE_0 [CSVFILE_1 ...] OUTPUT_XLS")
+    parser = optparse.OptionParser("""%prog [OPTION ...] CSVFILE_0 [CSVFILE_1 ...] OUTPUT_XLS
+
+Examples:
+  %prog aaa.csv bbb.csv ccc.csv ABC.xls
+  %prog --main-style 'font: name IPAPGothic' --sheet-names "aaa,bbb" A.csv B.csv AB.xls
+""")
 
     cog = optparse.OptionGroup(parser, "Common Options")
     cog.add_option('', '--sheet-names', help='Comma separated worksheet names')
