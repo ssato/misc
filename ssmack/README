@@ -1,0 +1,186 @@
+smack-beryl.py and smack-x11.py:
+These scripts are distributed under a GPL v2 licence.
+
+These scritps are free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.
+
+
+xfakeevent.c and xsendevent.c:
+These libraries are distributed under a BSD licence.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+
+[hdaps and tp_smapi]
+
+Hdaps is the Linux driver for monitoring the accelerometer known
+as IBM Active Protection System installed in IBM ThinkPad.
+It provides accelerometer values via sysfs
+('/sys/devices/platform/hdaps/').
+
+
+tp_smapi is the the Linux kernel module exposes some features
+of the ThinkPad hardware/firmware via a sysfs interface. 
+
+It also contains some fixes for the hdaps and these are necessary
+for some recent models, and recommended for all.
+
+
+Note: You need to `modprobe' hdaps before running smack*.py.
+
+Note: In FC6+' kernel, hdaps is in kernel package but not loaded
+by default, in my system at least. And also, it does not work on
+my thinkpad (x60s - Type: 1702-31I) and then I had to build and
+install tp_smapi. Perhaps, you might need it, too.
+
+
+[smack-beryl.py]
+
+Beryl is a combined window manager and composite manager forked
+from Compiz.
+
+Beryl has D-Bus Interface and its various actions are controllable
+via D-Bus.
+
+smack-beryl.py is derived from smack.py originally written by
+Michele Campeotto, to support Beryl via its D-Bus interface.
+
+I did not have enough time to learn D-Bus and implement it with
+using python-dbus binding at that time, so smack-beryl.py simply 
+use dsend.sh (a utility script to call D-Bus method from shell)
+found at Beryl's site.
+
+How to use:
+  1. Load hdaps
+    # modprobe hdaps
+
+  2. run smack-beryl.py
+    $ ./smack-beryl.py
+
+  3. Smack your thinkpad to switch workspace.
+
+
+[smack-x11.py]
+
+It is derived from smack-beryl.py to implement the feature - 
+go next plesentation slide by smack.
+
+First, I tried to use OOo' UNO API and went through its documentation
+but it seems too complicated for me and I could not find the way
+to accomplish that.
+
+So, I decided to fake the key event to go next presentation slide
+(Press and release [->] = 'Right' by default) and wrote tiny C modules,
+xfakeevent.c and xsendevent.c. smack-x11.py calls the API in these
+c modules with ctypes' help.
+
+If your OS supports XTestFakeButtonEvent(), I guess you can use
+xfakeevent.c although I don't (can't) test it.
+
+If it's not available such as FC6+ (my case), use xsendevent.c instead.
+
+How to use:
+  1. Load hdaps
+    # modprobe hdaps
+
+  2. Compile xsendevent.c
+    $ make 
+
+  3. Open your presentation slide with OOo in other workspace and
+     switch to the presentation mode (press [F5] by default).
+
+    $ ooffice /path/to/presentation_slide.odp &
+    (Focus to the OOo window and press [F5])
+
+  2. Go back to terminal and run smack-x11.py
+    $ ./smack-x11.py
+
+  3. Go back to OOo again and smack your thinkpad to go next slide.
+
+
+Issue: 'Error occurs during loading ctypes!'
+
+  Most OSes make stack memory not executable. Linux also does so.
+  In case of FC6+, its SELinux feature restricts certain memory
+  protection operation.
+
+  On such systems, error message like the following printed 
+  during importing python ctypes module because ctypes requires
+  execstack.
+
+-------------------------------------------------------------
+ImportError: /usr/lib/python2.5/lib-dynload/_ctypes.so: \
+ cannot enable executable stack as shared object requires: \
+ Permission denied
+-------------------------------------------------------------
+
+  There is an adhoc solution for this issue like the following.
+
+  # setsebool allow_execstack=true
+
+  NOTE:  This is a temporal and *danger* hack. Basically, you
+  should NOT do that and wait that ctypes is fixed.
+
+
+[References]
+
+* HDAPS @ ThinkWiki - http://thinkwiki.org/wiki/HDAPS
+* Tp smapi @ ThinkWiki - http://thinkwiki.org/wiki/Tp_smapi
+
+* 'Here comes the SmackPad' by Michele Campeotto -
+  'smack.py' was originally written by him.
+  http://blog.micampe.it/articles/2006/06/04/here-comes-the-smackpad
+
+* Beryl - http://www.beryl-project.org/
+* Tips/DBUS HowTo (dsend.sh is here)
+  http://wiki.beryl-project.org/wiki/Tips/DBUS_HowTo
+
+* D-Bus - http://www.freedesktop.org/wiki/Software/dbus
+
+* Python UNO bridge to OOo.
+  http://udk.openoffice.org/python/python-bridge.html
+
+* OOo API, ::com::sun, module star
+  http://api.openoffice.org/docs/common/ref/com/sun/star/module-ix.html
+
+* X11 manuals: XSendEvent(3X11), XStringToKeysym(3X11), ...
+
+* Python ctypes module - http://python.net/crew/theller/ctypes/
+
+* [RFC] dbus-python API (re)definition (ctypes - execstack issue) -
+  http://lists.freedesktop.org/archives/dbus/2006-August/005538.html
+
+* danwalsh: SELinux Reveals Bugs in other code.
+  http://danwalsh.livejournal.com/6117.html
+
+* SELinux/FC5Features (see 'Additional Security Access Checks' section)
+  http://fedoraproject.org/wiki/SELinux/FC5Features
+
+* SELinux Memory Protection Tests
+  http://people.redhat.com/drepper/selinux-mem.html
+
+
+Enjoy and Happy hacking!
+- Satoru SATOH <ssato&#64;redhat.com>
