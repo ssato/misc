@@ -20,7 +20,6 @@
 # Reference: http://docs.fedoraproject.org/drafts/rpm-guide-en/ch-rpm-programming-python.html
 #
 
-import copy
 import datetime
 import glob
 import optparse
