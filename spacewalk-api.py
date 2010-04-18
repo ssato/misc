@@ -399,7 +399,7 @@ def setup(options):
 
 
 def option_parser(cmd=sys.argv[0]):
-    p = optparse.OptionParser("""%(cmd)s [OPTION ...] RPC_STRING
+    p = optparse.OptionParser("""%(cmd)s [OPTION ...] RPC_API_STRING
 
 Examples:
   %(cmd)s --args=10821 packages.listDependencies 
