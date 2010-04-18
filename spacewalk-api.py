@@ -8,6 +8,8 @@
 #
 
 import ConfigParser as configparser
+import cPickle as pickle
+import datetime
 import getpass
 import logging
 import optparse
@@ -20,16 +22,179 @@ import time
 import xmlrpclib
 
 
+try:
+    import hashlib # python 2.5+
+    def hexdigest(s):
+        return hashlib.md5(s).hexdigest()
+except ImportError:
+    import md5
+    def hexdigest(s):
+        return md5.md5(s).hexdigest()
+
+
+
 PROTO = 'https'
 TIMEOUT = 900
-CONFIG = os.path.join(os.environ.get('HOME', '.'), '.spacewalk-api', 'config')
+
+CONFIG_DIR = os.path.join(os.environ.get('HOME', '.'), '.spacewalk-api')
+CONFIG = os.path.join(CONFIG_DIR, 'config')
+
+CACHE_DIR = os.path.join(CONFIG_DIR, 'cache')
+CACHE_EXPIRING_DATES = 1  # [days]
+
+
+
+def s_to_id(s):
+    """str -> id.
+    """
+    return hexdigest(s)
+
+
+def object_to_id(obj):
+    """Object -> id.
+    
+    NOTE: Object must be able to convert to str (i.e. implements __str__).
+
+    >>> object_to_id("test")
+    '098f6bcd4621d373cade4e832627b4f6'
+    >>> object_to_id({'a':"test"})
+    'c5b846ec3b2f1a5b7c44c91678a61f47'
+    >>> object_to_id(['a','b','c'])
+    'eea457285a61f212e4bbaaf890263ab4'
+    """
+    return s_to_id(str(obj))
+
+
+
+class Singleton(type):
+    """
+    Singleton metaclass. The following examples show how to use this.
+
+    >>> class Foo(object):
+    ...     __metaclass__ = Singleton
+    >>> 
+    >>> obj0 = Foo()
+    >>> obj1 = Foo()
+    >>> 
+    >>> obj0 == obj1
+    True
+    >>> id(obj0) == id(obj1)
+    True
+    >>> 
+    >>> class Bar(object):
+    ...     __metaclass__ = Singleton
+    ... 
+    ...     def __init__(self, *args, **kwargs):
+    ...         pass
+    >>> 
+    >>> bar0 = Bar(1)
+    >>> bar1 = Bar(1)
+    >>> bar2 = Bar(1, 2)
+    >>> bar3 = Bar(1, 2)
+    >>> 
+    >>> bar0 == bar1
+    True
+    >>> bar2 == bar3
+    True
+    >>> bar0 != bar2
+    True
+    >>> bar1 != bar3
+    True
+    """
+
+    def __init__(cls, name, bases, dic):
+        super(Singleton, cls).__init__(name, bases, dic)
+        cls.instances = {}
+
+    def __call__(cls, *args, **kw):
+        obj = cls.instances.get(args, False)
+
+        if not obj:
+            obj = super(Singleton, cls).__call__(*args, **kw)
+            cls.instances[args] = obj
+
+        return obj
+
+
+
+class Cache(object):
+    """Cache loader / dumper.
+    """
+    __metaclass__ = Singleton
+
+    def __init__(self, domain, expires=CACHE_EXPIRING_DATES):
+        """Initialize domain-local caching parameters.
+
+        @domain   a str represents target domain
+        @expires  time period to expire cache in date (>= 0).
+                  0 indicates disabling cache.
+        """
+        self.domain = domain
+        self.domain_id = s_to_id(domain)
+        self.cache_dir = os.path.join(CACHE_DIR, self.domain_id)
+        self.expire_dates = self.set_expires(expires)
+
+    def set_expires(self, dates):
+        return (dates > 0 and dates or 0)
+
+    def dir(self, obj):
+        """Resolve the dir in which cache file of the object is saved.
+        """
+        return os.path.join(self.cache_dir, object_to_id(obj))
+
+    def path(self, obj):
+        """Resolve path to cache file of the object.
+        """
+        return os.path.join(self.dir(obj), 'cache.pkl')
+
+    def load(self, obj):
+        try:
+            return pickle.load(open(self.path(obj), 'rb'))
+        except:
+            return None
+
+    def save(self, obj, data, protocol=pickle.HIGHEST_PROTOCOL):
+        """
+        @obj   object of which obj_id will be used as key of the cached data
+        @data  data to saved in cache
+        """
+        cache_dir = self.dir(obj)
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir, mode=0700)
+
+        cache_path = self.path(obj)
+
+        try:
+            # TODO: How to detect errors during/after pickle.dump.
+            pickle.dump(data, open(cache_path, 'wb'), protocol)
+            return True
+        except:
+            return False
+
+                
+    def needs_update(self, obj):
+        if self.expire_dates == 0:
+            return True
+
+        try:
+            mtime = os.stat(self.path(obj)).st_mtime
+        except OSError:  # It indicates that the cache file cannot be updated.
+            return True  # FIXME: How to handle the above case?
+
+        cur_time = datetime.datetime.now()
+        cache_mtime = datetime.datetime.fromtimestamp(mtime)
+
+        delta = cur_time - cache_mtime  # TODO: How to do if it's negative value?
+
+        return (delta >= datetime.timedelta(self.expire_dates))
 
 
 
 class RpcApi(object):
-    def __init__(self, conn_params):
+    def __init__(self, conn_params, enable_cache=True):
         """
         @conn_params  Connection parameters: server, userid, password, timeout, protocol.
+        @enable_cache Whether to enable query caching or not.
         """
         self.url = "%(protocol)s://%(server)s/rpc/api" % conn_params
         self.userid = conn_params.get('userid')
@@ -37,6 +202,8 @@ class RpcApi(object):
         self.timeout = conn_params.get('timeout')
 
         self.sid = False
+
+        self.cache = (enable_cache and Cache("%s:%s" % (self.url, self.userid)) or False)
 
     def login(self):
         self.server = xmlrpclib.ServerProxy(self.url)
@@ -49,6 +216,15 @@ class RpcApi(object):
 
             method = getattr(self.server, method_name)
 
+            if self.cache:
+                key = (method_name, args)
+
+                if not self.cache.needs_update(key):
+                    ret = self.cache.load(key)
+
+                    if ret is not None:
+                        return ret
+
             # wait a little bit to avoid DoS attack to the server.
             time.sleep(random.random())
 
@@ -58,6 +234,9 @@ class RpcApi(object):
                 ret = method(*args)
             else:
                 ret = method(self.sid, *args)
+
+            if self.cache:
+                self.cache.save(key, ret)
 
             return ret
 
@@ -239,6 +418,10 @@ password = secretpasswd
     cog.add_option('',   '--protocol', help='RHN server protocol.', default=PROTO)
     p.add_option_group(cog)
 
+    caog = optparse.OptionGroup(p, "Cache options")
+    caog.add_option('',   '--no-cache', help='Do not use query cache', action="store_true", default=False)
+    p.add_option_group(caog)
+
     p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
 
     return p
@@ -247,12 +430,16 @@ password = secretpasswd
 def main(argv):
     loglevel = logging.WARN
     out = sys.stdout
+    enable_cache = True
 
     parser = option_parser()
     (options, args) = parser.parse_args(argv[1:])
 
     if options.test:
         test()
+
+    if options.no_cache:
+        enable_cache = False
 
     if options.verbose > 0:
         loglevel = logging.INFO
@@ -278,7 +465,7 @@ def main(argv):
 
     conn_params = setup(options)
 
-    rapi = RpcApi(conn_params)
+    rapi = RpcApi(conn_params, enable_cache)
     rapi.login()
 
     xs = rapi.call(*rpc_cmd)
@@ -307,5 +494,6 @@ def test():
 
 if __name__ == '__main__':
     main(sys.argv)
+
 
 # vim: set sw=4 ts=4 expandtab:
