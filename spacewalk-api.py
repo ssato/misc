@@ -419,7 +419,7 @@ password = secretpasswd
     p.add_option_group(cog)
 
     caog = optparse.OptionGroup(p, "Cache options")
-    caog.add_option('',   '--no-cache', help='Do not use query cache', action="store_true", default=False)
+    caog.add_option('',   '--no-cache', help='Do not use query result cache', action="store_true", default=False)
     p.add_option_group(caog)
 
     p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
