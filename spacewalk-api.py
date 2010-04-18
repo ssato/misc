@@ -1,10 +1,26 @@
 #! /usr/bin/python
 #
-# Like spacewalk-api, call Spacewalk/RHN RPC API from command line.
+# Like tools/spacewalk-api, call Spacewalk/RHN RPC API from command line.
 #
 # Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
 #
-# License: GPLv2+ (see COPYING.GPLv2 for more details)
+# This software is licensed to you under the GNU General Public License,
+# version 2 (GPLv2). There is NO WARRANTY for this software, express or
+# implied, including the implied warranties of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. You should have received a copy of GPLv2
+# along with this software; if not, see
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+#
+#
+# [Features]
+#
+# * You can pass api arguements from command line in simple comma separated
+#   strings or JSON expression.
+# * Default result format is JSON but you can easily customize output format
+#   with '--format' option as you like.
+# * Utilize config file contains authentication parameters to eliminate passing
+#   these parameters with command line options.
+# * Query results are cached by default.
 #
 
 import ConfigParser as configparser
@@ -213,23 +229,28 @@ class RpcApi(object):
         self.sid = self.server.auth.login(self.userid, self.passwd, self.timeout)
 
     def logout(self):
-        self.server.auth.logout(self.sid)
+        if self.sid:
+            self.server.auth.logout(self.sid)
 
     def call(self, method_name, *args):
         try:
-            if not self.sid:
-                self.login()
-
-            method = getattr(self.server, method_name)
-
             if self.cache:
                 key = (method_name, args)
 
                 if not self.cache.needs_update(key):
                     ret = self.cache.load(key)
+                    logging.debug(" Loading cache: method=%s, args=%s" % (method_name, str(args)))
 
                     if ret is not None:
+                        logging.debug(" Found query result cache")
                         return ret
+
+                    logging.debug(" Not found query result cache")
+
+            if not self.sid:
+                self.login()
+
+            method = getattr(self.server, method_name)
 
             # wait a little bit to avoid DoS attack to the server.
             time.sleep(random.random())
@@ -305,14 +326,13 @@ def parse_rpc_args(args, arg_sep=','):
     return ret
 
 
-def resuls_to_str(results, human_readable=True):
+def resuls_to_str(results, indent=2):
     """
-    >>> resuls_to_str([123, 'abc', {'x':'yz'}], False)
+    >>> resuls_to_str([123, 'abc', {'x':'yz'}], 0)
     '[123, "abc", {"x": "yz"}]'
     >>> resuls_to_str([123, 'abc', {'x':'yz'}])
     '[\\n  123, \\n  "abc", \\n  {\\n    "x": "yz"\\n  }\\n]'
     """
-    indent = (human_readable and 2 or 0)
     return simplejson.dumps(results, ensure_ascii=False, indent=indent)
 
 
@@ -383,14 +403,16 @@ def option_parser(cmd=sys.argv[0]):
 
 Examples:
   %(cmd)s --args=10821 packages.listDependencies 
-  %(cmd)s -P MySatProfile --args=rhel-x86_64-server-vt-5 channel.software.getDetails
+  %(cmd)s -P MySpacewalkProfile --args=rhel-x86_64-server-vt-5 channel.software.getDetails
   %(cmd)s -C /tmp/s.cfg -A rhel-x86_64-server-vt-5,guest channel.software.isUserSubscribable
   %(cmd)s -A "rhel-i386-server-5","2010-04-01 08:00:00" channel.software.listAllPackages
   %(cmd)s -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' channel.software.listAllPackages
   %(cmd)s --format "%%(label)s" channel.listSoftwareChannels
   %(cmd)s -A 100010021 -F "%%(hostname)s %%(description)s" system.getDetails
 
-Config file example ------------------------------------------
+
+Config file example (%(config)s):
+--------------------------------------------------------------
 
 [DEFAULT]
 server = rhn.redhat.com
@@ -399,36 +421,39 @@ password =   # it will ask you if password is not set.
 timeout = 900
 protocol = https
 
-[MySatProfile]
-server = my-satellite.example.com
-userid = admin
+[MySpacewalkProfile]
+server = my-spacewalk.example.com
+userid = rpcusr
 password = secretpasswd
 
 --------------------------------------------------------------
-""" % {'cmd': cmd}
+""" % {'cmd': cmd, 'config': CONFIG}
     )
 
     p.add_option('-C', '--config', help='Config file path [%default]', default=CONFIG)
-    p.add_option('-P', '--profile', help='Select profile from section titles in config file', default=False)
+    p.add_option('-P', '--profile', help='Select profile (section) in config file')
     p.add_option('-A', '--args', default="",
         help='Api args other than session id in comma separated strings or JSON expression [empty]')
-    p.add_option('-o', '--output', help="output file [default: stdout]")
-    p.add_option('-F', '--format', help="output format", default=False)
     p.add_option('-v', '--verbose', help='verbose mode', default=0, action="count")
+    p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
 
     cog = optparse.OptionGroup(p, "Connect options")
     cog.add_option('-s', '--server', help='Spacewalk/RHN server hostname.')
     cog.add_option('-u', '--userid', help='Spacewalk/RHN login user id')
     cog.add_option('-p', '--password', help='Spacewalk/RHN Login password')
     cog.add_option('-t', '--timeout', help='Session timeout in sec [%default]', default=TIMEOUT)
-    cog.add_option('',   '--protocol', help='RHN server protocol.', default=PROTO)
+    cog.add_option('',   '--protocol', help='Spacewalk/RHN server protocol.', default=PROTO)
     p.add_option_group(cog)
 
     caog = optparse.OptionGroup(p, "Cache options")
     caog.add_option('',   '--no-cache', help='Do not use query result cache', action="store_true", default=False)
     p.add_option_group(caog)
 
-    p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
+    oog = optparse.OptionGroup(p, "Output options")
+    oog.add_option('-o', '--output', help="output file [default: stdout]")
+    oog.add_option('-F', '--format', help="output format", default=False)
+    oog.add_option('-I', '--indent', help="Indent for JSON output. 0 means no indent. [%default]", type="int", default=2)
+    p.add_option_group(oog)
 
     return p
 
@@ -482,12 +507,12 @@ def main(argv):
             for x in xs:
                 print >> out, options.format % x
         else:
-            print >> out, resuls_to_str(xs)
+            print >> out, resuls_to_str(xs, options.indent)
     else:
         if options.format:
             print >> out, options.format % xs
         else:
-            print >> out, resuls_to_str(xs)
+            print >> out, resuls_to_str(xs, options.indent)
 
     del rapi
 
