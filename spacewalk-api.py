@@ -205,9 +205,15 @@ class RpcApi(object):
 
         self.cache = (enable_cache and Cache("%s:%s" % (self.url, self.userid)) or False)
 
+    def __del__(self):
+        self.logout()
+
     def login(self):
         self.server = xmlrpclib.ServerProxy(self.url)
         self.sid = self.server.auth.login(self.userid, self.passwd, self.timeout)
+
+    def logout(self):
+        self.server.auth.logout(self.sid)
 
     def call(self, method_name, *args):
         try:
@@ -482,6 +488,8 @@ def main(argv):
             print >> out, options.format % xs
         else:
             print >> out, resuls_to_str(xs)
+
+    del rapi
 
     return 0
 
