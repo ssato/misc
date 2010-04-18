@@ -161,7 +161,7 @@ def setup_with_configfile(config_file, profile=""):
         protocol = cp.get(sect, 'protocol')
 
     except configparser.NoOptionError:
-        raise
+        pass
 
     return {
         'server': server,
