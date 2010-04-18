@@ -18,8 +18,8 @@
 #   strings or JSON expression.
 # * Default result format is JSON but you can easily customize output format
 #   with '--format' option as you like.
-# * Utilize config file contains authentication parameters to cut out of the
-#   need of passing these parameters with command line options.
+# * Utilize config file contains authentication parameters to cut out the need
+#   of passing these parameters with command line options.
 # * Query results are cached by default.
 #
 
