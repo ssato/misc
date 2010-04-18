@@ -131,7 +131,7 @@ def resuls_to_str(results, human_readable=True):
     return simplejson.dumps(results, ensure_ascii=False, indent=indent)
 
 
-def init_config_with_configfile(config_file, profile=""):
+def setup_with_configfile(config_file, profile=""):
     """
     @config_file  Configuration file path, ex. '~/.spacewalk-api/config'.
     """
@@ -172,7 +172,7 @@ def init_config_with_configfile(config_file, profile=""):
     }
 
 
-def init_config_with_options(config, options):
+def setup_with_options(config, options):
     """
     @config   config parameters dict: {'server':, 'userid':, ...}
     @options  optparse.Options
@@ -186,9 +186,9 @@ def init_config_with_options(config, options):
     return {'server':server, 'userid':userid, 'password':password, 'timeout':timeout, 'protocol':protocol}
 
 
-def init_config(options):
-    conf = init_config_with_configfile(options.config, options.profile)
-    conf = init_config_with_options(conf, options)
+def setup(options):
+    conf = setup_with_configfile(options.config, options.profile)
+    conf = setup_with_options(conf, options)
 
     return conf
 
@@ -198,36 +198,53 @@ def option_parser(cmd=sys.argv[0]):
 
 Examples:
   %(cmd)s --args=10821 packages.listDependencies 
-  %(cmd)s -P rhn --args=rhel-x86_64-server-vt-5 channel.software.getDetails
-  %(cmd)s -C /tmp/s.cfg --args=rhel-x86_64-server-vt-5,guest channel.software.isUserSubscribable
-  %(cmd)s --args="rhel-i386-server-5","2010-04-01 08:00:00" channel.software.listAllPackages
-  %(cmd)s --args='["rhel-i386-server-5","2010-04-01 08:00:00"]' channel.software.listAllPackages
-  %(cmd)s --args=100010021 --format "%%(hostname)s %%(description)s" system.getDetails
-  %(cmd)s --format "%%(label)s" channel.listSoftwareChannels""" \
-        % {'cmd': cmd}
+  %(cmd)s -P MySatProfile --args=rhel-x86_64-server-vt-5 channel.software.getDetails
+  %(cmd)s -C /tmp/s.cfg -A rhel-x86_64-server-vt-5,guest channel.software.isUserSubscribable
+  %(cmd)s -A "rhel-i386-server-5","2010-04-01 08:00:00" channel.software.listAllPackages
+  %(cmd)s -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' channel.software.listAllPackages
+  %(cmd)s --format "%%(label)s" channel.listSoftwareChannels
+  %(cmd)s -A 100010021 -F "%%(hostname)s %%(description)s" system.getDetails
+
+Config file example ------------------------------------------
+
+[DEFAULT]
+server = rhn.redhat.com
+userid = xxxxyyyyzzzz
+password =   # it will ask you if password is not set.
+timeout = 900
+protocol = https
+
+[MySatProfile]
+server = my-satellite.example.com
+userid = admin
+password = secretpasswd
+
+--------------------------------------------------------------
+""" % {'cmd': cmd}
     )
 
-    p.add_option('-s', '--server', help='Spacewalk/RHN server hostname.')
-    p.add_option('-u', '--userid', help='Spacewalk/RHN login user id')
-    p.add_option('-p', '--password', help='Spacewalk/RHN Login password')
-    p.add_option('-t', '--timeout', help='Session timeout in sec [%default]', default=TIMEOUT)
-    p.add_option('',   '--protocol', help='RHN server protocol.', default="https")
     p.add_option('-C', '--config', help='Config file path [%default]', default=CONFIG)
-    p.add_option('-P', '--profile', help='Connection profile name', default=False)
+    p.add_option('-P', '--profile', help='Select profile from section titles in config file', default=False)
+    p.add_option('-A', '--args', default="",
+        help='Api args other than session id in comma separated strings or JSON expression [empty]')
     p.add_option('-o', '--output', help="output file [default: stdout]")
-    p.add_option('',   '--format', help="output format", default=False)
+    p.add_option('-F', '--format', help="output format", default=False)
     p.add_option('-v', '--verbose', help='verbose mode', default=0, action="count")
 
-    p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
+    cog = optparse.OptionGroup(p, "Connect options")
+    cog.add_option('-s', '--server', help='Spacewalk/RHN server hostname.')
+    cog.add_option('-u', '--userid', help='Spacewalk/RHN login user id')
+    cog.add_option('-p', '--password', help='Spacewalk/RHN Login password')
+    cog.add_option('-t', '--timeout', help='Session timeout in sec [%default]', default=TIMEOUT)
+    cog.add_option('',   '--protocol', help='RHN server protocol.', default=PROTO)
+    p.add_option_group(cog)
 
-    p.add_option('', '--args', default="",
-        help='Comma separated api arguments other than session id (in str or JSON expression) [empty]')
+    p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
 
     return p
 
 
 def main(argv):
-    rpc_args = False
     loglevel = logging.WARN
     out = sys.stdout
 
@@ -253,14 +270,13 @@ def main(argv):
         return 0
 
     rpc_cmd = [args[0]]
-    logging.debug(" api = '%s'" % rpc_cmd[0])
 
     if options.args:
-        rpc_args = parse_rpc_args(options.args)
-        logging.debug(" rpc args = %s" % str(rpc_args))
-        rpc_cmd += rpc_args
+        rpc_cmd += parse_rpc_args(options.args)
 
-    conn_params = init_config(options)
+    logging.debug(" rpc: api='%s', args=%s" % (rpc_cmd[0], str(rpc_cmd[1:])))
+
+    conn_params = setup(options)
 
     rapi = RpcApi(conn_params)
     rapi.login()
