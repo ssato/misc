@@ -83,16 +83,17 @@ def object_to_id(obj):
 class Cache(object):
     """Cache loader / dumper.
     """
-    def __init__(self, domain, expires=CACHE_EXPIRING_DATES):
+    def __init__(self, domain, expires=CACHE_EXPIRING_DATES, cache_topdir=CACHE_DIR):
         """Initialize domain-local caching parameters.
 
         @domain   a str represents target domain
         @expires  time period to expire cache in date (>= 0).
                   0 indicates disabling cache.
+        @cache_topdir  topdir to save cache files
         """
         self.domain = domain
-        self.domain_id = s_to_id(domain)
-        self.cache_dir = os.path.join(CACHE_DIR, self.domain_id)
+        self.domain_id = str_to_id(domain)
+        self.cache_dir = os.path.join(cache_topdir, self.domain_id)
         self.expire_dates = self.set_expires(expires)
 
     def set_expires(self, dates):
@@ -348,6 +349,8 @@ def option_parser(cmd=sys.argv[0]):
 
 Examples:
   %(cmd)s --args=10821 packages.listDependencies 
+  %(cmd)s --list-args="10821,10822,10823" packages.getDetails 
+  %(cmd)s -vv --args=10821 packages.listDependencies 
   %(cmd)s -P MySpacewalkProfile --args=rhel-x86_64-server-vt-5 channel.software.getDetails
   %(cmd)s -C /tmp/s.cfg -A rhel-x86_64-server-vt-5,guest channel.software.isUserSubscribable
   %(cmd)s -A "rhel-i386-server-5","2010-04-01 08:00:00" channel.software.listAllPackages
@@ -377,8 +380,6 @@ password = secretpasswd
 
     p.add_option('-C', '--config', help='Config file path [%default]', default=CONFIG)
     p.add_option('-P', '--profile', help='Select profile (section) in config file')
-    p.add_option('-A', '--args', default="",
-        help='Api args other than session id in comma separated strings or JSON expression [empty]')
     p.add_option('-v', '--verbose', help='verbose mode', default=0, action="count")
     p.add_option('-T', '--test', help='Test mode', default=False, action="store_true")
 
@@ -395,12 +396,38 @@ password = secretpasswd
     p.add_option_group(caog)
 
     oog = optparse.OptionGroup(p, "Output options")
-    oog.add_option('-o', '--output', help="output file [default: stdout]")
-    oog.add_option('-F', '--format', help="output format", default=False)
+    oog.add_option('-o', '--output', help="Output file [default: stdout]")
+    oog.add_option('-F', '--format', help="Output format (non-json)", default=False)
     oog.add_option('-I', '--indent', help="Indent for JSON output. 0 means no indent. [%default]", type="int", default=2)
     p.add_option_group(oog)
 
+    aog = optparse.OptionGroup(p, "API argument options")
+    aog.add_option('-A', '--args', default="",
+        help='Api args other than session id in comma separated strings or JSON expression [empty]')
+    aog.add_option('', '--list-args', help='Specify List of API args in JSON expression')
+    p.add_option_group(aog)
+
     return p
+
+
+def rpc_main(rapi, api, api_args, options, out):
+    """
+    """
+    logging.debug(" rpc: api='%s', args=%s" % (api, api_args))
+    xs = rapi.call(api, *api_args)
+
+    # TODO: clean up this ugly and complex part.
+    if isinstance(xs, list):
+        if options.format:
+            for x in xs:
+                print >> out, options.format % x
+        else:
+            print >> out, resuls_to_str(xs, options.indent)
+    else:
+        if options.format:
+            print >> out, options.format % xs
+        else:
+            print >> out, resuls_to_str(xs, options.indent)
 
 
 def main(argv):
@@ -432,32 +459,25 @@ def main(argv):
         parser.print_usage()
         return 0
 
-    rpc_cmd = [args[0]]
-
-    if options.args:
-        rpc_cmd += parse_rpc_args(options.args)
-
-    logging.debug(" rpc: api='%s', args=%s" % (rpc_cmd[0], str(rpc_cmd[1:])))
+    api = args[0]
 
     conn_params = setup(options)
 
     rapi = RpcApi(conn_params, enable_cache)
     rapi.login()
 
-    xs = rapi.call(*rpc_cmd)
+    if options.list_args:
+        list_args = parse_rpc_args(options.list_args)
 
-    # TODO: clean up this ugly and complex part.
-    if isinstance(xs, list):
-        if options.format:
-            for x in xs:
-                print >> out, options.format % x
-        else:
-            print >> out, resuls_to_str(xs, options.indent)
+        for arg in list_args:
+            rpc_main(rapi, api, [arg], options, out)
+
     else:
-        if options.format:
-            print >> out, options.format % xs
+        if options.args:
+            args = parse_rpc_args(options.args)
+            rpc_main(rapi, api, args, options, out)
         else:
-            print >> out, resuls_to_str(xs, options.indent)
+            rpc_main(rapi, api, [], options, out)
 
     del rapi
 
