@@ -60,9 +60,7 @@ CACHE_EXPIRING_DATES = 1  # [days]
 
 
 
-def s_to_id(s):
-    """str -> id.
-    """
+def str_to_id(s):
     return hexdigest(s)
 
 
@@ -78,66 +76,13 @@ def object_to_id(obj):
     >>> object_to_id(['a','b','c'])
     'eea457285a61f212e4bbaaf890263ab4'
     """
-    return s_to_id(str(obj))
-
-
-
-class Singleton(type):
-    """
-    Singleton metaclass. The following examples show how to use this.
-
-    >>> class Foo(object):
-    ...     __metaclass__ = Singleton
-    >>> 
-    >>> obj0 = Foo()
-    >>> obj1 = Foo()
-    >>> 
-    >>> obj0 == obj1
-    True
-    >>> id(obj0) == id(obj1)
-    True
-    >>> 
-    >>> class Bar(object):
-    ...     __metaclass__ = Singleton
-    ... 
-    ...     def __init__(self, *args, **kwargs):
-    ...         pass
-    >>> 
-    >>> bar0 = Bar(1)
-    >>> bar1 = Bar(1)
-    >>> bar2 = Bar(1, 2)
-    >>> bar3 = Bar(1, 2)
-    >>> 
-    >>> bar0 == bar1
-    True
-    >>> bar2 == bar3
-    True
-    >>> bar0 != bar2
-    True
-    >>> bar1 != bar3
-    True
-    """
-
-    def __init__(cls, name, bases, dic):
-        super(Singleton, cls).__init__(name, bases, dic)
-        cls.instances = {}
-
-    def __call__(cls, *args, **kw):
-        obj = cls.instances.get(args, False)
-
-        if not obj:
-            obj = super(Singleton, cls).__call__(*args, **kw)
-            cls.instances[args] = obj
-
-        return obj
+    return str_to_id(str(obj))
 
 
 
 class Cache(object):
     """Cache loader / dumper.
     """
-    __metaclass__ = Singleton
-
     def __init__(self, domain, expires=CACHE_EXPIRING_DATES):
         """Initialize domain-local caching parameters.
 
