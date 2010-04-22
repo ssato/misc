@@ -404,7 +404,7 @@ password = secretpasswd
     aog = optparse.OptionGroup(p, "API argument options")
     aog.add_option('-A', '--args', default="",
         help='Api args other than session id in comma separated strings or JSON expression [empty]')
-    aog.add_option('', '--list-args', help='Specify List of API args in JSON expression')
+    aog.add_option('', '--list-args', help='Specify List of API args')
     p.add_option_group(aog)
 
     return p
