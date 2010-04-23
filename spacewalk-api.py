@@ -14,10 +14,10 @@
 #
 # [Features]
 #
-# * You can pass api arguements from command line in simple comma separated
-#   strings or JSON expression.
-# * Default result format is JSON but you can easily customize output format
-#   with '--format' option as you like.
+# * It's possible to pass arguements for APIs from command line in simple comma
+#   separated strings or JSON expression.
+# * Default result format is JSON but easily customizable with '--format'
+#   option as you like.
 # * Utilize config file contains authentication parameters to cut out the need
 #   of passing these parameters with command line options.
 # * Query results are cached by default.
@@ -25,6 +25,7 @@
 
 import ConfigParser as configparser
 import cPickle as pickle
+import commands
 import datetime
 import getpass
 import logging
@@ -35,6 +36,7 @@ import re
 import simplejson
 import sys
 import time
+import unittest
 import xmlrpclib
 
 
@@ -77,6 +79,10 @@ def object_to_id(obj):
     'eea457285a61f212e4bbaaf890263ab4'
     """
     return str_to_id(str(obj))
+
+
+def run(cmd_str):
+    return commands.getstatusoutput(cmd_str)
 
 
 
@@ -179,6 +185,7 @@ class RpcApi(object):
             self.server.auth.logout(self.sid)
 
     def call(self, method_name, *args):
+        logging.debug(" Call: api=%s, args=%s" % (method_name, str(args)))
         try:
             if self.cache:
                 key = (method_name, args)
@@ -198,7 +205,8 @@ class RpcApi(object):
 
             method = getattr(self.server, method_name)
 
-            # wait a little bit to avoid DoS attack to the server.
+            # wait a little to avoid DoS attack to the server if called
+            # multiple times.
             time.sleep(random.random())
 
             # Special cases which do not need session_id parameter:
@@ -215,6 +223,13 @@ class RpcApi(object):
 
         except xmlrpclib.Fault, m:
             raise RuntimeError("rpc: method '%s', args '%s'\nError message: %s" % (method_name, str(args), m))
+
+    def multicall(self, method_name, argsets):
+        """Quick hack to implement XML-RPC's multicall like function.
+
+        @see xmlrpclib.MultiCall
+        """
+        return [self.call(method_name, arg) for arg in argsets]
 
 
 
@@ -239,24 +254,29 @@ def __parse(arg):
         return str(arg)
 
 
-def parse_rpc_args(args, arg_sep=','):
+def parse_api_args(args, arg_sep=','):
     """
     Simple JSON-like expression parser.
 
     @args     options.args :: string
     @return   rpc arg objects, [arg] :: [string]
 
-    >>> parse_rpc_args('1234567')
+    >>> parse_api_args('')
+    []
+    >>> parse_api_args('1234567')
     [1234567]
-    >>> parse_rpc_args('abcXYZ012')
+    >>> parse_api_args('abcXYZ012')
     ['abcXYZ012']
-    >>> parse_rpc_args('{"channelLabel": "foo-i386-5"}')
+    >>> parse_api_args('{"channelLabel": "foo-i386-5"}')
     [{'channelLabel': 'foo-i386-5'}]
-    >>> parse_rpc_args('1234567,abcXYZ012,{"channelLabel": "foo-i386-5"}')
+    >>> parse_api_args('1234567,abcXYZ012,{"channelLabel": "foo-i386-5"}')
     [1234567, 'abcXYZ012', {'channelLabel': 'foo-i386-5'}]
-    >>> parse_rpc_args('[1234567,"abcXYZ012",{"channelLabel": "foo-i386-5"}]')
+    >>> parse_api_args('[1234567,"abcXYZ012",{"channelLabel": "foo-i386-5"}]')
     [1234567, 'abcXYZ012', {'channelLabel': 'foo-i386-5'}]
     """
+    if not args:
+        return []
+
     try:
         x = simplejson.loads(args)
         if isinstance(x, list):
@@ -270,11 +290,11 @@ def parse_rpc_args(args, arg_sep=','):
     return ret
 
 
-def resuls_to_str(results, indent=2):
+def results_to_json_str(results, indent=2):
     """
-    >>> resuls_to_str([123, 'abc', {'x':'yz'}], 0)
+    >>> results_to_json_str([123, 'abc', {'x':'yz'}], 0)
     '[123, "abc", {"x": "yz"}]'
-    >>> resuls_to_str([123, 'abc', {'x':'yz'}])
+    >>> results_to_json_str([123, 'abc', {'x':'yz'}])
     '[\\n  123, \\n  "abc", \\n  {\\n    "x": "yz"\\n  }\\n]'
     """
     return simplejson.dumps(results, ensure_ascii=False, indent=indent)
@@ -400,32 +420,12 @@ password = secretpasswd
     p.add_option_group(oog)
 
     aog = optparse.OptionGroup(p, "API argument options")
-    aog.add_option('-A', '--args', default="",
+    aog.add_option('-A', '--args', default='',
         help='Api args other than session id in comma separated strings or JSON expression [empty]')
     aog.add_option('', '--list-args', help='Specify List of API args')
     p.add_option_group(aog)
 
     return p
-
-
-def rpc_main(rapi, api, api_args, options, out):
-    """
-    """
-    logging.debug(" rpc: api='%s', args=%s" % (api, api_args))
-    xs = rapi.call(api, *api_args)
-
-    # TODO: clean up this ugly and complex part.
-    if isinstance(xs, list):
-        if options.format:
-            for x in xs:
-                print >> out, options.format % x
-        else:
-            print >> out, resuls_to_str(xs, options.indent)
-    else:
-        if options.format:
-            print >> out, options.format % xs
-        else:
-            print >> out, resuls_to_str(xs, options.indent)
 
 
 def main(argv):
@@ -465,26 +465,73 @@ def main(argv):
     rapi.login()
 
     if options.list_args:
-        list_args = parse_rpc_args(options.list_args)
-
-        for arg in list_args:
-            rpc_main(rapi, api, [arg], options, out)
-
+        list_args = parse_api_args(options.list_args)
+        print list_args
+        res = rapi.multicall(api, list_args)
     else:
-        if options.args:
-            args = parse_rpc_args(options.args)
-            rpc_main(rapi, api, args, options, out)
-        else:
-            rpc_main(rapi, api, [], options, out)
+        args = (options.args and parse_api_args(options.args) or [])
+        res = rapi.call(api, *args)
 
-    del rapi
+    if not isinstance(res, list):
+        res = [res]
+
+    if options.format:
+        print >> out, '\n'.join((options.format % r for r in res))
+    else:
+        print >> out, results_to_json_str(res, options.indent)
 
     return 0
 
 
+
+class TestScript(unittest.TestCase):
+    """TODO: More test cases.
+    """
+
+    def setUp(self):
+        self.cmd = sys.argv[0]
+
+    def __helper(self, cfmt):
+        cs = cfmt % self.cmd
+        (status, _output) = run(cs)
+
+        assert status == 0, "cmdline=%s" % cs
+
+    def test_api_wo_arg_and_sid(self):
+        self.__helper("%s api.getVersion")
+
+    def test_api_wo_arg(self):
+        self.__helper("%s channel.listSoftwareChannels")
+
+    def test_api_w_arg(self):
+        self.__helper("%s --args=rhel-i386-server-5 channel.software.getDetails")
+
+    def test_api_w_arg_and_format_option(self):
+        self.__helper("%s -A rhel-i386-server-5 --format '%%(channel_description)s' channel.software.getDetails")
+
+    def test_api_w_arg_multicall(self):
+        self.__helper("%s --list-args='rhel-i386-server-5,rhel-x86_64-server-5' channel.software.getDetails")
+
+    def test_api_w_args(self):
+        self.__helper("%s -A 'rhel-i386-server-5,2010-04-01 08:00:00' channel.software.listAllPackages")
+
+    def test_api_w_args_as_list(self):
+        self.__helper("%s -A '[\"rhel-i386-server-5\",\"2010-04-01 08:00:00\"]' channel.software.listAllPackages")
+
+
+
+def unittests():
+    #unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestScript)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 def test():
     import doctest
+
     doctest.testmod(verbose=True)
+    unittests()
+
     sys.exit(0)
 
 
