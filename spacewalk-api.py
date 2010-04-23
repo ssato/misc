@@ -231,7 +231,7 @@ def __parse(arg):
         if re.match(r'[1-9]\d*', arg):
             return int(arg)
         elif re.match(r'{.*}', arg):
-            return eval(arg)
+            return simplejson.loads(arg)  # retry with simplejson
         else:
             return str(arg)
 
@@ -257,8 +257,6 @@ def parse_rpc_args(args, arg_sep=','):
     >>> parse_rpc_args('[1234567,"abcXYZ012",{"channelLabel": "foo-i386-5"}]')
     [1234567, 'abcXYZ012', {'channelLabel': 'foo-i386-5'}]
     """
-    ret = []
-
     try:
         x = simplejson.loads(args)
         if isinstance(x, list):
