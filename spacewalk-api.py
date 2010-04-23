@@ -466,7 +466,6 @@ def main(argv):
 
     if options.list_args:
         list_args = parse_api_args(options.list_args)
-        print list_args
         res = rapi.multicall(api, list_args)
     else:
         args = (options.args and parse_api_args(options.args) or [])
