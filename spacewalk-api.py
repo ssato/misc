@@ -14,14 +14,21 @@
 #
 # [Features]
 #
-# * It's possible to pass arguements for APIs from command line in simple comma
-#   separated strings or JSON expression.
-# * Default result format is JSON but easily customizable with '--format'
-#   option as you like.
-# * Utilize config file contains authentication parameters to cut out the need
-#   of passing these parameters with command line options.
-# * Query results are cached by default.
-# * May call a API with multiple different argument sets at once
+# * Can call Spacewalk/RHN RPC APIs require arguments.
+#
+# * API call Results are output in JSON expression by default to enable
+#   post-processing of that data by itself or another program.
+#
+# * Instead of JSON output, it is easily customizable in python string format
+#   expression if you want.
+#
+# * Utilize config file to save authentication parameters to cut out the need
+#   of typing these parameters every time.
+#
+# * RPC call results are cached by default and it will drastically reduce the
+#   time to get same resutls next time.
+#
+# * Can call a API with multiple different arguments sets at once
 #
 
 import ConfigParser as configparser
@@ -88,8 +95,9 @@ def run(cmd_str):
 
 
 class Cache(object):
-    """Cache loader / dumper.
+    """Pickle module based data caching backend.
     """
+
     def __init__(self, domain, expires=CACHE_EXPIRING_DATES, cache_topdir=CACHE_DIR):
         """Initialize domain-local caching parameters.
 
@@ -160,6 +168,9 @@ class Cache(object):
 
 
 class RpcApi(object):
+    """Spacewalk / RHN XML-RPC API server object.
+    """
+
     def __init__(self, conn_params, enable_cache=True):
         """
         @conn_params  Connection parameters: server, userid, password, timeout, protocol.
@@ -301,7 +312,7 @@ def results_to_json_str(results, indent=2):
     return simplejson.dumps(results, ensure_ascii=False, indent=indent)
 
 
-def setup_with_configfile(config_file, profile=""):
+def configure_with_configfile(config_file, profile=""):
     """
     @config_file  Configuration file path, ex. '~/.spacewalk-api/config'.
     """
@@ -342,7 +353,7 @@ def setup_with_configfile(config_file, profile=""):
     }
 
 
-def setup_with_options(config, options):
+def configure_with_options(config, options):
     """
     @config   config parameters dict: {'server':, 'userid':, ...}
     @options  optparse.Options
@@ -356,9 +367,9 @@ def setup_with_options(config, options):
     return {'server':server, 'userid':userid, 'password':password, 'timeout':timeout, 'protocol':protocol}
 
 
-def setup(options):
-    conf = setup_with_configfile(options.config, options.profile)
-    conf = setup_with_options(conf, options)
+def configure(options):
+    conf = configure_with_configfile(options.config, options.profile)
+    conf = configure_with_options(conf, options)
 
     return conf
 
@@ -437,12 +448,6 @@ def main(argv):
     parser = option_parser()
     (options, args) = parser.parse_args(argv[1:])
 
-    if options.test:
-        test()
-
-    if options.no_cache:
-        enable_cache = False
-
     if options.verbose > 0:
         loglevel = logging.INFO
 
@@ -451,16 +456,22 @@ def main(argv):
 
     logging.basicConfig(level=loglevel)
 
-    if options.output:
-        out = open(options.output, 'w')
-
     if len(args) == 0:
         parser.print_usage()
         return 0
 
+    if options.test:
+        test()
+
+    if options.no_cache:
+        enable_cache = False
+
+    if options.output:
+        out = open(options.output, 'w')
+
     api = args[0]
 
-    conn_params = setup(options)
+    conn_params = configure(options)
 
     rapi = RpcApi(conn_params, enable_cache)
     rapi.login()
@@ -521,7 +532,6 @@ class TestScript(unittest.TestCase):
 
 
 def unittests():
-    #unittest.main()
     suite = unittest.TestLoader().loadTestsFromTestCase(TestScript)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
@@ -536,7 +546,7 @@ def test():
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    sys.exit(main(sys.argv))
 
 
 # vim: set sw=4 ts=4 expandtab:
