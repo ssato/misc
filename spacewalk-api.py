@@ -21,6 +21,7 @@
 # * Utilize config file contains authentication parameters to cut out the need
 #   of passing these parameters with command line options.
 # * Query results are cached by default.
+# * May call a API with multiple different argument sets at once
 #
 
 import ConfigParser as configparser
