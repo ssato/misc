@@ -59,6 +59,102 @@ except ImportError:
 
 
 
+"""
+Examples:
+
+$ ./spacewalk-api.py --args=10821 packages.listDependencies
+[
+  {
+    "dependency": "/usr/bin/perl",
+    "dependency_modifier": " ",
+    "dependency_type": "requires"
+  },
+
+    ... (snip) ...
+
+  {
+    "dependency": "cvsmapfs",
+    "dependency_modifier": "= 1.3-7",
+    "dependency_type": "provides"
+  }
+]
+$ ./spacewalk-api.py --list-args="10821,10822,10823" packages.getDetails
+[
+  {
+    "package_size": "15653",
+    "package_arch_label": "noarch",
+    "package_cookie": "porkchop.redhat.com 964488467",
+    "package_md5sum": "44971f49f5a521464c70038bd9641a8b",
+    "package_summary": "Extension for CVS to handle links\n",
+    "package_name": "cvsmapfs",
+    "package_epoch": "",
+    "package_checksums": {
+      "md5": "44971f49f5a521464c70038bd9641a8b"
+    },
+
+    ... (snip) ...
+
+  {
+    "package_size": "3110234",
+    "package_arch_label": "i386",
+    "package_cookie": "porkchop.redhat.com 964465421",
+    "package_md5sum": "1919a8e06ee5c0916685cd04dff20776",
+    "package_summary": "SNNS documents\n",
+    "package_name": "SNNS-doc",
+    "package_epoch": "",
+    "package_checksums": {
+      "md5": "1919a8e06ee5c0916685cd04dff20776"
+    },
+    "package_payload_size": "5475688",
+    "package_version": "4.2",
+    "package_license": "Free Software",
+    "package_vendor": "Red Hat, Inc.",
+    "package_release": "7",
+    "package_last_modified_date": "2006-08-22 21:56:01.0",
+    "package_description": "This package includes the documents in html and postscript for SNNS.\n",
+    "package_id": 10823,
+    "providing_channels": [
+      "redhat-powertools-i386-7.0",
+      "redhat-powertools-i386-7.1"
+    ],
+    "package_build_host": "porky.devel.redhat.com",
+    "package_build_date": "2000-07-24 19:07:23.0",
+    "package_file": "SNNS-doc-4.2-7.i386.rpm"
+  }
+]
+$ ./spacewalk-api.py -vv --args=10821 \
+> -F "%(dependency)s:%(dependency_type)s" packages.listDependencies
+DEBUG:root: config_file = /home/ssato/.spacewalk-api/config
+DEBUG:root: profile = 'None'
+DEBUG:root: Call: api=packages.listDependencies, args=(10821,)
+DEBUG:root: Loading cache: method=packages.listDependencies, args=(10821,)
+DEBUG:root: Found query result cache
+/usr/bin/perl:requires
+cvs:requires
+perl:requires
+rpmlib(CompressedFileNames):requires
+rpmlib(PayloadFilesHavePrefix):requires
+cvsmapfs:provides
+$
+$ ./spacewalk-api.py -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' \
+> --format "%(package_name)s" channel.software.listAllPackages
+kdebase
+kdebase-devel
+kexec-tools
+krb5-devel
+krb5-libs
+krb5-server
+krb5-workstation
+lvm2
+nss_db
+sudo
+wireshark
+wireshark-gnome
+$
+"""
+
+
+
 PROTO = 'https'
 TIMEOUT = 900
 
