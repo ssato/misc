@@ -319,7 +319,7 @@ class RpcApi(object):
                         logging.debug(" Found query result cache")
                         return ret
 
-                    logging.debug(" Not found query result cache")
+                    logging.debug(" No query result cache found.")
 
             if not self.sid:
                 self.login()
@@ -533,7 +533,7 @@ password = secretpasswd
 
     caog = optparse.OptionGroup(p, "Cache options")
     caog.add_option('',   '--no-cache', help='Do not use query result cache', action="store_true", default=False)
-    caog.add_option('',   '--expire', help='Expiration dates. 0 means refreash cache [%default]', default=1, type="int")
+    caog.add_option('',   '--expire', help='Expiration dates. 0 means refresh cache [%default]', default=1, type="int")
     p.add_option_group(caog)
 
     oog = optparse.OptionGroup(p, "Output options")
