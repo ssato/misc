@@ -16,7 +16,7 @@
 #
 # * Can call Spacewalk/RHN RPC APIs require arguments.
 #
-# * API call Results are output in JSON expression by default to enable
+# * API call results are output in JSON expression by default to enable
 #   post-processing of that data by itself or another program.
 #
 # * Instead of JSON output, it is easily customizable in python string format
@@ -25,10 +25,10 @@
 # * Utilize config file to save authentication parameters to cut out the need
 #   of typing these parameters every time.
 #
-# * RPC call results are cached by default and it will drastically reduce the
+# * API call results are cached by default and it will drastically reduce the
 #   time to get same resutls next time.
 #
-# * Can call a API with multiple different arguments sets at once
+# * Can call an API with multiple different arguments sets at once.
 #
 
 import ConfigParser as configparser
