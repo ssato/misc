@@ -14,13 +14,14 @@
 #
 # [Features]
 #
-# * Can call Spacewalk/RHN RPC APIs require arguments.
+# * Can call Spacewalk/RHN RPC APIs from command line even if it requires
+#   arguments.
 #
 # * API call results are output in JSON expression by default to enable
 #   post-processing of that data by itself or another program.
 #
-# * Instead of JSON output, it is easily customizable in python string format
-#   expression if you want.
+# * Results output is easily customizable in python string format expression if
+#   you want.
 #
 # * Utilize config file to save authentication parameters to cut out the need
 #   of typing these parameters every time.
