@@ -490,7 +490,7 @@ Config file example (%(config)s):
 
 [DEFAULT]
 server = rhn.redhat.com
-userid = xxxxyyyyzzzz
+userid = xyz********
 password =   # it will ask you if password is not set.
 timeout = 900
 protocol = https
