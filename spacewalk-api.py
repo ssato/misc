@@ -151,6 +151,18 @@ sudo
 wireshark
 wireshark-gnome
 $
+$ ./spacewalk-api.py -A 10170***** -I 0 system.getDetails
+[{"building": "", "city": "", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "", "room": ""}]
+$ ./spacewalk-api.py -A '[10170*****,{"city": "tokyo", "rack": "ep7"}]' system.setDetails
+[
+  1
+]
+$ ./spacewalk-api.py -A 10170***** -I 0 system.getDetails
+[{"building": "", "city": "", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "", "room": ""}]
+ssato@localhost% ./spacewalk-api.py -A 10170***** -I 0 --no-cache system.getDetails
+[{"building": "", "city": "tokyo", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "ep7", "room": ""}]
+$
+
 """
 
 
@@ -194,20 +206,20 @@ class Cache(object):
     """Pickle module based data caching backend.
     """
 
-    def __init__(self, domain, expires=CACHE_EXPIRING_DATES, cache_topdir=CACHE_DIR):
+    def __init__(self, domain, expire=CACHE_EXPIRING_DATES, cache_topdir=CACHE_DIR):
         """Initialize domain-local caching parameters.
 
-        @domain   a str represents target domain
-        @expires  time period to expire cache in date (>= 0).
-                  0 indicates disabling cache.
+        @domain  a str represents target domain
+        @expire  time period to expire cache in date (>= 0).
+                 0 indicates disabling cache.
         @cache_topdir  topdir to save cache files
         """
         self.domain = domain
         self.domain_id = str_to_id(domain)
         self.cache_dir = os.path.join(cache_topdir, self.domain_id)
-        self.expire_dates = self.set_expires(expires)
+        self.expire_dates = self.set_expire(expire)
 
-    def set_expires(self, dates):
+    def set_expire(self, dates):
         return (dates > 0 and dates or 0)
 
     def dir(self, obj):
@@ -267,10 +279,11 @@ class RpcApi(object):
     """Spacewalk / RHN XML-RPC API server object.
     """
 
-    def __init__(self, conn_params, enable_cache=True):
+    def __init__(self, conn_params, enable_cache=True, expire=1):
         """
         @conn_params  Connection parameters: server, userid, password, timeout, protocol.
-        @enable_cache Whether to enable query caching or not.
+        @enable_cache Whether to enable query result cache or not.
+        @expire  Cache expiration date
         """
         self.url = "%(protocol)s://%(server)s/rpc/api" % conn_params
         self.userid = conn_params.get('userid')
@@ -279,7 +292,7 @@ class RpcApi(object):
 
         self.sid = False
 
-        self.cache = (enable_cache and Cache("%s:%s" % (self.url, self.userid)) or False)
+        self.cache = (enable_cache and Cache("%s:%s" % (self.url, self.userid), expire) or False)
 
     def __del__(self):
         self.logout()
@@ -482,7 +495,8 @@ Examples:
   %(cmd)s -A "rhel-i386-server-5","2010-04-01 08:00:00" channel.software.listAllPackages
   %(cmd)s -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' channel.software.listAllPackages
   %(cmd)s --format "%%(label)s" channel.listSoftwareChannels
-  %(cmd)s -A 100010021 -F "%%(hostname)s %%(description)s" system.getDetails
+  %(cmd)s -A 100010021 --no-cache -F "%%(hostname)s %%(description)s" system.getDetails
+  %(cmd)s -A '[1017068053,{"city": "tokyo", "rack": "rack-A-1"}]' system.setDetails
 
 
 Config file example (%(config)s):
@@ -519,6 +533,7 @@ password = secretpasswd
 
     caog = optparse.OptionGroup(p, "Cache options")
     caog.add_option('',   '--no-cache', help='Do not use query result cache', action="store_true", default=False)
+    caog.add_option('',   '--expire', help='Expiration dates. 0 means refreash cache [%default]', default=1, type="int")
     p.add_option_group(caog)
 
     oog = optparse.OptionGroup(p, "Output options")
@@ -552,12 +567,12 @@ def main(argv):
 
     logging.basicConfig(level=loglevel)
 
+    if options.test:
+        test()
+
     if len(args) == 0:
         parser.print_usage()
         return 0
-
-    if options.test:
-        test()
 
     if options.no_cache:
         enable_cache = False
@@ -569,7 +584,7 @@ def main(argv):
 
     conn_params = configure(options)
 
-    rapi = RpcApi(conn_params, enable_cache)
+    rapi = RpcApi(conn_params, enable_cache, options.expire)
     rapi.login()
 
     if options.list_args:
