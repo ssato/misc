@@ -159,7 +159,7 @@ $ ./spacewalk-api.py -A '[10170*****,{"city": "tokyo", "rack": "ep7"}]' system.s
 ]
 $ ./spacewalk-api.py -A 10170***** -I 0 system.getDetails
 [{"building": "", "city": "", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "", "room": ""}]
-ssato@localhost% ./spacewalk-api.py -A 10170***** -I 0 --no-cache system.getDetails
+$ ./spacewalk-api.py -A 10170***** -I 0 --no-cache system.getDetails
 [{"building": "", "city": "tokyo", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "ep7", "room": ""}]
 $
 
