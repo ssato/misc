@@ -62,7 +62,7 @@ except ImportError:
 """
 Examples:
 
-$ ./spacewalk-api.py --args=10821 packages.listDependencies
+$ ./swapi.py --args=10821 packages.listDependencies
 [
   {
     "dependency": "/usr/bin/perl",
@@ -78,7 +78,7 @@ $ ./spacewalk-api.py --args=10821 packages.listDependencies
     "dependency_type": "provides"
   }
 ]
-$ ./spacewalk-api.py --list-args="10821,10822,10823" packages.getDetails
+$ ./swapi.py --list-args="10821,10822,10823" packages.getDetails
 [
   {
     "package_size": "15653",
@@ -122,9 +122,9 @@ $ ./spacewalk-api.py --list-args="10821,10822,10823" packages.getDetails
     "package_file": "SNNS-doc-4.2-7.i386.rpm"
   }
 ]
-$ ./spacewalk-api.py -vv --args=10821 \
+$ ./swapi.py -vv --args=10821 \
 > -F "%(dependency)s:%(dependency_type)s" packages.listDependencies
-DEBUG:root: config_file = /home/ssato/.spacewalk-api/config
+DEBUG:root: config_file = /home/ssato/.swapi/config
 DEBUG:root: profile = 'None'
 DEBUG:root: Call: api=packages.listDependencies, args=(10821,)
 DEBUG:root: Loading cache: method=packages.listDependencies, args=(10821,)
@@ -136,7 +136,7 @@ rpmlib(CompressedFileNames):requires
 rpmlib(PayloadFilesHavePrefix):requires
 cvsmapfs:provides
 $
-$ ./spacewalk-api.py -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' \
+$ ./swapi.py -A '["rhel-i386-server-5","2010-04-01 08:00:00"]' \
 > --format "%(package_name)s" channel.software.listAllPackages
 kdebase
 kdebase-devel
@@ -151,15 +151,15 @@ sudo
 wireshark
 wireshark-gnome
 $
-$ ./spacewalk-api.py -A 10170***** -I 0 system.getDetails
+$ ./swapi.py -A 10170***** -I 0 system.getDetails
 [{"building": "", "city": "", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "", "room": ""}]
-$ ./spacewalk-api.py -A '[10170*****,{"city": "tokyo", "rack": "ep7"}]' system.setDetails
+$ ./swapi.py -A '[10170*****,{"city": "tokyo", "rack": "ep7"}]' system.setDetails
 [
   1
 ]
-$ ./spacewalk-api.py -A 10170***** -I 0 system.getDetails
+$ ./swapi.py -A 10170***** -I 0 system.getDetails
 [{"building": "", "city": "", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "", "room": ""}]
-$ ./spacewalk-api.py -A 10170***** -I 0 --no-cache system.getDetails
+$ ./swapi.py -A 10170***** -I 0 --no-cache system.getDetails
 [{"building": "", "city": "tokyo", "location_aware_download": "true", "base_entitlement": "enterprise_entitled", "description": "Initial Registration Parameters:\nOS: redhat-release\nRelease: 5Server\nCPU Arch: i686-redhat-linux", "address1": "", "address2": "", "auto_errata_update": "false", "state": "", "profile_name": "rhel-5-3-guest-1.net-1.local", "country": "", "rack": "ep7", "room": ""}]
 $
 
@@ -170,7 +170,7 @@ $
 PROTO = 'https'
 TIMEOUT = 900
 
-CONFIG_DIR = os.path.join(os.environ.get('HOME', '.'), '.spacewalk-api')
+CONFIG_DIR = os.path.join(os.environ.get('HOME', '.'), '.swapi')
 CONFIG = os.path.join(CONFIG_DIR, 'config')
 
 CACHE_DIR = os.path.join(CONFIG_DIR, 'cache')
@@ -423,7 +423,7 @@ def results_to_json_str(results, indent=2):
 
 def configure_with_configfile(config_file, profile=""):
     """
-    @config_file  Configuration file path, ex. '~/.spacewalk-api/config'.
+    @config_file  Configuration file path, ex. '~/.swapi/config'.
     """
     (server,userid,password,timeout,protocol) = ('', '', '', TIMEOUT, PROTO)
 
