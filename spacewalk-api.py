@@ -16,10 +16,10 @@
 #
 # * Can call every Spacewalk/RHN RPC APIs from command line.
 #
-# * API call results are output in JSON expression by default to enable
-#   post-processing of that data by itself or another program.
+# * API call results are output in JSON by default to enable post-processing of
+#   that data by this script itself or another program.
 #
-# * Results output is easily customizable in python string format expression
+# * Result outputs are easily customizable in python string format expression
 #   as needed.
 #
 # * Utilize config file to save authentication parameters to cut out the need
