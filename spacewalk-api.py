@@ -1,6 +1,6 @@
 #! /usr/bin/python
 #
-# Like tools/spacewalk-api, call Spacewalk/RHN RPC API from command line.
+# Like utils/spacewalk-api, call Spacewalk/RHN RPC API from command line.
 #
 # Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
 #
