@@ -14,7 +14,11 @@
 #
 # [Features]
 #
-# * Can call every Spacewalk/RHN RPC APIs from command line.
+# * Can call every Spacewalk/RHN RPC APIs with or without arguments from
+#   command line.
+#
+# * If API needs arguments, you can pass them in comma separated strings or
+#   JSON data.
 #
 # * API call results are output in JSON by default to enable post-processing of
 #   that data by this script itself or another program.
