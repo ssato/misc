@@ -23,6 +23,7 @@ import os.path
 import os
 import pprint
 import sys
+import unittest
 import xlwt
 
 
@@ -36,10 +37,11 @@ def zipWith(f, xs=[], ys=[]):
     >>> assert zipWith(lambda x, y: (x,y), [3, 3, 8], [2, 1, 5]) == zip([3, 3, 8], [2, 1, 5])
     >>>
 
-    @TODO: handle cases if len(xs) != len(ys), for example, use zip'
+    @TODO: Handle cases if len(xs) != len(ys), for example, use zip' instead of zip
     where
-        zip'([], ys) = [(None, y) for y in ys]  # it works if f is max but not if f is min
-                                                # because min(None, y) returns nothing (undef).
+        zip' [] ys = [(None, y)| y <- ys]  # it works if f is max but not if f is min
+        zip' xs [] = [(x, None)| x <- xs]  # because min(None, y) returns nothing (undef).
+        zip' xs ys = zip xs ys
     """
     assert callable(f)
     return [f(x, y) for x, y in zip(xs, ys)]
@@ -55,6 +57,7 @@ def max_col_widths(xss):
     """
     yss = [[len(x) for x in xs] for xs in xss]  # [[String]] -> [[Int]]
     return functools.reduce(functools.partial(zipWith, max), yss[1:], yss[0])
+
 
 
 class CsvsWorkbook(object):
@@ -182,6 +185,7 @@ Examples:
     cog.add_option('-E', '--encoding', help='Character set encoding of the CSV files [utf-8]', default='utf-8')
     cog.add_option('-v', '--verbose', help='Verbose mode', default=False, action="store_true")
     cog.add_option('-q', '--quiet', help='Quiet mode', default=False, action="store_true")
+    cog.add_option('-T', '--test', help='Test mode - running test suites', default=False, action="store_true")
     parser.add_option_group(cog)
         #'main': xlwt.easyxf('font: name Times New Roman'),
 
@@ -211,6 +215,9 @@ def main():
     if options.quiet:
         loglevel = logging.ERROR
 
+    if options.test:
+        test()
+
     logging.basicConfig(level=loglevel)
 
     if len(args) < 2:
@@ -232,8 +239,23 @@ def main():
     wb.save()
 
 
-def test():
+
+class TestScript(unittest.TestCase):
+    """TODO: Implement this.
+    """
     pass
+
+
+
+def test():
+    import doctest
+
+    doctest.testmod(verbose=True)
+
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestScript)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+    sys.exit(0)
 
 
 if __name__ == '__main__':
