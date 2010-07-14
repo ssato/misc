@@ -16,6 +16,7 @@ value_0, value_1, ...             => Dataset
 
 
 import csv
+import functools
 import logging
 import optparse
 import os.path
@@ -24,6 +25,36 @@ import pprint
 import sys
 import xlwt
 
+
+
+def zipWith(f, xs=[], ys=[]):
+    """
+    >>> zipWith(max, [3, 3, 8, 2], [2, 1, 5, 7])
+    [3, 3, 8, 7]
+    >>> zipWith(lambda x, y: (x,y), [3, 3, 8, 2], [2, 1, 5, 7])
+    [(3, 2), (3, 1), (8, 5), (2, 7)]
+    >>> assert zipWith(lambda x, y: (x,y), [3, 3, 8], [2, 1, 5]) == zip([3, 3, 8], [2, 1, 5])
+    >>>
+
+    @TODO: handle cases if len(xs) != len(ys), for example, use zip'
+    where
+        zip'([], ys) = [(None, y) for y in ys]  # it works if f is max but not if f is min
+                                                # because min(None, y) returns nothing (undef).
+    """
+    assert callable(f)
+    return [f(x, y) for x, y in zip(xs, ys)]
+
+
+def max_col_widths(xss):
+    """
+    @return list of max value of column length list. see an example below.
+
+    >>> xss = [['aaa', 'bbb', 'cccccccc', 'dd'], ['aa', 'b', 'ccccc', 'ddddddd'], ['aaaa', 'bbbb', 'c', 'dd']]
+    >>> max_col_widths(xss)
+    [4, 4, 8, 7]
+    """
+    yss = [[len(x) for x in xs] for xs in xss]  # [[String]] -> [[Int]]
+    return functools.reduce(functools.partial(zipWith, max), yss[1:], yss[0])
 
 
 class CsvsWorkbook(object):
@@ -81,11 +112,22 @@ class CsvsWorkbook(object):
         return self._sheets + 1
 
     def addWorksheetFromCSVFile(self, csv_filename, csv_encoding='utf-8',
-            title=False, fieldnames=[], header_style=False, main_style=False):
+            title=False, fieldnames=[], header_style=False, main_style=False,
+            auto_col_width=False):
         if not title:
             title = "Sheet %d" % (self.sheets())
 
         _conv = lambda x: unicode(x, csv_encoding)
+
+        if header_style:
+            hstyle = header_style
+        else:
+            hstyle = self.header_style()
+
+        if main_style:
+            mstyle = main_style 
+        else:
+            mstyle = self.main_style()
 
         reader = csv.reader(open(csv_filename))
         cells = [row for row in reader]
@@ -101,13 +143,28 @@ class CsvsWorkbook(object):
 
         for col in range(0, len(fieldnames)):
             logging.info(" col = %d, fieldname = %s" % (col, fieldnames[col]))
-            worksheet.write(0, col, _conv(fieldnames[col]), self.header_style())
+            worksheet.write(0, col, _conv(fieldnames[col]), hstyle)
+
+        # @FIXME: Tune factor and threashold values.
+        if auto_col_width:
+            mcws = max_col_widths(dataset[1:])  # ignore header columns.
+            factor0 = 200
+            factor1 = 10
+            threashold0 = 15
+
+            for i in range(0, len(dataset[0])):
+                logging.info(" col[i].width = %d" % mcws[i])
+                w = mcws[i]
+                if w < threashold0:
+                    w += factor1
+
+                worksheet.col(i).width = w * factor0
 
         # main data
         for row in range(1, len(dataset)):
             for col in range(0, len(dataset[row])):
                 logging.info(" row = %d, col = %d, data = %s" % (row, col, dataset[row][col]))
-                worksheet.write(row, col, _conv(dataset[row][col]) or "", self.main_style())
+                worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
 
 
 
@@ -129,6 +186,7 @@ Examples:
         #'main': xlwt.easyxf('font: name Times New Roman'),
 
     sog = optparse.OptionGroup(parser, "Style Options")
+    sog.add_option('', '--auto-col-width', default=False, help='Automatically adjust column widths')
     sog.add_option('', '--header-style', default='font: name Times New Roman, bold on',
         help='Main (content) style. See xlwt\'s document also, https://secure.simplistix.co.uk/svn/xlwt/trunk/README.html. ["%default"]')
     sog.add_option('', '--main-style', default='font: name Times New Roman',
@@ -168,7 +226,8 @@ def main():
     wb = CsvsWorkbook(output, options.header_style, options.main_style)
     for csvf in csvfiles:
         title = sheet_names.get(csvf, os.path.basename(csvf).replace('.csv',''))
-        wb.addWorksheetFromCSVFile(csvf, csv_encoding=options.encoding, title=title)
+        wb.addWorksheetFromCSVFile(csvf, csv_encoding=options.encoding, title=title,
+            auto_col_width=options.auto_col_width)
 
     wb.save()
 
