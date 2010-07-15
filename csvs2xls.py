@@ -16,7 +16,6 @@ value_0, value_1, ...             => Dataset
 
 
 import csv
-import functools
 import logging
 import optparse
 import os.path
@@ -25,6 +24,8 @@ import pprint
 import sys
 import unittest
 import xlwt
+
+from functools import reduce as fold, partial as curry
 
 
 
@@ -55,11 +56,7 @@ def max_col_widths(xss):
     >>> max_col_widths(xss)
     [4, 4, 8, 7]
     """
-    fold = functools.reduce
-    curry = functools.partial
-
     yss = [[len(x) for x in xs] for xs in xss]
-
     return fold(curry(zipWith, max), yss[1:], yss[0])
 
 
