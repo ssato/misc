@@ -49,14 +49,18 @@ def zipWith(f, xs=[], ys=[]):
 
 def max_col_widths(xss):
     """
-    @return list of max value of column length list. see an example below.
+    @return list of max value of column length list (:: [Int]). see an example below.
 
     >>> xss = [['aaa', 'bbb', 'cccccccc', 'dd'], ['aa', 'b', 'ccccc', 'ddddddd'], ['aaaa', 'bbbb', 'c', 'dd']]
     >>> max_col_widths(xss)
     [4, 4, 8, 7]
     """
-    yss = [[len(x) for x in xs] for xs in xss]  # [[String]] -> [[Int]]
-    return functools.reduce(functools.partial(zipWith, max), yss[1:], yss[0])
+    fold = functools.reduce
+    curry = functools.partial
+
+    yss = [[len(x) for x in xs] for xs in xss]
+
+    return fold(curry(zipWith, max), yss[1:], yss[0])
 
 
 
