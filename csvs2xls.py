@@ -70,7 +70,7 @@ def zipWith(f, xs=[], ys=[]):
 
 def max_col_widths(xss):
     """
-    @return list of max value of column length list (:: [Int]). see an example below.
+    @return list of max width needed for columns (:: [Int]). see an example below.
 
     >>> xss = [['aaa', 'bbb', 'cccccccc', 'dd'], ['aa', 'b', 'ccccc', 'ddddddd'], ['aaaa', 'bbbb', 'c', 'dd']]
     >>> max_col_widths(xss)
@@ -78,6 +78,31 @@ def max_col_widths(xss):
     """
     yss = [[len(x) for x in xs] for xs in xss]
     return fold(curry(zipWith, max), yss[1:], yss[0])
+
+
+def max_col_widths_2(xss):
+    """
+    More straight-forward implementation optimized for matric.
+
+    >>> xss = [['aaa', 'bbb', 'cccccccc', 'dd'], ['aa', 'b', 'ccccc', 'ddddddd'], ['aaaa', 'bbbb', 'c', 'dd']]
+    >>> max_col_widths(xss)
+    [4, 4, 8, 7]
+    """
+    yss = [[len(x) for x in xs] for xs in xss]
+    return [max((yss[i][j] for i in range(0, len(yss)))) for j in range(0, len(yss[0]))]
+
+
+def adjust_width(width):
+    """@FIXME: Tune factor and threashold values.
+    """
+    factor0 = 200
+    factor1 = 10
+    threashold0 = 15
+
+    if width < threashold0:
+        width += factor1
+
+    return width * factor0
 
 
 
@@ -172,17 +197,11 @@ class CsvsWorkbook(object):
         # @FIXME: Tune factor and threashold values.
         if auto_col_width:
             mcws = max_col_widths(dataset[1:])  # ignore header columns.
-            factor0 = 200
-            factor1 = 10
-            threashold0 = 15
 
             for i in range(0, len(dataset[0])):
-                logging.info(" col[%d].width = %d" % (i, mcws[i]))
-                w = mcws[i]
-                if w < threashold0:
-                    w += factor1
-
-                worksheet.col(i).width = w * factor0
+                w = adjust_width(mcws[i])
+                logging.info(" col[%d].width=%d [%d](adjusted [original])" % (i, w, mcws[i]))
+                worksheet.col(i).width = w
 
         # main data
         for row in range(1, len(dataset)):
