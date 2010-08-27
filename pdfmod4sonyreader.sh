@@ -30,19 +30,53 @@ function insert_title_in_metadata () {
 InfoKey: Title\nInfoValue: $title"
 }
 
-# Usage: cat <metadata> | save_metadata INPUT_FILE OUTPUT_FILE
-function save_metadata () {
-        pdftk $1 update_info - output $2
+# Usage: cat <metadata> | update_metadata INPUT_FILE
+function update_metadata () {
+        pdftk $1 update_info - output -
 }
 
-function add_title () {
+# Usage: get_cordinates INPUT_PDF
+function get_cordinates () {
+        sed -nre 's,.*MediaBox\s*\[([^]]+)\]/?.*,\1,p' $1 | sort | uniq
+}
+
+# Usage: cat INPUT_PDF | crop MARGIN
+function crop () {
+        local output=$1  # [%]
+        local margin=$2
+
+        local topleft=$3
+        local topright=$4
+        local bottomleft=$5
+        local bottomright=$6
+
+        #topleft=$(echo "$topleft + $topleft * $margin / 100" | bc)
+        #topright=$(echo "$topright + $topright * $margin / 100" | bc)
+        #bottomleft=$(echo "$bottomleft - $bottomleft * $margin / 100" | bc)
+        #bottomright=$(echo "$bottomright - $bottomright * $margin / 100" | bc)
+
+        topleft=$(echo "$topleft + $margin" | bc)
+        topright=$(echo "$topright + $margin" | bc)
+        bottomleft=$(echo "$bottomleft - $margin" | bc)
+        bottomright=$(echo "$bottomright - $margin" | bc)
+
+        sed -nre "s,(Crop|Media)Box\s*\[([^]]+)\],\1Box\[$topleft $topright $bottomleft $bottomright\],g" | pdftk - output $output
+}
+
+function mod_pdf () {
         local input=$1
         local output=$2
+        local title="$3"
+        local margin=$4
 
-        shift 2
-        local title="$@"
+        local cordinates=`get_cordinates $input`
+        local tl=`echo $cordinates | cut -f 1 -d ' '`
+        local tr=`echo $cordinates | cut -f 2 -d ' '`
+        local bl=`echo $cordinates | cut -f 3 -d ' '`
+        local br=`echo $cordinates | cut -f 4 -d ' '`
 
-        dump_metadata $input | insert_title_in_metadata "$title" | save_metadata $input $output
+        #dump_metadata $input | insert_title_in_metadata "$title" | update_metadata $input | crop $output $margin $tl $tr $bl $br 
+        dump_metadata $input | insert_title_in_metadata "$title" | update_metadata $input > $output
 }
 
 
@@ -53,11 +87,25 @@ fi
 
 input=$1
 output=$2
-title=$3
-margin=$4   # Not implemented yet.
+title="$3"
+margin=$4
+
+if test "x$output" = "x$input" ; then
+        echo "[Error] input $input equals to output $output."
+        exit 1
+fi
 
 if test -z "$title"; then
         title=`guess_title $input`
+        if test -z "$title"; then
+                echo "[Error] Could not get the appropriate title for $input"
+                exit 1
+        fi
 fi
 
-add_title $input $output "$title"
+if test -z "$margin"; then
+        margin=20
+fi
+
+
+mod_pdf $input $output "$title" $margin
