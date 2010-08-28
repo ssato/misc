@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Optimize PDF file for Sony Reader.
+# Crop PDF
 #
 # Author: Satoru SATOH <satoru.satoh@gmail.com>
 # License: MIT
@@ -9,103 +9,61 @@
 #
 set -e
 
-usage="Usage: $0 INPUT_FILE OUTPUT_FILE [TITLE_NAME] [MARGIN]"
+usage="Usage: $0 INPUT_FILE OUTPUT_FILE [MARGIN]"
 
-
-# guess_title(input_file)
-function guess_title () {
-        pdftotext $1 - | head -n 1
-}
-
-# Usage: dump_metadata INPUT_FILE
-function dump_metadata () {
-        pdftk $1 dump_data output -
-}
-
-# Usage: dump_metadata | insert_title_in_metadata TITLE
-function insert_title_in_metadata () {
-        local title="$@"
-
-        sed -e "1i \
-InfoKey: Title\nInfoValue: $title"
-}
-
-# Usage: cat <metadata> | update_metadata INPUT_FILE
-function update_metadata () {
-        pdftk $1 update_info - output -
-}
 
 # Usage: get_cordinates INPUT_PDF
 function get_cordinates () {
-        sed -nre 's,.*MediaBox\s*\[([^]]+)\]/?.*,\1,p' $1 | sort | uniq
+        sed -nre 's,.*MediaBox\s*\[([^]]+)\]/?.*,\1,p' "$1" | sort | uniq
 }
 
 # Usage: cat INPUT_PDF | crop MARGIN
 function crop () {
-        local output=$1  # [%]
-        local margin=$2
+        local margin=$1  # [%]
 
-        local topleft=$3
-        local topright=$4
-        local bottomleft=$5
-        local bottomright=$6
-
-        #topleft=$(echo "$topleft + $topleft * $margin / 100" | bc)
-        #topright=$(echo "$topright + $topright * $margin / 100" | bc)
-        #bottomleft=$(echo "$bottomleft - $bottomleft * $margin / 100" | bc)
-        #bottomright=$(echo "$bottomright - $bottomright * $margin / 100" | bc)
+        local topleft=$2
+        local topright=$3
+        local bottomleft=$4
+        local bottomright=$5
 
         topleft=$(echo "$topleft + $margin" | bc)
         topright=$(echo "$topright + $margin" | bc)
         bottomleft=$(echo "$bottomleft - $margin" | bc)
         bottomright=$(echo "$bottomright - $margin" | bc)
 
-        sed -nre "s,(Crop|Media)Box\s*\[([^]]+)\],\1Box\[$topleft $topright $bottomleft $bottomright\],g" | pdftk - output $output
+        sed -re "s,(Crop|Media)Box\s*\[([^]]+)\],\1Box\[$topleft $topright $bottomleft $bottomright\],g" | pdftk - output -
 }
 
 function mod_pdf () {
-        local input=$1
-        local output=$2
-        local title="$3"
-        local margin=$4
+        local input="$1"
+        local output="$2"
+        local margin=$3
 
-        local cordinates=`get_cordinates $input`
+        local cordinates=`get_cordinates "$input"`
         local tl=`echo $cordinates | cut -f 1 -d ' '`
         local tr=`echo $cordinates | cut -f 2 -d ' '`
         local bl=`echo $cordinates | cut -f 3 -d ' '`
         local br=`echo $cordinates | cut -f 4 -d ' '`
 
-        #dump_metadata $input | insert_title_in_metadata "$title" | update_metadata $input | crop $output $margin $tl $tr $bl $br 
-        dump_metadata $input | insert_title_in_metadata "$title" | update_metadata $input > $output
+        cat $input | crop $margin $tl $tr $bl $br > $output
 }
 
 
-if test $# -lt 2; then
+if test $# -lt 1; then
         echo $usage
         exit 1
 fi
 
-input=$1
-output=$2
-title="$3"
-margin=$4
+input="$1"
+output="$2"
+margin=$3
+
+if test -z "$margin"; then margin=25; fi
 
 if test "x$output" = "x$input" ; then
         echo "[Error] input $input equals to output $output."
         exit 1
 fi
 
-if test -z "$title"; then
-        title=`guess_title $input`
-        if test -z "$title"; then
-                echo "[Error] Could not get the appropriate title for $input"
-                exit 1
-        fi
-fi
+mod_pdf "$input" "$output" $margin
 
-if test -z "$margin"; then
-        margin=20
-fi
-
-
-mod_pdf $input $output "$title" $margin
