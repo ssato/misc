@@ -76,5 +76,9 @@ if test -z "$title"; then
         fi
 fi
 
-mod_pdf "$input" "$title" > "$output"
+if test "$output" = "-"; then
+        mod_pdf "$input" "$title"
+else
+        mod_pdf "$input" "$title" > "$output"
+fi
 

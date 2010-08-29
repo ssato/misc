@@ -36,8 +36,7 @@ function crop () {
 
 function mod_pdf () {
         local input="$1"
-        local output="$2"
-        local margin=$3
+        local margin=$2
 
         local cordinates=`get_cordinates "$input"`
         local tl=`echo $cordinates | cut -f 1 -d ' '`
@@ -45,7 +44,7 @@ function mod_pdf () {
         local bl=`echo $cordinates | cut -f 3 -d ' '`
         local br=`echo $cordinates | cut -f 4 -d ' '`
 
-        cat $input | crop $margin $tl $tr $bl $br > $output
+        cat $input | crop $margin $tl $tr $bl $br
 }
 
 
@@ -58,12 +57,16 @@ input="$1"
 output="$2"
 margin=$3
 
-if test -z "$margin"; then margin=25; fi
+if test -z "$margin"; then margin=30; fi
 
 if test "x$output" = "x$input" ; then
         echo "[Error] input $input equals to output $output."
         exit 1
 fi
 
-mod_pdf "$input" "$output" $margin
+if test "$output" = "-"; then
+        mod_pdf "$input" $margin
+else
+        mod_pdf "$input" $margin > $output
+fi
 
