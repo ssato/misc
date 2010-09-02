@@ -204,7 +204,9 @@ class CsvsWorkbook(object):
                 worksheet.col(i).width = w
 
         # main data
-        for row in range(1, len(dataset)):
+        rows = len(dataset)
+
+        for row in range(1, rows):
             for col in range(0, len(dataset[row])):
                 logging.info(" row=%d, col=%d, data=%s" % (row, col, dataset[row][col]))
                 worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
