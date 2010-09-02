@@ -40,7 +40,7 @@ import logging
 import optparse
 import os.path
 import os
-import pprint
+import pprint  # for debug
 import sys
 import unittest
 import xlwt
@@ -105,6 +105,43 @@ def adjust_width(width):
     return width * factor0
 
 
+def mergeable_cells(xss, row_start=0):
+    """Returns (cell_value, r1, r2, c1, c2) of merge-able cells.
+
+    >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b']])
+    [('a', 0, 1, 0, 0)]
+    >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b'], ['c', 'a', 'b'], ['d', 'e', 'b']])
+    [('a', 0, 1, 0, 0), ('b', 1, 3, 2, 2)]
+    >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b'], ['c', 'a', 'b'], ['d', 'e', 'b']], 1)
+    [('b', 1, 3, 2, 2)]
+    """
+    rl = len(xss)
+    cl = max((len(xss[r]) for r in range(0, rl)))
+    ret = []
+
+    for c in range(0, cl):
+        yss = [(xss[r][c], r, c) for r in range(row_start, rl) if len(xss[r]) > c]
+        mss = [[yss[0]]]  # Possibly mergeable cells
+
+        for ys in yss[1:]:
+            ms_last = mss[-1]
+
+            if ys[0] == ms_last[-1][0]: # If matched (maybe mergeable),
+                if len(ms_last) > 1:    # and there are more than one cells
+                    mss[-1][-1] = ys    # then replace the last cell with it,
+                else:
+                    mss[-1] += [ys]     # or append it.
+            else:
+                mss += [[ys]]           # Append the next candidate ms if not matched.
+
+        #pprint.pprint(mss)
+        # remove non-mergeable cells having only one cell and convert each pair
+        # [(val, r1, c1), (val, r2, c2)] to (val, r1, r2, c1, c2).
+        mcs = [(ms[0][0],ms[0][1],ms[1][1],ms[0][2],ms[1][2]) for ms in mss if len(ms) > 1]
+        ret += mcs
+
+    return ret
+
 
 class CsvsWorkbook(object):
 
@@ -162,7 +199,7 @@ class CsvsWorkbook(object):
 
     def addWorksheetFromCSVFile(self, csv_filename, csv_encoding='utf-8',
             title=False, fieldnames=[], header_style=False, main_style=False,
-            auto_col_width=False):
+            auto_col_width=False, vmerge=True):
         if not title:
             title = "Sheet %d" % (self.sheets())
 
@@ -191,7 +228,7 @@ class CsvsWorkbook(object):
             fieldnames = headers
 
         for col in range(0, len(fieldnames)):
-            logging.info(" col = %d, fieldname = %s" % (col, fieldnames[col]))
+            logging.info(" col=%d, fieldname=%s" % (col, fieldnames[col]))
             worksheet.write(0, col, _conv(fieldnames[col]), hstyle)
 
         # @FIXME: Tune factor and threashold values.
@@ -204,10 +241,17 @@ class CsvsWorkbook(object):
                 worksheet.col(i).width = w
 
         # main data
-        for row in range(1, len(dataset)):
+        rows = len(dataset)
+
+        for row in range(1, rows):
             for col in range(0, len(dataset[row])):
-                logging.info(" row = %d, col = %d, data = %s" % (row, col, dataset[row][col]))
+                logging.info(" row=%d, col=%d, data=%s" % (row, col, dataset[row][col]))
                 worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
+
+        # TODO: It does not work: 
+        #if vmerge:
+        #    for ms in mergeable_cells(dataset, 1):
+        #        worksheet.write_merge(ms[1], ms[2], ms[3], ms[4], ms[0])
 
 
 
