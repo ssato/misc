@@ -191,7 +191,7 @@ class CsvsWorkbook(object):
             fieldnames = headers
 
         for col in range(0, len(fieldnames)):
-            logging.info(" col = %d, fieldname = %s" % (col, fieldnames[col]))
+            logging.info(" col=%d, fieldname=%s" % (col, fieldnames[col]))
             worksheet.write(0, col, _conv(fieldnames[col]), hstyle)
 
         # @FIXME: Tune factor and threashold values.
@@ -206,7 +206,7 @@ class CsvsWorkbook(object):
         # main data
         for row in range(1, len(dataset)):
             for col in range(0, len(dataset[row])):
-                logging.info(" row = %d, col = %d, data = %s" % (row, col, dataset[row][col]))
+                logging.info(" row=%d, col=%d, data=%s" % (row, col, dataset[row][col]))
                 worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
 
 
