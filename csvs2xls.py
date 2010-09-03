@@ -150,41 +150,37 @@ def mergeable_cells(xss, row_start=0, row_end=-1, col_start=0, col_end=-1):
 class CsvsWorkbook(object):
 
     default_styles = {
-        #'header': xlwt.easyxf('font: name Times New Roman, color-index red, bold on'),
-        'header': xlwt.easyxf('font: name Times New Roman, bold on'),
-        'main': xlwt.easyxf('font: name Times New Roman'),
+        'header': 'font: name Times New Roman, bold on',
+        'main': 'font: name Times New Roman',
+        'merged': 'align: wrap yes, vert center, horiz center',
     }
 
-    def __init__(self, filename, header_style=False, main_style=False):
+    def __init__(self, filename, header_style=False, main_style=False, merged_style=False):
         self._filename = filename
         self._workbook = xlwt.Workbook()
         self._sheets = 0
-        self.__init_styles(header_style, main_style)
+        self.__init_styles(header_style, main_style, merged_style)
 
-    def __init_styles(self, header_style, main_style):
-        if header_style:
-            self._header_style = self.__to_style(header_style, True)
-        else:
-            self._header_style = self.default_styles['header']
+    def __init_styles(self, header_style, main_style, merged_style):
+        for (sn, ss) in (('header', header_style), ('main', main_style), ('merged', merged_style)):
+            self.__init_style(sn, ss)
 
-        if main_style:
-            self._main_style = self.__to_style(main_style)
-        else:
-            self._main_style = self.default_styles['main']
+    def __init_style(self, style_name, style):
+        if not style:
+            style = self.default_styles[style_name]
+
+        setattr(self, "_%s_style" % style_name, self.__to_style(style_name, style))
 
     def __del__(self):
         self._workbook.save(self._filename)
 
-    def __to_style(self, style_string, isHeader=False):
+    def __to_style(self, style_name, style_string):
         try:
             style = xlwt.easyxf(style_string)
             assert isinstance(style, xlwt.Style.XFStyle)
         except:
-            logging.warn(" given style '%s' is not valid. Fall backed to the default." % style_string)
-            if isHeader:
-                ss = self.default_styles['header']
-            else:
-                ss = self.default_styles['main']
+            logging.warn(" given style '%s'[%s] is not valid. Fall backed to the default." % (style_string, style_name))
+            ss = self.default_styles.get(style_name, self.default_styles['main'])
             style = xlwt.easyxf(ss)
 
         return style
@@ -198,26 +194,35 @@ class CsvsWorkbook(object):
     def main_style(self):
         return self._main_style
 
+    def merged_style(self):
+        return self._merged_style
+
     def sheets(self):
         return self._sheets + 1
 
     def addWorksheetFromCSVFile(self, csv_filename, csv_encoding='utf-8',
             title=False, fieldnames=[], header_style=False, main_style=False,
-            auto_col_width=False, vmerge=False, vmerge_col_end=-1):
+            auto_col_width=False,
+            vmerge=False, vmerge_col_end=-1, merged_style=False):
         if not title:
             title = "Sheet %d" % (self.sheets())
 
         _conv = lambda x: unicode(x, csv_encoding)
 
         if header_style:
-            hstyle = header_style
+            hstyle = self.__to_style('header', header_style)
         else:
             hstyle = self.header_style()
 
         if main_style:
-            mstyle = main_style 
+            mstyle = self.__to_style('main', main_style)
         else:
             mstyle = self.main_style()
+
+        if merged_style:
+            mgstyle = self.__to_style('merged', merged_style)
+        else:
+            mgstyle = self.merged_style()
 
         reader = csv.reader(open(csv_filename))
         cells = [row for row in reader]
@@ -249,7 +254,7 @@ class CsvsWorkbook(object):
 
         if vmerge:
             for ms in mergeable_cells(dataset, 1, col_end=vmerge_col_end):
-                worksheet.write_merge(ms[1], ms[2], ms[3], ms[4], ms[0])
+                worksheet.write_merge(ms[1], ms[2], ms[3], ms[4], _conv(ms[0]), mgstyle)
 
         for row in range(1, rows):
             for col in range(0, len(dataset[row])):
@@ -294,6 +299,8 @@ Examples:
         help='Main (content) style. See xlwt\'s document also, https://secure.simplistix.co.uk/svn/xlwt/trunk/README.html. ["%default"]')
     sog.add_option('', '--main-style', default='font: name Times New Roman',
         help='Main (content) style, ex. "font: name IPAPGothic" for Japanese texts ["%default"]')
+    sog.add_option('', '--merged-style', default='align: wrap yes, vert center',
+        help='Merged cells\' style if --vmerge option is used, ex. "vert center, horiz center ["%default"]')
     parser.add_option_group(sog)
 
     return parser
@@ -333,8 +340,10 @@ def main():
     for csvf in csvfiles:
         title = sheet_names.get(csvf, os.path.basename(csvf).replace('.csv',''))
         wb.addWorksheetFromCSVFile(csvf, csv_encoding=options.encoding, title=title,
+            main_style=options.main_style, header_style=options.header_style,
             auto_col_width=options.auto_col_width, 
-            vmerge=options.vmerge, vmerge_col_end=options.vmerge_col_end)
+            vmerge=options.vmerge, vmerge_col_end=options.vmerge_col_end,
+            merged_style=options.merged_style)
 
     wb.save()
 
