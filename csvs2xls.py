@@ -258,6 +258,7 @@ class CsvsWorkbook(object):
                     try:
                         worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
                     except:
+                        logging.info("The cell (row=%d, col=%d) was already written as merged cells" % (row, col))
                         pass   # skip this cell as it was written as merged cells before.
                 else:
                     worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
