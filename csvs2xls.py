@@ -42,6 +42,7 @@ import os.path
 import os
 import pprint  # for debug
 import sys
+import tempfile
 import unittest
 import xlwt
 
@@ -105,7 +106,7 @@ def adjust_width(width):
     return width * factor0
 
 
-def mergeable_cells(xss, row_start=0):
+def mergeable_cells(xss, row_start=0, row_end=-1, col_start=0, col_end=-1):
     """Returns (cell_value, r1, r2, c1, c2) of merge-able cells.
 
     >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b']])
@@ -114,12 +115,14 @@ def mergeable_cells(xss, row_start=0):
     [('a', 0, 1, 0, 0), ('b', 1, 3, 2, 2)]
     >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b'], ['c', 'a', 'b'], ['d', 'e', 'b']], 1)
     [('b', 1, 3, 2, 2)]
+    >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b'], ['c', 'a', 'b'], ['d', 'e', 'b']], col_end=1)
+    [('a', 0, 1, 0, 0)]
     """
-    rl = len(xss)
-    cl = max((len(xss[r]) for r in range(0, rl)))
+    rl = (row_end < 0 and len(xss) or row_end)
+    cl = (col_end < 0 and max((len(xss[r]) for r in range(0, rl))) or col_end)
     ret = []
 
-    for c in range(0, cl):
+    for c in range(col_start, cl):
         yss = [(xss[r][c], r, c) for r in range(row_start, rl) if len(xss[r]) > c]
         mss = [[yss[0]]]  # Possibly mergeable cells
 
@@ -199,7 +202,7 @@ class CsvsWorkbook(object):
 
     def addWorksheetFromCSVFile(self, csv_filename, csv_encoding='utf-8',
             title=False, fieldnames=[], header_style=False, main_style=False,
-            auto_col_width=False, vmerge=True):
+            auto_col_width=False, vmerge=False, vmerge_col_end=-1):
         if not title:
             title = "Sheet %d" % (self.sheets())
 
@@ -243,15 +246,20 @@ class CsvsWorkbook(object):
         # main data
         rows = len(dataset)
 
+        if vmerge:
+            for ms in mergeable_cells(dataset, 1, col_end=vmerge_col_end):
+                worksheet.write_merge(ms[1], ms[2], ms[3], ms[4], ms[0])
+
         for row in range(1, rows):
             for col in range(0, len(dataset[row])):
                 logging.info(" row=%d, col=%d, data=%s" % (row, col, dataset[row][col]))
-                worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
-
-        # TODO: It does not work: 
-        #if vmerge:
-        #    for ms in mergeable_cells(dataset, 1):
-        #        worksheet.write_merge(ms[1], ms[2], ms[3], ms[4], ms[0])
+                if vmerge:
+                    try:
+                        worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
+                    except:
+                        pass   # skip this cell as it was written as merged cells before.
+                else:
+                    worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
 
 
 
@@ -272,6 +280,11 @@ Examples:
     cog.add_option('-T', '--test', help='Test mode - running test suites', default=False, action="store_true")
     parser.add_option_group(cog)
         #'main': xlwt.easyxf('font: name Times New Roman'),
+
+    mog = optparse.OptionGroup(parser, "Cell-merging Options")
+    mog.add_option('', '--vmerge', default=False, action="store_true", help='Automatically merge cells having same value')
+    mog.add_option('', '--vmerge-col-end', default=-1, type="int", help='Specify the idx of the end column to be merged')
+    parser.add_option_group(mog)
 
     sog = optparse.OptionGroup(parser, "Style Options")
     sog.add_option('', '--auto-col-width', default=False, help='Automatically adjust column widths')
@@ -318,7 +331,8 @@ def main():
     for csvf in csvfiles:
         title = sheet_names.get(csvf, os.path.basename(csvf).replace('.csv',''))
         wb.addWorksheetFromCSVFile(csvf, csv_encoding=options.encoding, title=title,
-            auto_col_width=options.auto_col_width)
+            auto_col_width=options.auto_col_width, 
+            vmerge=options.vmerge, vmerge_col_end=options.vmerge_col_end)
 
     wb.save()
 
