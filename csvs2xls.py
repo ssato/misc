@@ -107,7 +107,8 @@ def adjust_width(width):
 
 
 def mergeable_cells(xss, row_start=0, row_end=-1, col_start=0, col_end=-1):
-    """Returns (cell_value, r1, r2, c1, c2) of merge-able cells.
+    """
+    @return (cell_value, r1, r2, c1, c2) of merge-able cells.
 
     >>> mergeable_cells([['a', 'b', 'c'], ['a', 'c', 'b']])
     [('a', 0, 1, 0, 0)]
