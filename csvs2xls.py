@@ -131,8 +131,8 @@ def mergeable_cells(xss, row_start=0, row_end=-1, col_start=0, col_end=-1):
             ms_last = mss[-1]
 
             if ys[0] == ms_last[-1][0]: # If matched (maybe mergeable),
-                if len(ms_last) > 1:    # and there are more than one cells
-                    mss[-1][-1] = ys    # then replace the last cell with it,
+                if len(ms_last) > 1:    # and there are more than one cells pushed already
+                    mss[-1][-1] = ys    # then replace the last cell pushed with it,
                 else:
                     mss[-1] += [ys]     # or append it.
             else:
@@ -258,7 +258,7 @@ class CsvsWorkbook(object):
                     try:
                         worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
                     except:
-                        logging.info("The cell (row=%d, col=%d) was already written as merged cells" % (row, col))
+                        logging.info("The cell (row=%d, col=%d) is a part of merged cells." % (row, col))
                         pass   # skip this cell as it was written as merged cells before.
                 else:
                     worksheet.write(row, col, _conv(dataset[row][col]) or "", mstyle)
