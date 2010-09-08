@@ -32,10 +32,10 @@ InfoKey: Title\nInfoValue: $title"
 
 # Usage: cat INPUT_FILE | dump_metadata | update_title_in_metadata TITLE
 function update_title_in_metadata () {
-        local org_title="$1"
+        local org_title="`pdfinfo $1 | sed -nre 's/^Title: +(.+)$/\1/p'`"
         local title="$2"
 
-        sed -e "s/InfoValue: $org_title/InfoValue: $title/"
+        sed -re "s,Title\($org_title\)/,Title($title)/,g" $1
 }
 
 # Usage: cat <metadata> | update_metadata INPUT_FILE
