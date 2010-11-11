@@ -1,10 +1,8 @@
 #! /usr/bin/python
 #
-"""Generate a PDF file from image files
+"""Generate a PDF file from image files with cairo.
 
-Based on png2pdf.py by ludwigf
-
-@see http://blog.ludwigf.org/2010/1/27/png2pdf
+Based on png2pdf.py by ludwigf (http://blog.ludwigf.org/2010/1/27/png2pdf).
 """
 
 
@@ -41,15 +39,15 @@ def _images_to_pdf(inputs, output, width, height):
 
         
 def main():
-    parser = optparse.OptionParser("%prog [OPTION ...] IMAGE_0 [IMAGE_1 ...]")
-    parser.add_option('-o', '--output', default='output.pdf', help='Output PDF filename [%default]')
-    parser.add_option('', '--force', default=False, help='Force overwrite the output [no]')
-    parser.add_option('', '--width', type='int', default=1024, help='Output width [%default]')
-    parser.add_option('', '--height', type='int', default=768, help='Output height [%default]')
-    (options, args) = parser.parse_args()
+    p = optparse.OptionParser("%prog [OPTION ...] IMAGE_0 [IMAGE_1 ...]")
+    p.add_option('-o', '--output', default='output.pdf', help='Output PDF filename [%default]')
+    p.add_option('', '--force', default=False, help='Force overwrite the output [no]')
+    p.add_option('', '--width', type='int', default=1024, help='Output width [%default]')
+    p.add_option('', '--height', type='int', default=768, help='Output height [%default]')
+    (options, args) = p.parse_args()
 
     if len(args) < 1:
-        parser.print_help()
+        p.print_help()
         sys.exit(0)
 
     inputs = args
