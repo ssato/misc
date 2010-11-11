@@ -1,0 +1,93 @@
+Option Explicit
+
+
+''' Excel macro to convert half-width char to full-width char.
+''' Copyright (C) 2007 Satoru SATOH <ssato@redhat.com>
+''' License: MIT
+
+''' Macro
+Public Sub mHF2FH()
+    Dim c As Variant
+
+    '' Avoid speeddown because of the screen updating
+    Application.ScreenUpdating = False
+
+    For Each c In ActiveSheet.UsedRange
+        'If IsEmpty(c.Value) Then
+        '    c.Value = "*"
+        'End If
+        c.Value = fHF2FH(c.Value)
+    Next c
+
+    '' Another way using 'with'
+    'Dim i As Integer, j As Integer
+    'With ActiveSheet.UsedRange
+    'For i = .Item(1).Address To .Item(1, Columns.Count).Address
+    '    For j = .Item(Rows.Count, 1).Address To .Item(.Count).Address
+    '        .Value = fHF2FH(.Value)
+    '    Next
+    'Next
+
+    Application.ScreenUpdating = True
+End Sub
+
+
+''' Half or Fullwidth forms -> Full or Halfwidth forms
+''' 1) halfwidth katakana -> fullwidth katakana
+''' 2) fullwidth alphabet -> alphabet
+''' 3) fullwidth number -> number
+''' 4) some special chars such as 'parenthesized ideograph stock'
+'''     -> "(" + 'ideograph stock' + ")"
+'''
+Public Function fHF2FH(ByVal s As String) As String
+    Dim i As Long, x As Long
+    Dim rs As String, c As String, c2 As String
+
+    rs = ""
+
+    For i = 1 To Len(s)
+        c = Mid$(s, i, 1)
+        x = Asc(c)
+
+        Select Case x
+
+            '' fullwidth alpha/number
+            '' alpha: -32160 - -32135, -32127 - -32102
+            '' number: -32177 - -32168
+            Case -32160 To -32102, -32177 To -32168
+                rs = rs & StrConv(c, vbNarrow)
+
+
+            '' halfwidth katakana and some symbols
+            Case 161 To 223
+
+                '' is next char [semi-]voiced sound mark?
+                '' 222: voiced sound mark
+                '' 223: semi-voiced sound mark
+                c2 = Mid$(s, i + 1, 1)
+                If (c2 = Chr$(222)) Or (c2 = Chr$(223)) Then
+                    c = c & c2
+                    i = i + 1
+                End If
+
+                rs = rs & StrConv(c, vbWide)
+
+            '' some enclosed CJK letters
+            '' -30838 (11626): parenthesized ideograph stock
+            '' -30839 (11627): parenthesized ideograph have
+            '' -30060 (13172): ideograph stock
+            '' -26804 (19757): ideograph have
+            Case -30838
+                rs = rs & "(" & Chr$(-30060) & ")"
+
+            Case -30839
+                rs = rs & "(" & Chr$(-26804) & ")"
+
+            Case Else
+                rs = rs & c
+        End Select
+    Next
+
+    fHF2FH = rs
+End Function
+
