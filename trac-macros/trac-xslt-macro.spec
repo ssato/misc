@@ -28,7 +28,15 @@ Requires:       libxml2-python, libxslt-python
 
 
 %description
-The FootNoteMacro automatically collates1 and generates xlsts.
+The XsltMacro allows you to embed the result of an XSL-transformation in a
+page. It takes two parameters, a stylesheet and a document to transform. These
+can be an attachment on any wiki-page or ticket, any page from the htdocs area,
+any file in the repository, or any url (these options are similar to those for
+Trac's native ImageMacro). For more details see the documentation in the macro.
+
+The macro can either be installed as a simple macro or as a plugin; the
+use_iframe and use_object options (see below) only work when installed as a
+plugin.
 
 
 %prep
