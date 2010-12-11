@@ -27,7 +27,8 @@ Requires:       trac >= 0.11, python-setuptools
 
 
 %description
-The MovieMacro automatically collates1 and generates movies.
+Embed online movies from YouTube, GoogleVideo and MetaCafe, and local movies
+via FlowPlayer. If you want support for more online sites just create a ticket.
 
 
 %prep
