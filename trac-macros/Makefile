@@ -15,6 +15,7 @@ trac-footnote-macro \
 trac-include-macro \
 trac-markdown-macro \
 trac-movie-macro \
+trac-rssembed-macro \
 $(NULL)
 
 MODULE_STAMPS = $(addsuffix .stamp,$(MODULES))
@@ -76,6 +77,13 @@ trac-movie-macro: trac-movie-macro.spec
 	svn co http://trac-hacks.org/svn/moviemacro/$(TRAC_VERSION)/ $@
 
 trac-movie-macro.stamp: trac-movie-macro trac-movie-macro.spec
+	$(make-srpm)
+	touch $@
+
+trac-rssembed-macro: trac-rssembed-macro.spec
+	svn co http://trac-hacks.org/svn/rssembedmacro/$(TRAC_VERSION)/ $@
+
+trac-rssembed-macro.stamp: trac-rssembed-macro trac-rssembed-macro.spec
 	$(make-srpm)
 	touch $@
 
