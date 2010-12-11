@@ -21,8 +21,10 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-BuildRequires:  w3m
 BuildRequires:  curl
+%if %{_url_avail}
+BuildRequires:  w3m
+%endif
 Requires:       trac >= 0.11, python-setuptools
 
 
