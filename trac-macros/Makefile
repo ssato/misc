@@ -13,6 +13,7 @@ TRAC_VERSION = 0.11
 MODULES	:= \
 trac-footnote-macro \
 trac-include-macro \
+trac-markdown-macro \
 $(NULL)
 
 MODULE_STAMPS = $(addsuffix .stamp,$(MODULES))
