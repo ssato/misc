@@ -15,7 +15,7 @@ URL:            %{_url}
 #  svn co http://trac-hacks.org/svn/rssembedmacro/0.11/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
-Source0:        TracRssEmbedMacro-%{version}.tar.bz2
+Source0:        TracRssEmbed-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -28,7 +28,7 @@ The trac macro to embed a RSS feed into a wiki page. All HTML is stripped out.
 
 
 %prep
-%setup -n TracRssEmbedMacro-%{version} -q
+%setup -n TracRssEmbed-%{version} -q
 
 
 %build
