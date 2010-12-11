@@ -41,11 +41,11 @@ via FlowPlayer. If you want support for more online sites just create a ticket.
 w3m -dump %{_url} | sed -n '/^Description/,/^Recent/p' > README.Fedora
 %endif
 
+
 %install
 rm -rf $RPM_BUILD_ROOT
 # skip-build doesn't work on el4
 %{__python} setup.py install -O1 --root $RPM_BUILD_ROOT
-
 
  
 %clean

@@ -16,6 +16,7 @@ trac-include-macro \
 trac-markdown-macro \
 trac-movie-macro \
 trac-rssembed-macro \
+trac-xslt-macro \
 $(NULL)
 
 MODULE_STAMPS = $(addsuffix .stamp,$(MODULES))
@@ -84,6 +85,13 @@ trac-rssembed-macro: trac-rssembed-macro.spec
 	svn co http://trac-hacks.org/svn/rssembedmacro/$(TRAC_VERSION)/ $@
 
 trac-rssembed-macro.stamp: trac-rssembed-macro trac-rssembed-macro.spec
+	$(make-srpm)
+	touch $@
+
+trac-xslt-macro: trac-xslt-macro.spec
+	svn co http://trac-hacks.org/svn/xsltmacro/$(TRAC_VERSION)/ $@
+
+trac-xslt-macro.stamp: trac-xslt-macro trac-xslt-macro.spec
 	$(make-srpm)
 	touch $@
 

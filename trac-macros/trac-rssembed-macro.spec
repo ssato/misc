@@ -40,7 +40,6 @@ rm -rf $RPM_BUILD_ROOT
 # skip-build doesn't work on el4
 %{__python} setup.py install -O1 --root $RPM_BUILD_ROOT
 
-
  
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -42,7 +42,6 @@ README, and registered it with Trac Hacks.
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --root $RPM_BUILD_ROOT
 
-
  
 %clean
 rm -rf $RPM_BUILD_ROOT
