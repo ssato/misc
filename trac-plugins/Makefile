@@ -50,7 +50,7 @@ pre-build.stamp: check-env.stamp
 
 $(MODULE_STAMPS): pre-build.stamp
 $(MODULE_SPECS):
-	test -d .git || curl -O $(SPECS_LOCATION)/$@
+	test -d .git || curl --silent -O $(SPECS_LOCATION)/$@
 
 trac-defaultcc-plugin: trac-defaultcc-plugin.spec
 	svn co http://trac-hacks.org/svn/defaultccplugin/trunk/ $@
