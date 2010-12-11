@@ -5,7 +5,7 @@
 ARCH ?= x86_64
 TARGET_OSVERSION ?= fedora-14-$(ARCH)
 
-SPECS_LOCATION = https://github.com/ssato/misc.git/trac-macros
+SPECS_LOCATION = https://github.com/ssato/misc/raw/master/trac-macros
 
 # The version of trac provided in $(TARGET_OSVERSION):
 TRAC_VERSION = 0.11
