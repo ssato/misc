@@ -1,7 +1,7 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define _url    http://trac-hacks.org/wiki/FootNoteMacro
-%define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 0 || echo 1)
+%define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 1 || echo 0)
 
 
 Name:           trac-footnote-macro
