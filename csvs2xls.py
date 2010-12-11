@@ -50,6 +50,10 @@ from functools import reduce as fold, partial as curry
 
 
 
+STDIN_FNAME = 'stdin'
+
+
+
 def zipWith(f, xs=[], ys=[]):
     """
     >>> zipWith(max, [3, 3, 8, 2], [2, 1, 5, 7])
@@ -224,8 +228,14 @@ class CsvsWorkbook(object):
         else:
             mgstyle = self.merged_style()
 
-        reader = csv.reader(open(csv_filename))
+        if csv_filename == STDIN_FNAME:
+            csvf = sys.stdin
+        else:
+            csvf = open(csv_filename) 
+            
+        reader = csv.reader(csvf)
         cells = [row for row in reader]
+        csvf.close()
 
         (headers, dataset) = (cells[0],cells)
 
@@ -276,6 +286,7 @@ def opts_parser():
 
 Examples:
   %prog aaa.csv bbb.csv ccc.csv ABC.xls
+  %prog - output.xls  # read csv data from stdin
   %prog --main-style 'font: name IPAPGothic' --sheet-names "aaa,bbb" A.csv B.csv AB.xls
 """)
 
@@ -332,6 +343,10 @@ def main():
 
     csvfiles = args[0:-1]
     output = args[-1]
+
+    for i in range(0,len(csvfiles)):
+        if csvfiles[i] == '-':
+            csvfiles[i] = STDIN_FNAME
 
     if options.sheet_names:
         sheet_names = dict(zip(csvfiles, options.sheet_names.split(',')))
