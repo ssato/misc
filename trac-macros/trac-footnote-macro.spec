@@ -1,6 +1,7 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define _url    http://trac-hacks.org/wiki/FootNoteMacro
+%define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 0 || echo 1)
 
 
 Name:           trac-footnote-macro
@@ -21,6 +22,7 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  w3m
+BuildRequires:  curl
 Requires:       trac >= 0.11, python-setuptools
 
 
@@ -34,8 +36,9 @@ The FootNoteMacro automatically collates1 and generates footnotes.
 
 %build
 %{__python} setup.py build
-w3m -dump %{_url} > README.Fedora
-
+%if %{_url_avail}
+w3m -dump %{_url} | sed -n '/^Description/,/^Contributors/p' > README.Fedora
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -50,7 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
+%if %{_url_avail}
 %doc README.Fedora
+%endif
 %{python_sitelib}/*
 
 
