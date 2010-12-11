@@ -12,6 +12,7 @@ TRAC_VERSION = 0.11
 
 MODULES	:= \
 trac-footnote-macro \
+trac-include-macro \
 $(NULL)
 
 MODULE_STAMPS = $(addsuffix .stamp,$(MODULES))
@@ -51,6 +52,13 @@ trac-footnote-macro: trac-footnote-macro.spec
 	svn co http://trac-hacks.org/svn/footnotemacro/$(TRAC_VERSION)/ $@
 
 trac-footnote-macro.stamp: trac-footnote-macro trac-footnote-macro.spec
+	$(make-srpm)
+	touch $@
+
+trac-include-macro: trac-include-macro.spec
+	svn co http://trac-hacks.org/svn/includemacro/$(TRAC_VERSION)/ $@
+
+trac-include-macro.stamp: trac-include-macro trac-include-macro.spec
 	$(make-srpm)
 	touch $@
 
