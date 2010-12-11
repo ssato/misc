@@ -1,0 +1,4 @@
+Here are some custom rpm spec files for trac plugins and extensions available
+from the following url and a makefile to build srpms and rpms:
+
+  http://trac-hacks.org/wiki/integration
