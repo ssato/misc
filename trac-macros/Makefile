@@ -62,6 +62,14 @@ trac-include-macro.stamp: trac-include-macro trac-include-macro.spec
 	$(make-srpm)
 	touch $@
 
+trac-markdown-macro: trac-markdown-macro.spec
+	git clone git://github.com/dwclifton/tracmarkdownmacro.git $@
+	mv $@/$(TRAC_VERSION)/* $@/
+
+trac-markdown-macro.stamp: trac-markdown-macro trac-markdown-macro.spec
+	$(make-srpm)
+	touch $@
+
 build: srpms.stamp
 
 srpms.stamp: $(MODULE_STAMPS)
