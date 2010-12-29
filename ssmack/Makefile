@@ -27,4 +27,4 @@ xfakeevent.o: xfakeevent.c
 clean: 
 	-rm -f *.o *.so *.so.*
 
-.PHONEY: all clean
+.PHONY: all clean
