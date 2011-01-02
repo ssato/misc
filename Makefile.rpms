@@ -21,6 +21,7 @@ rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
 	--define "_sourcedir $(shell pwd)/$(dir $<)" \
 	-bs $(dir $<)/$(@:.stamp=).spec
 mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
+mv $(dir $<)/*.src.rpm ./ && \
 mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm ./
 endef
 
