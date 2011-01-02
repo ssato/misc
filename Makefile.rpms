@@ -1,0 +1,57 @@
+#
+# Bootstrap makefile for trac plugins.
+#
+
+ARCH	?= x86_64
+VERSION	?= 14
+TARGET_OS	?= fedora-$(VERSION)-$(ARCH)
+
+GIT_LOCATION = https://github.com/ssato/misc.git
+
+mscgen_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+python_errorhandler_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+
+define make-rpms = 
+test -d $(dir $<)/BUILDROOT || mkdir -p $(dir $<)/BUILDROOT
+rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
+	--define "_topdir $(shell pwd)/$(dir $<)" \
+	--define "_builddir $(shell pwd)/$(dir $<)" \
+	--define "_rpmdir $(shell pwd)/$(dir $<)" \
+	--define "_srcrpmdir $(shell pwd)/$(dir $<)" \
+	--define "_sourcedir $(shell pwd)/$(dir $<)" \
+	-bs $(@:.stamp=).spec
+mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
+mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm ./
+endef
+
+
+all: pre-build.stamp
+
+check-env.stamp:
+	mock --version >/dev/null
+	touch $@
+
+pre-build.stamp: check-env.stamp
+	mock --init -r $(TARGET_OS)
+	touch $@
+
+mscgen-build python-errorhandler-build python-iterpipes-build python-xlutils-build python-xlwt-build xtrace-build:
+	mkdir -p $@
+
+mscgen.stamp python-errorhandler.stamp python-iterpipes.stamp python-xlutils.stamp python-xlwt.stamp xtrace.stamp: pre-build.stamp
+
+
+mscgen-build/mscgen-src-0.18.tar.gz: mscgen-build
+	cd $< && curl --silent -O http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+
+mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz
+	$(make-rpms)
+
+
+clean:
+	-rm -f check-env.stamp pre-build.stamp
+
+maintainer-clean:
+	-rm -f *.stamp
+
+.PHONY: clean maintainer-clean
