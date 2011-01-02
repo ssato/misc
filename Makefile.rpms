@@ -6,7 +6,7 @@ ARCH	?= x86_64
 VERSION	?= 14
 TARGET_OS	?= fedora-$(VERSION)-$(ARCH)
 
-GIT_LOCATION = https://github.com/ssato/misc.git
+SPEC_LOCATION	= https://github.com/ssato/misc/raw/master
 
 mscgen_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
 python_errorhandler_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
@@ -19,13 +19,15 @@ rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
 	--define "_rpmdir $(shell pwd)/$(dir $<)" \
 	--define "_srcrpmdir $(shell pwd)/$(dir $<)" \
 	--define "_sourcedir $(shell pwd)/$(dir $<)" \
-	-bs $(@:.stamp=).spec
+	-bs $(dir $<)/$(@:.stamp=).spec
 mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
 mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm ./
 endef
 
 
 all: pre-build.stamp
+
+rpms: mscgen.stamp
 
 check-env.stamp:
 	mock --version >/dev/null
@@ -42,9 +44,12 @@ mscgen.stamp python-errorhandler.stamp python-iterpipes.stamp python-xlutils.sta
 
 
 mscgen-build/mscgen-src-0.18.tar.gz: mscgen-build
-	cd $< && curl --silent -O http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+	curl --silent -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
 
-mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz
+mscgen-build/mscgen.spec: mscgen-build
+	curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
+
+mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz mscgen-build/mscgen.spec
 	$(make-rpms)
 
 
@@ -54,4 +59,4 @@ clean:
 maintainer-clean:
 	-rm -f *.stamp
 
-.PHONY: clean maintainer-clean
+.PHONY: clean maintainer-clean rpms
