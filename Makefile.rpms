@@ -34,8 +34,10 @@ check-env.stamp:
 	mock --version >/dev/null
 	touch $@
 
+#pre-build.stamp: check-env.stamp
+#	mock --init -r $(TARGET_OS)
+#	touch $@
 pre-build.stamp: check-env.stamp
-	mock --init -r $(TARGET_OS)
 	touch $@
 
 mscgen-build python-errorhandler-build python-iterpipes-build python-xlutils-build python-xlwt-build xtrace-build:
