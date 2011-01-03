@@ -1,7 +1,7 @@
 Name:           xtrace
 Version:        1.0.2
 Release:        1%{?dist}
-Summary:        trace communication between X client and server
+Summary:        Trace communication between X client and server
 Group:          Development/Debuggers
 License:        GPLv2
 URL:            http://xtrace.alioth.debian.org
