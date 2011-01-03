@@ -4,16 +4,16 @@
 %define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 1 || echo 0)
 
 
-Name:           trac-xlst-macro
+Name:           trac-xslt-macro
 Version:        0.8
-Release:        1%{?dist}
-Summary:        Wiki xlst macro for Trac
+Release:        2%{?dist}
+Summary:        Wiki xslt macro for Trac
 Group:          Applications/Internet
 License:        BSD
 URL:            %{_url}
 #
 # Source comes from SVN:
-#  svn co http://trac-hacks.org/svn/xlstmacro/0.11/ t && \
+#  svn co http://trac-hacks.org/svn/xsltmacro/0.11/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
 Source0:        xslt-%{version}.tar.bz2
@@ -70,5 +70,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan  4 2011 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.8-2
+- Fixed typos
+
 * Sun Dec 12 2010 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.8-1
 - Initial build
