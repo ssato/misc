@@ -1,15 +1,26 @@
 #
-# Bootstrap makefile for trac plugins.
+# Makefile to build RPMs from the specs.
 #
 
-ARCH	?= x86_64
-VERSION	?= 14
-TARGET_OS	?= fedora-$(VERSION)-$(ARCH)
+
+## Override these on command line as needed.
+ARCH	= x86_64
+VERSION	= 14
+TARGET_OS	= fedora-$(VERSION)-$(ARCH)
 
 SPEC_LOCATION	= https://github.com/ssato/misc/raw/master
 
-mscgen_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
-python_errorhandler_SOURCE_URL	= http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+RPM_SPECS	= \
+mscgen.spec \
+python-errorhandler.spec \
+python-iterpipes.spec \
+python-xlutils.spec \
+python-xlwt.spec \
+xtrace.spec \
+$(NULL)
+
+builddirs	= $(RPM_SPECS:.spec=-build)
+buildstamps	= $(RPM_SPECS:.spec=.stamp)
 
 define make-rpms = 
 test -d $(dir $<)/BUILDROOT || mkdir -p $(dir $<)/BUILDROOT
@@ -21,7 +32,7 @@ rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
 	--define "_sourcedir $(shell pwd)/$(dir $<)" \
 	-bs $(dir $<)/$(@:.stamp=).spec
 mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
-mv $(dir $<)/*.src.rpm ./ && \
+mv $(dir $<)/*.src.rpm  ./ && \
 mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm ./
 endef
 
@@ -30,29 +41,33 @@ all: pre-build.stamp
 
 rpms: mscgen.stamp
 
-check-env.stamp:
+pre-build.stamp:
+	rpmbuild --help >/dev/null
 	mock --version >/dev/null
 	touch $@
 
-#pre-build.stamp: check-env.stamp
-#	mock --init -r $(TARGET_OS)
-#	touch $@
-pre-build.stamp: check-env.stamp
-	touch $@
-
-mscgen-build python-errorhandler-build python-iterpipes-build python-xlutils-build python-xlwt-build xtrace-build:
+$(builddirs):
 	mkdir -p $@
 
-mscgen.stamp python-errorhandler.stamp python-iterpipes.stamp python-xlutils.stamp python-xlwt.stamp xtrace.stamp: pre-build.stamp
+$(buildstamps): pre-build.stamp
 
 
 mscgen-build/mscgen-src-0.18.tar.gz: mscgen-build
-	curl --silent -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+	test -f $@ || curl --silent -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
 
 mscgen-build/mscgen.spec: mscgen-build
-	curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
+	test -f $@ || curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
 
 mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz mscgen-build/mscgen.spec
+	$(make-rpms)
+
+xtrace-build/xtrace_1.0.2.orig.tar.gz: xtrace-build
+	test -f $@ || curl --silent --insecure -o $@ https://alioth.debian.org/frs/download.php/3201/xtrace_1.0.2.orig.tar.gz
+
+xtrace-build/xtrace.spec: xtrace-build
+	test -f $@ || curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
+
+xtrace.stamp: xtrace-build/xtrace_1.0.2.orig.tar.gz xtrace-build/xtrace.spec
 	$(make-rpms)
 
 
