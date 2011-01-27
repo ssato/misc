@@ -5,7 +5,7 @@
 
 Name:           python-xlwt
 Version:        0.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A library to create Microsoft Excel (tm) spreadsheet files
 Group:          Development/Languages
 License:        BSD
@@ -34,6 +34,7 @@ reading Excel spreadsheets.
 %build
 # Remove CFLAGS=... for noarch packages (unneeded)
 CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+echo "deltarpm test" > TESTFILE
 
 
 %install
@@ -48,9 +49,13 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc README.html HISTORY.html
+%doc TESTFILE
 %{python_sitelib}/*
 
 
 %changelog
+* Wed Jan  5 2011 Satoru SATOH <ssato@redhat.com> - 0.7.2-2
+- deltarpm test
+
 * Mon Aug 10 2009 Satoru SATOH <ssato@redhat.com> - 0.7.2-1
 - Initial packaging.
