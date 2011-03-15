@@ -1,0 +1,32 @@
+About
+======================
+
+a python script and makefile to generate outage list in csv format from the PDF
+files provided by tepco.
+
+WARNING: This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Files
+======================
+
+*.csv: outage list in csv format
+
+outagelist.py: process 
+
+
+HOWTO
+=========================
+
+run 'make'.
+
+NOTE: you need python, pdftotext in poppler-utils.
+
+
+AUTHOR
+===========================
+
+Satoru SATOH <ssato@redhat.com>
+
