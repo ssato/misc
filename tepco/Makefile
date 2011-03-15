@@ -12,8 +12,12 @@ kanagawa \
 tokyo \
 saitama \
 yamanashi \
-numazu \
 $(NULL)
+
+## This data (xls) is different from others.
+## (the first cell starts from 'D:0')
+#areas += numazu
+
 
 pdf_url_base = http://www.tepco.co.jp/images
 
