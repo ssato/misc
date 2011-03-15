@@ -1,7 +1,7 @@
 # Makefile to download and process files from tepco.
 
 SRC_FORMAT ?= xls
-INTERVAL ?= 5
+INTERVAL ?= 30
 
 areas = \
 tochigi \
@@ -29,7 +29,8 @@ check:
 
 # FIXME: avoid DOS attack to tepco.
 download: check
-	for f in $(SOURCES); do curl -O -s -z $$f $(pdf_url_base)/$$f && sleep $(INTERVAL); done
+	cs=""; for f in $(SOURCES); do cs="sleep $(INTERVAL) && curl -O -s -z $$f $(pdf_url_base)/$$f && $$cs"; done; \
+		cs="$$cs echo OK"; echo $$cs; eval $$cs
 
 $(objs): download
 
