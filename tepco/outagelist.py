@@ -1,7 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Convert PDF files published by tepco (Tokyo Denryoku) to other formats: csv, html, json.
+# Convert PDF files published by tepco (Tokyo Denryoku) to other formats: csv
+# [, html, json in plan].
 #
 # Copyright (C) 2011 Satoru SATOH <ssato@redhat.com>
 #
