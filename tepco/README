@@ -2,7 +2,7 @@ About
 ======================
 
 a python script and makefile to generate outage list in csv format from the PDF
-files provided by tepco.
+or xls files provided by tepco.
 
 WARNING: This program is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -12,9 +12,13 @@ FITNESS FOR A PARTICULAR PURPOSE.
 Files
 ======================
 
-*.csv: outage list in csv format
+Makefile: driver file does the followings:
 
-outagelist.py: process 
+ 1. download pdf or xls files if updated
+ 2. preprocess pdf files and generate txt files (pdf only)
+ 3. process xls or txt (if pdf) files and generate csv files
+
+outagelist.py: process input file and output csv file
 
 
 HOWTO
@@ -22,7 +26,7 @@ HOWTO
 
 run 'make'.
 
-NOTE: you need python, pdftotext in poppler-utils.
+NOTE: you need python, pdftotext in poppler-utils and python-xlrt (if process xls files).
 
 
 AUTHOR
