@@ -32,7 +32,6 @@ download: check
 	cs=""; for f in $(SOURCES); do cs="sleep $(INTERVAL) && curl -O -s -z $$f $(pdf_url_base)/$$f && $$cs"; done; \
 		cs="$$cs echo OK"; echo $$cs; eval $$cs
 
-$(objs): download
 
 # pdftohtml is not allowed because original pdf file forbids copying texts in it (ouch!).
 ifeq ($(SRC_FORMAT),pdf)

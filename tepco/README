@@ -27,9 +27,11 @@ electric_outage_area_list.py: process input file and output csv file
 HOWTO
 =========================
 
-run 'make'.
+1. make download
+2. make
 
-NOTE: you need python, pdftotext in poppler-utils and python-xlrt (if process xls files).
+
+NOTE: you need python, pdftotext in poppler-utils (if pdf) and python-xlrt (if xls).
 
 
 AUTHOR
