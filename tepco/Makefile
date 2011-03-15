@@ -15,7 +15,11 @@ yamanashi \
 $(NULL)
 
 ## This data (xls) is different from others.
+<<<<<<< HEAD
 ## (the first cell starts from 'D:0')
+=======
+## 
+>>>>>>> 70380a2ee8c5fd73958817c109ec406cf3bfa309
 #areas += numazu
 
 
