@@ -24,8 +24,11 @@ objs = $(SOURCES:.$(SRC_FORMAT)=.csv)
 all: $(objs)
 
 
+check:
+	ping -c1 -w1 www.tepco.co.jp
+
 # FIXME: avoid DOS attack to tepco.
-download:
+download: check
 	for f in $(SOURCES); do curl -O -s -z $$f $(pdf_url_base)/$$f && sleep $(INTERVAL); done
 
 $(objs): download
@@ -45,4 +48,4 @@ endif
 clean:
 	-rm -f $(SOURCES) $(objs)
 
-.PHONY: clean download
+.PHONY: clean check download
