@@ -18,7 +18,7 @@ Makefile: driver file does the followings:
  2. preprocess pdf files and generate txt files (pdf only)
  3. process xls or txt (if pdf) files and generate csv files
 
-outagelist.py: process input file and output csv file
+electric_outage_area_list.py: process input file and output csv file
 
 
 HOWTO

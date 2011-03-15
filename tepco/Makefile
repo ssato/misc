@@ -36,10 +36,10 @@ ifeq ($(SRC_FORMAT),pdf)
 	pdftotext $< $@
 
 %.csv: %.txt
-	python outagelist.py $< -o $@
+	python electric_outage_area_list.py $< -o $@
 else
 %.csv: %.xls
-	python outagelist.py $< -o $@
+	python electric_outage_area_list.py $< -o $@
 endif
 
 clean:
