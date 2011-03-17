@@ -14,6 +14,7 @@ saitama \
 yamanashi \
 $(NULL)
 
+## FIXME:
 ## This data (xls) is different from others.
 ## (the first cell starts from 'D:0')
 #areas += numazu
@@ -32,9 +33,11 @@ check:
 	ping -c1 -w1 www.tepco.co.jp
 
 # FIXME: avoid DOS attack to tepco.
-download: check
+download: download.stamp
+download.stamp: check
 	cs=""; for f in $(SOURCES); do cs="sleep $(INTERVAL) && curl -O -s -z $$f $(pdf_url_base)/$$f && $$cs"; done; \
 		cs="$$cs echo OK"; echo $$cs; eval $$cs
+	touch $@
 
 
 # pdftohtml is not allowed because original pdf file forbids copying texts in it (ouch!).
@@ -50,6 +53,7 @@ else
 endif
 
 clean:
-	-rm -f $(SOURCES) $(objs)
+	-rm -f download.stamp
+	-rm -f $(objs)
 
 .PHONY: clean check download
