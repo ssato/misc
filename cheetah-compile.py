@@ -37,22 +37,6 @@ import sys
 
 from Cheetah.CheetahWrapper import *
 
-try:
-    from functools import partial
-except ImportError:
-    def partial(func, *args, **kwargs):
-        def wrapped(*restargs, **restkwargs):
-            _args = list(args)
-            _args.extend(restargs)
-
-            _kwargs = dict(kwargs)
-            _kwargs.update(restkwargs)
-
-            return func(*_args, **_kwargs)
-
-        return wrapped
-
-
 ## Defines idata loaders:
 SUPPORTED_DATA_LOADERS = {
     "pickle": lambda path, **kwargs: pickle.load(open(path, "rb"), **kwargs)
@@ -81,16 +65,16 @@ def load_idata(format, path, loaders=SUPPORTED_DATA_LOADERS, **kwargs):
 
     if load_fun is None:
         sys.stderr.write("[WARN] Could not find any loaders for the requested format: %s\n" % format)
-        return {}
+    else:
+        try:
+            return load_fun(path)
+        except Exception, e:
+            sys.stderr.write("Error (%s): %s\n" % (repr(e.__class__), str(e)))
 
-    try:
-        return load_fun(path)
-    except Exception, e:
-        sys.stderr.write("Error (%s): %s\n" % (repr(e.__class__), str(e)))
-        return {}
+    return {}
 
 
-def parse_idata_option(optstr):
+def parse_idata_option(optstr, check_exists=False):
     """
 
     >>> parse_idata_option("pickle:/path/to/data.pickle")
@@ -103,7 +87,10 @@ def parse_idata_option(optstr):
     try:
         (fmt, path) = optstr.split(":")
 
-        if path and os.path.exists(path):
+        if path:
+            if check_exists and not os.path.exists(path):
+                raise RuntimeError("Path does not exists: " + path)
+
             return (fmt, path)
     except:
         pass
@@ -113,6 +100,8 @@ def parse_idata_option(optstr):
 
 
 class ExtCheetahWrapper(CheetahWrapper):
+
+    idata = {}
 
     ##################################################
     ## Modified version of CheetahWrapper.parseOpts:
@@ -198,12 +187,13 @@ Files are %s""", args, pprint.pformat(vars(opts)), files)
         if opts.idata:
             fmt_and_path = parse_idata_option(opts.idata)
             if fmt_and_path:
-                idata = load_idata(*fmt_and_path)
-                self.searchList.append(idata)
+                self.idata = load_idata(*fmt_and_path)
+                self.searchList.append(self.idata)
 
 
-           
+
 if __name__ == '__main__':
     ExtCheetahWrapper().main()
+
 
 # vim: shiftwidth=4 tabstop=4 expandtab:
