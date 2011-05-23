@@ -42,6 +42,12 @@ from itertools import groupby
 
 
 try:
+    from collections import OrderedDict as dict
+except ImportError:
+    pass
+
+
+try:
     import json
 except ImportError:
     try:
@@ -121,29 +127,40 @@ def show(cell_type, cell_value, datemode):
     return v
 
 
-def sheet_cell_values_g(sheet):
+def sheet_cell_values_in_the_row_g(sheet, row, datemode=None):
+    if datemode is None:
+        datemode = sheet.book.datemode
+
+    for y in xrange(0, sheet.ncols):
+        ctype = sheet.cell_type(row, y)
+
+        if ctype == xlrd.XL_CELL_EMPTY:
+            v = ""
+        else:
+            v = show(ctype, sheet.cell_value(row, y), datemode)
+
+        yield (y, v)  # row idx, col idx and its value
+
+
+def sheet_cell_values_g(sheet, row_start):
     datemode = sheet.book.datemode
 
-    for x in xrange(0, sheet.nrows):
-        for y in xrange(0, sheet.ncols):
-            ctype = sheet.cell_type(x, y)
-
-            if ctype == xlrd.XL_CELL_EMPTY:
-                v = ""
-            else:
-                v = show(ctype, sheet.cell_value(x, y), datemode)
-
-            yield (x, y, v)  # row idx, col idx and its value
+    for x in xrange(row_start, sheet.nrows):
+        for y, v in sheet_cell_values_in_the_row_g(sheet, x, datemode):
+            yield (x, y, v)
 
 
 def fst(tpl_or_list):
     return tpl_or_list[0]
 
 
-def foreach_sheet_cells_by_row(sheet):
-    for k, g in groupby(sheet_cell_values_g(sheet), fst):
-        ret = [t[2] for t in g]
-        yield ret
+def foreach_sheet_cells_by_row(sheet, row_start=1):
+    for k, g in groupby(sheet_cell_values_g(sheet, row_start), fst):
+        yield [t[2] for t in g]
+
+
+def normalize_key(key_str):
+    return key_str.lower().replace(" ", "_")
 
 
 
@@ -151,13 +168,26 @@ class DataDumper(object):
 
     suffix = ".dat"
 
-    def __init__(self, worksheet, name=None, outdir=os.curdir):
+    def __init__(self, worksheet, name=None, headers=[], outdir=os.curdir):
         self.worksheet = worksheet
         self.name = name is None and self.worksheet.name or name
         self.output = os.path.join(outdir, self.name + self.suffix)
 
+        if headers:
+            self.headers = [normalize_key(h) for h in headers]
+            self.row_start = 0
+        else:
+            self.headers = self.get_headers(self.worksheet)
+            self.row_start = 1
+
+    def get_headers(self, worksheet):
+        return [normalize_key(val) or "-" for idx, val in sheet_cell_values_in_the_row_g(worksheet, 0)]
+
     def open(self, flag="w"):
         return open(self.output, flag)
+
+    def foreach_sheet_cells_by_row(self):
+        return foreach_sheet_cells_by_row(self.worksheet, self.row_start)
 
     def dump_impl(self):
         raise NotImplementedError("Children classes must implement this!")
@@ -179,7 +209,9 @@ class CsvDumper(DataDumper):
     def dump_impl(self):
         writer = UnicodeWriter(self.open())
 
-        for rowdata in foreach_sheet_cells_by_row(self.worksheet):
+        writer.writerow(self.headers)
+
+        for rowdata in self.foreach_sheet_cells_by_row():
             writer.writerow(rowdata)
 
         out.close()
@@ -191,18 +223,19 @@ class JsonDumper(DataDumper):
     suffix = ".json"
 
     def dump_impl(self):
-        data = [rowdata for rowdata in foreach_sheet_cells_by_row(self.worksheet)]
+        data = [dict(zip(self.headers, rowdata)) for rowdata in self.foreach_sheet_cells_by_row()]
         json.dump(data, self.open(), ensure_ascii=False, indent=2)
 
 
 
-DUMPERS = {
-    "csv": CsvDumper,  # default
-    "json": JsonDumper,
-}
+DUMPERS = dict(
+    csv=CsvDumper,  # default
+    json=JsonDumper,
+)
 
 
-def xls_to(xls_file, dumper, outdir=os.curdir, names=[], dumper_map=DUMPERS):
+
+def xls_to(xls_file, dumper, outdir, names=[], headers=[], dumper_map=DUMPERS):
     book = xlrd.open_workbook(xls_file)
 
     if not os.path.isdir(outdir):
@@ -212,11 +245,11 @@ def xls_to(xls_file, dumper, outdir=os.curdir, names=[], dumper_map=DUMPERS):
         sheet = book.sheet_by_index(n)
 
         if names and len(names) > n:
-            name = csv_names[n]
+            name = names[n]
         else:
             name = sheet.name
 
-        dmpr = dumper_map[dumper](sheet, name, outdir)
+        dmpr = dumper_map[dumper](sheet, name, headers, outdir)
         dmpr.dump()
 
 
@@ -233,6 +266,7 @@ Examples:
 
     defaults = {
         "names": "",
+        "headers": "",
         "dumper": "csv",
         "outdir": os.curdir,
         "verbose": False,
@@ -244,6 +278,8 @@ Examples:
     cog.add_option("", "--dumper", type="choice", choices=dumper_choices,
         help="Select dump format from " + ", ".join(dumper_choices) + " [%default]")
     cog.add_option("", "--names", help="Comma separated filenames")
+    cog.add_option("", "--headers",
+        help="Comma separated list of headers [default: cell contents in 1st row of input .xls]")
     cog.add_option("-o", "--outdir", help="Specify output dir [%default]")
     cog.add_option("-v", "--verbose", help="Verbose mode", action="store_true")
     cog.add_option("-q", "--quiet", help="Quiet mode", action="store_true")
@@ -272,14 +308,12 @@ def main(dumper_map=DUMPERS):
         parser.print_help()
         sys.exit(0)
 
-    if options.names:
-        names = options.names.split(',')
-    else:
-        names = []
+    names = options.names and options.names.split(',') or []
+    headers = options.headers and options.headers.split(',') or []
 
     xls_file = args[0]
 
-    xls_to(xls_file, options.dumper, options.outdir, names)
+    xls_to(xls_file, options.dumper, options.outdir, names, headers)
 
 
 
