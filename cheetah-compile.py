@@ -42,6 +42,12 @@ SUPPORTED_DATA_LOADERS = {
 }
 
 try:
+    from collections import OrderedDict as dict
+except ImportError:
+    pass
+
+
+try:
     import json
     SUPPORTED_DATA_LOADERS["json"] = lambda path, **kwargs: json.load(open(path), **kwargs)
 except ImportError:
@@ -65,7 +71,7 @@ def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
     @format_and_paths  [(str, str)]  A list of (format, path)
     @loaders  dict  Data loaders for supported formats
     """
-    ret = {}
+    ret = dict()
 
     for format, path in format_and_paths:
         load_fun = loaders.get(format, None)
