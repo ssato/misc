@@ -59,31 +59,40 @@ except ImportError:
 
 
 
-def load_idata(format, path, loaders=SUPPORTED_DATA_LOADERS, **kwargs):
-    load_fun = loaders.get(format, None)
+def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
+    """Load input data and returns a dict.
 
-    if load_fun is None:
-        sys.stderr.write("[WARN] Could not find any loaders for the requested format: %s\n" % format)
-    else:
-        ## FIXME: It might be better to handle exceptions.
-        #try:
-        #    return load_fun(path)
-        #except Exception, e:
-        #    sys.stderr.write("Error during loading %s: (%s): %s\n" % (path, repr(e.__class__), str(e)))
-        #    ...
-        return load_fun(path)
+    @format_and_paths  [(str, str)]  A list of (format, path)
+    @loaders  dict  Data loaders for supported formats
+    """
+    ret = {}
 
-    return {}
+    for format, path in format_and_paths:
+        load_fun = loaders.get(format, None)
+
+        if load_fun is None:
+            sys.stderr.write("[WARN] No loader is available for the requested format: %s\n" % format)
+        else:
+            ## FIXME: It might be better to handle exceptions.
+            #try:
+            #    return load_fun(path)
+            #except Exception, e:
+            #    sys.stderr.write("Error during loading %s: (%s): %s\n" % (path, repr(e.__class__), str(e)))
+            #    ...
+            updates = load_fun(path)
+            ret.update(updates)
+
+    return ret
 
 
-def parse_idata_option(optstr, check_exists=False):
+def parse_idata_option_single(optstr, check_exists=False):
     """
 
-    >>> parse_idata_option("pickle:/path/to/data.pickle")
+    >>> parse_idata_option_single("pickle:/path/to/data.pickle")
     ('pickle', '/path/to/data.pickle')
-    >>> parse_idata_option("json:")
+    >>> parse_idata_option_single("json:")
     ()
-    >>> parse_idata_option("yaml")
+    >>> parse_idata_option_single("yaml")
     ()
     """
     try:
@@ -91,13 +100,37 @@ def parse_idata_option(optstr, check_exists=False):
 
         if path:
             if check_exists and not os.path.exists(path):
-                raise RuntimeError("Path does not exists: " + path)
+                raise RuntimeError("Not found: " + path)
 
             return (fmt, path)
     except:
         pass
 
     return ()
+
+
+def parse_idata_option(optstr, check_exists=False):
+    """
+
+    >>> parse_idata_option("pickle:/path/to/data.pickle", False)
+    [('pickle', '/path/to/data.pickle')]
+    >>> parse_idata_option("pickle:/path/to/data.pickle,yaml:./data2.yaml,json:/tmp/data3.json", False)
+    [('pickle', '/path/to/data.pickle'), ('yaml', './data2.yaml'), ('json', '/tmp/data3.json')]
+    >>> parse_idata_option("json:")
+    []
+    >>> parse_idata_option("yaml")
+    []
+    >>> parse_idata_option("")
+    []
+    """
+    ret = []
+
+    for fmt_and_path in optstr.split(","):
+        updates = parse_idata_option_single(fmt_and_path, check_exists=check_exists)
+        if updates:
+            ret.append(updates)
+
+    return ret
 
 
 def compile_template(template, params, is_file=False):
