@@ -36,16 +36,15 @@ import sys
 
 from Cheetah.Template import Template
 
-## Defines idata loaders:
-SUPPORTED_DATA_LOADERS = {
-    "pickle": lambda path, **kwargs: pickle.load(open(path, "rb"), **kwargs)
-}
-
 try:
     from collections import OrderedDict as dict
 except ImportError:
     pass
 
+## Defines idata loaders:
+SUPPORTED_DATA_LOADERS = dict(
+    pickle=lambda path, **kwargs: pickle.load(open(path, "rb"), **kwargs)
+)
 
 try:
     import json
@@ -181,7 +180,7 @@ def main(argv=sys.argv):
         sys.exit(1)
 
     template = args[0]
-    params = {}
+    params = dict()
 
     output = opts.output and open(opts.output, "w") or sys.stdout
 
