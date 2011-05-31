@@ -36,10 +36,15 @@ import sys
 
 from Cheetah.Template import Template
 
+
+DICT_TYPES = dict
 try:
     from collections import OrderedDict as dict
+    DICT_TYPES = (DICT_TYPES, dict)
+
 except ImportError:
     pass
+
 
 ## Defines idata loaders:
 SUPPORTED_DATA_LOADERS = dict(
@@ -68,7 +73,7 @@ logging.getLogger().setLevel(logging.WARN)
 
 
 
-def update(lhs, rhs):
+def update(lhs, rhs, dict_types=DICT_TYPES):
     """Update lhs with rhs recursively.
 
     # NOTE: This does not work because isinstance({...}) returns False contrary
@@ -83,17 +88,18 @@ def update(lhs, rhs):
     ...     assert d[k] == d1.get(k, d0.get(k))
     >>> 
     >>> d = update(dict(a=1, b=dict(c=2, d=4)), dict(b=dict(c=3, e=5), f=6))
-    >>> assert isinstance(d["b"], dict)
+    >>> assert isinstance(d["b"], DICT_TYPES)
     >>> assert d["b"]["c"] == 3
     >>> assert d["b"]["d"] == 4
     >>> assert d["b"]["e"] == 5
     """
-    assert type(lhs) == type(rhs), "Type mismatch: %s vs. %s" % (str(type(lhs)), str(type(rhs)))
+    assert isinstance(rhs, type(lhs)) or isinstance(lhs, type(rhs)), \
+        "Class mismatch: %s vs. %s" % (str(type(lhs)), str(type(rhs)))
 
-    if isinstance(lhs, dict):
+    if isinstance(lhs, dict_types):
         for k, v in lhs.iteritems():
             if rhs.has_key(k):
-                lhs[k] = isinstance(v, dict) and update(v, rhs[k]) or rhs[k]
+                lhs[k] = isinstance(v, dict_types) and update(v, rhs[k]) or rhs[k]
 
         for k, v in rhs.iteritems():
             if not lhs.has_key(k):
