@@ -28,7 +28,7 @@
 #
 # SEE ALSO: python-cheetah: http://cheetahtemplate.org
 #
-
+import logging
 import optparse
 import os
 import os.path
@@ -64,6 +64,47 @@ except ImportError:
 
 
 
+logging.getLogger().setLevel(logging.WARN)
+
+
+
+def update(lhs, rhs):
+    """Update lhs with rhs recursively.
+
+    # NOTE: This does not work because isinstance({...}) returns False contrary
+    # to my expectation.
+    # >>> d = update({"a": 1, "b": 2}, {"b": 3, "c": 4})
+
+    >>> d0 = dict(a=1, b=2); d1 = dict(b=3, c=4)
+    >>> d = update(dict(a=1, b=2), dict(b=3, c=4))
+    >>> 
+    >>> assert len(d.keys()) == len(list(set(d0.keys() + d1.keys())))
+    >>> for k, v in d.iteritems():
+    ...     assert d[k] == d1.get(k, d0.get(k))
+    >>> 
+    >>> d = update(dict(a=1, b=dict(c=2, d=4)), dict(b=dict(c=3, e=5), f=6))
+    >>> assert isinstance(d["b"], dict)
+    >>> assert d["b"]["c"] == 3
+    >>> assert d["b"]["d"] == 4
+    >>> assert d["b"]["e"] == 5
+    """
+    assert type(lhs) == type(rhs), "Type mismatch: %s vs. %s" % (str(type(lhs)), str(type(rhs)))
+
+    if isinstance(lhs, dict):
+        for k, v in lhs.iteritems():
+            if rhs.has_key(k):
+                lhs[k] = isinstance(v, dict) and update(v, rhs[k]) or rhs[k]
+
+        for k, v in rhs.iteritems():
+            if not lhs.has_key(k):
+                lhs[k] = v
+
+        return lhs
+
+    else:
+        return rhs is None and lhs or rhs
+
+
 def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
     """Load input data and returns a dict.
 
@@ -85,7 +126,7 @@ def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
             #    sys.stderr.write("Error during loading %s: (%s): %s\n" % (path, repr(e.__class__), str(e)))
             #    ...
             updates = load_fun(path)
-            ret.update(updates)
+            update(ret, updates)
 
     return ret
 
@@ -185,10 +226,10 @@ def main(argv=sys.argv):
     output = opts.output and open(opts.output, "w") or sys.stdout
 
     if opts.idata:
-        fmt_and_path = parse_idata_option(opts.idata)
+        fmt_and_path_list = parse_idata_option(opts.idata)
 
-        if fmt_and_path:
-            idata = load_idata(*fmt_and_path)
+        if fmt_and_path_list:
+            idata = load_idata(fmt_and_path_list)
             params = idata
             #import pprint; pprint.pprint(params)
 
