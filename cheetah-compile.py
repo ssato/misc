@@ -85,28 +85,31 @@ def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
     return ret
 
 
-def parse_idata_option_single(optstr, check_exists=False):
+def parse_idata_option_single(optstr, check_exists=False, sep=":"):
     """
 
     >>> parse_idata_option_single("pickle:/path/to/data.pickle")
     ('pickle', '/path/to/data.pickle')
+    >>> parse_idata_option_single("data.json")
+    ('json', 'data.json')
     >>> parse_idata_option_single("json:")
     ()
     >>> parse_idata_option_single("yaml")
     ()
     """
-    try:
+    if sep in optstr:
         (fmt, path) = optstr.split(":")
+    else:
+        path = optstr
+        fmt = os.path.splitext(path)[-1][1:]
 
-        if path:
-            if check_exists and not os.path.exists(path):
-                raise RuntimeError("Not found: " + path)
+    if fmt and path:
+        if check_exists and not os.path.exists(path):
+            raise RuntimeError("Not found: " + path)
 
-            return (fmt, path)
-    except:
-        pass
-
-    return ()
+        return (fmt, path)
+    else:
+        return ()
 
 
 def parse_idata_option(optstr, check_exists=False):
@@ -116,6 +119,8 @@ def parse_idata_option(optstr, check_exists=False):
     [('pickle', '/path/to/data.pickle')]
     >>> parse_idata_option("pickle:/path/to/data.pickle,yaml:./data2.yaml,json:/tmp/data3.json", False)
     [('pickle', '/path/to/data.pickle'), ('yaml', './data2.yaml'), ('json', '/tmp/data3.json')]
+    >>> parse_idata_option("data1.json,/tmp/data2.json", False)
+    [('json', 'data1.json'), ('json', '/tmp/data2.json')]
     >>> parse_idata_option("json:")
     []
     >>> parse_idata_option("yaml")
