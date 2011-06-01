@@ -59,13 +59,13 @@ except ImportError:
         import simplejson
         SUPPORTED_DATA_LOADERS["json"] = lambda path, **kwargs: simplejson.load(open(path), **kwargs)
     except ImportError:
-        sys.stderr.write("[WARN] Could not load json module and it will not be supported.\n")
+        sys.stderr.write("[INFO] json module is not found. Disable JSON support...\n")
 
 try:
     import yaml
     SUPPORTED_DATA_LOADERS["yaml"] = lambda path, **kwargs: yaml.load(open(path), **kwargs)
 except ImportError:
-    sys.stderr.write("[WARN] Could not load yaml module and it will not be supported.\n")
+    sys.stderr.write("[INFO] yaml module is not found. Disable YAML support...\n")
 
 
 
