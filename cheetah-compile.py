@@ -76,10 +76,6 @@ logging.getLogger().setLevel(logging.WARN)
 def update(lhs, rhs, dict_types=DICT_TYPES):
     """Update lhs with rhs recursively.
 
-    # NOTE: This does not work because isinstance({...}) returns False contrary
-    # to my expectation.
-    # >>> d = update({"a": 1, "b": 2}, {"b": 3, "c": 4})
-
     >>> d0 = dict(a=1, b=2); d1 = dict(b=3, c=4)
     >>> d = update(dict(a=1, b=2), dict(b=3, c=4))
     >>> 
@@ -92,6 +88,12 @@ def update(lhs, rhs, dict_types=DICT_TYPES):
     >>> assert d["b"]["c"] == 3
     >>> assert d["b"]["d"] == 4
     >>> assert d["b"]["e"] == 5
+    >>> 
+    >>> d2 = { "a": { "b": [0, 1], "c": [10, 11]} }
+    >>> d3 = { "a": { "b": [0, 1, 2, 3]}}
+    >>> d = update(d2, d3)
+    >>> assert d["a"]["b"] == [0, 1, 2, 3]
+    >>> assert d["a"]["c"] == [10, 11]
     """
     assert isinstance(rhs, type(lhs)) or isinstance(lhs, type(rhs)), \
         "Class mismatch: %s vs. %s" % (str(type(lhs)), str(type(rhs)))
