@@ -28,11 +28,14 @@
 #
 # SEE ALSO: python-cheetah: http://cheetahtemplate.org
 #
+import cPickle as pickle
 import logging
 import optparse
 import os
 import os.path
 import sys
+import tempfile
+import unittest
 
 from Cheetah.Template import Template
 
@@ -46,31 +49,57 @@ except ImportError:
     pass
 
 
-## Defines idata loaders:
-SUPPORTED_DATA_LOADERS = dict(
-    pickle=lambda path, **kwargs: pickle.load(open(path, "rb"), **kwargs)
-)
 
-try:
-    import json
-    SUPPORTED_DATA_LOADERS["json"] = lambda path, **kwargs: json.load(open(path), **kwargs)
-except ImportError:
-    try:
-        import simplejson
-        SUPPORTED_DATA_LOADERS["json"] = lambda path, **kwargs: simplejson.load(open(path), **kwargs)
-    except ImportError:
-        sys.stderr.write("[INFO] json module is not found. Disable JSON support...\n")
+class DataLoader(object):
 
-try:
-    import yaml
-    SUPPORTED_DATA_LOADERS["yaml"] = lambda path, **kwargs: yaml.load(open(path), **kwargs)
-except ImportError:
-    sys.stderr.write("[INFO] yaml module is not found. Disable YAML support...\n")
+    def __init__(self, load_fun, mode="r"):
+        self.load_fun = load_fun
+        self.mode = mode
+
+    def __call__(self, path, **kwargs):
+        return self.load_fun(open(path, self.mode), **kwargs)
 
 
 
 logging.getLogger().setLevel(logging.WARN)
 
+
+## Defines idata loaders:
+DATA_LOADERS = dict(
+    pickle=DataLoader(pickle.load, "rb"),
+    pkl=DataLoader(pickle.load, "rb"),
+)
+
+try:
+    import json
+    DATA_LOADERS["json"] = DataLoader(json.load)
+except ImportError:
+    try:
+        import simplejson
+        DATA_LOADERS["json"] = DataLoader(simplejson.load)
+    except ImportError:
+        logging.info("json module is not found. Disable JSON support...\n")
+
+try:
+    import yaml
+    DATA_LOADERS["yaml"] = DATA_LOADERS["yml"] = DataLoader(yaml.load)
+except ImportError:
+    logging.info("yaml module is not found. Disable YAML support...\n")
+
+
+
+def ext_from_path(path):
+    """
+    TODO: More intelligent detection.
+
+    >>> ext_from_path("a.txt")
+    'txt'
+    >>> ext_from_path("b.txt.zip")
+    'zip'
+    >>> ext_from_path("a")
+    ''
+    """
+    return os.path.splitext(path)[-1][1:]
 
 
 def update(lhs, rhs, dict_types=DICT_TYPES):
@@ -113,55 +142,214 @@ def update(lhs, rhs, dict_types=DICT_TYPES):
         return rhs is None and lhs or rhs
 
 
-def load_idata(format_and_paths, loaders=SUPPORTED_DATA_LOADERS):
+def load_idata(path, format=None, loaders=DATA_LOADERS):
     """Load input data and returns a dict.
 
-    @format_and_paths  [(str, str)]  A list of (format, path)
+    @path     str   Data file path
+    @format   str   Data format [option; guessed from the file extension if not passed]
     @loaders  dict  Data loaders for supported formats
+    """
+    if format is None or not format:
+        format = os.path.splitext(path)[-1][1:]
+        if not format:
+            logging.warn("File path '%s' lacks extension and format is not passed" % path)
+            return None
+
+    load_fun = loaders.get(format, None)
+
+    if load_fun is None:
+        logging.warn("No loader is available for the requested format: %s\n" % format)
+        return None
+
+    logging.info("Loader found for the format=%s, path=%s" % (format, path))
+
+    return load_fun(path)
+
+
+
+class Helper_load_idata(unittest.TestCase):
+
+    path_suffix = ".pickle"
+
+    def is_loader_supported(self, format):
+        return format in DATA_LOADERS.keys()
+
+    def setUp(self):
+        (_fd, self.path) = tempfile.mkstemp(suffix=self.path_suffix)
+
+        self.data = dict(
+            a=dict(b=1, c=2, d="aaa"),
+            e=[1, 2, 3],
+            f="ggg",
+        )
+
+    def tearDown(self):
+        os.remove(self.path)
+
+
+
+class Test_load_idata__pickle(Helper_load_idata):
+
+    def test_load_idata__pickle(self):
+        pickle.dump(self.data, open(self.path, "wb"))
+        data = load_idata(self.path, "pickle")
+
+        self.assertIsNotNone(data)
+        self.assertEquals(data, self.data)
+
+    def test_load_idata__pickle_auto_detect_format(self):
+        pickle.dump(self.data, open(self.path, "wb"))
+        data = load_idata(self.path)
+
+        self.assertIsNotNone(data)
+        self.assertEquals(data, self.data)
+
+
+
+class Test_load_idata__json(Helper_load_idata):
+
+    path_suffix = ".json"
+
+    def test_load_idata__json(self):
+        if not self.is_loader_supported("json"):
+            sys.stderr.write("json is not supported. skip this test")
+            return
+        else:
+            json.dump(self.data, open(self.path, "w"))
+            data = load_idata(self.path, "json")
+
+            self.assertIsNotNone(data)
+            self.assertEquals(data, self.data)
+
+    def test_load_idata__json_auto_detect_format(self):
+        if not self.is_loader_supported("json"):
+            sys.stderr.write("json is not supported. skip this test")
+            return
+        else:
+            json.dump(self.data, open(self.path, "w"))
+            data = load_idata(self.path)
+
+            self.assertIsNotNone(data)
+            self.assertEquals(data, self.data)
+
+
+
+class Test_load_idata__yaml(Helper_load_idata):
+
+    path_suffix = ".yaml"
+
+    def test_load_idata__yaml(self):
+        if not self.is_loader_supported("yaml"):
+            sys.stderr.write("yaml is not supported. skip this test")
+            return
+        else:
+            yaml.dump(self.data, open(self.path, "w"))
+            data = load_idata(self.path, "yaml")
+
+            self.assertIsNotNone(data)
+            self.assertEquals(data, self.data)
+
+    def test_load_idata__yaml_auto_detect_format(self):
+        if not self.is_loader_supported("yaml"):
+            sys.stderr.write("yaml is not supported. skip this test")
+            return
+        else:
+            yaml.dump(self.data, open(self.path, "w"))
+            data = load_idata(self.path)
+
+            self.assertIsNotNone(data)
+            self.assertEquals(data, self.data)
+
+
+
+def loads_idata(path_and_maybe_formats, loaders=DATA_LOADERS):
+    """Load input data and returns a dict.
+
+    @path_and_maybe_formats  [(str, str | None)]
+        A list of (path, format). format may be None or "" (empty str).
     """
     ret = dict()
 
-    for format, path in format_and_paths:
-        load_fun = loaders.get(format, None)
+    for path, format in path_and_maybe_formats:
+        updates = load_idata(path, format)
 
-        if load_fun is None:
-            sys.stderr.write("[WARN] No loader is available for the requested format: %s\n" % format)
+        if updates is None:
+            logging.warn("No meaningful data found: " + path)
         else:
-            ## FIXME: It might be better to handle exceptions.
-            #try:
-            #    return load_fun(path)
-            #except Exception, e:
-            #    sys.stderr.write("Error during loading %s: (%s): %s\n" % (path, repr(e.__class__), str(e)))
-            #    ...
-            updates = load_fun(path)
             update(ret, updates)
 
     return ret
 
 
+
+class Test_loads_idata(unittest.TestCase):
+
+    def is_loader_supported(self, format):
+        return format in DATA_LOADERS.keys()
+
+    def setUp(self):
+        dataset = []
+
+        self.data = [
+            dict(a=dict(b=1, c=2, d="aaa")),
+            dict(e=[1, 2, 3]),
+            dict(f="ggg"),
+        ]
+
+        self.files = [tempfile.mkstemp(suffix=".pickle")[1]]
+        pickle.dump(self.data[0], open(self.files[0], "wb"))
+
+        if self.is_loader_supported("json"):
+            self.files.append(tempfile.mkstemp(suffix=".json")[1])
+            json.dump(self.data[1], open(self.files[1], "w"))
+        else:
+            self.files.append(tempfile.mkstemp(suffix=".pickle")[1])
+            pickle.dump(self.data[1], open(self.files[1], "wb"))
+
+        if self.is_loader_supported("yaml"):
+            self.files.append(tempfile.mkstemp(suffix=".yaml")[1])
+            yaml.dump(self.data[2], open(self.files[2], "w"))
+        else:
+            self.files.append(tempfile.mkstemp(suffix=".pickle")[1])
+            pickle.dump(self.data[2], open(self.files[2], "wb"))
+
+    def tearDown(self):
+        for path in self.files:
+            os.remove(path)
+
+    def test_loads_idata(self):
+        data_ref = self.data[0]
+        update(data_ref, self.data[1])
+        update(data_ref, self.data[2])
+
+        data = loads_idata([(path, ext_from_path(path)) for path in self.files])
+
+        self.assertIsNotNone(data)
+        self.assertEquals(data, data_ref)
+
+
+
 def parse_idata_option_single(optstr, check_exists=False, sep=":"):
     """
 
-    >>> parse_idata_option_single("pickle:/path/to/data.pickle")
-    ('pickle', '/path/to/data.pickle')
+    >>> parse_idata_option_single("/path/to/data.pickle:pickle")
+    ('/path/to/data.pickle', 'pickle')
     >>> parse_idata_option_single("data.json")
-    ('json', 'data.json')
-    >>> parse_idata_option_single("json:")
-    ()
+    ('data.json', 'json')
     >>> parse_idata_option_single("yaml")
     ()
     """
     if sep in optstr:
-        (fmt, path) = optstr.split(":")
+        (path, fmt) = optstr.split(":")
     else:
         path = optstr
-        fmt = os.path.splitext(path)[-1][1:]
+        fmt = os.path.splitext(path)[-1][1:]  # TODO: More intelligent detection.
 
-    if fmt and path:
+    if path and fmt:
         if check_exists and not os.path.exists(path):
             raise RuntimeError("Not found: " + path)
 
-        return (fmt, path)
+        return (path, fmt)
     else:
         return ()
 
@@ -169,25 +357,23 @@ def parse_idata_option_single(optstr, check_exists=False, sep=":"):
 def parse_idata_option(optstr, check_exists=False):
     """
 
-    >>> parse_idata_option("pickle:/path/to/data.pickle", False)
-    [('pickle', '/path/to/data.pickle')]
-    >>> parse_idata_option("pickle:/path/to/data.pickle,yaml:./data2.yaml,json:/tmp/data3.json", False)
-    [('pickle', '/path/to/data.pickle'), ('yaml', './data2.yaml'), ('json', '/tmp/data3.json')]
+    >>> parse_idata_option("/path/to/data.pickle:pickle", False)
+    [('/path/to/data.pickle', 'pickle')]
+    >>> parse_idata_option("/path/to/data.pickle:pickle,./data2.yaml:yaml,/tmp/data3.json:json", False)
+    [('/path/to/data.pickle', 'pickle'), ('./data2.yaml', 'yaml'), ('/tmp/data3.json', 'json')]
     >>> parse_idata_option("data1.json,/tmp/data2.json", False)
-    [('json', 'data1.json'), ('json', '/tmp/data2.json')]
-    >>> parse_idata_option("json:")
-    []
-    >>> parse_idata_option("yaml")
+    [('data1.json', 'json'), ('/tmp/data2.json', 'json')]
+    >>> parse_idata_option("json")
     []
     >>> parse_idata_option("")
     []
     """
     ret = []
 
-    for fmt_and_path in optstr.split(","):
-        updates = parse_idata_option_single(fmt_and_path, check_exists=check_exists)
-        if updates:
-            ret.append(updates)
+    for path_and_format in optstr.split(","):
+        p_and_f = parse_idata_option_single(path_and_format, check_exists=check_exists)
+        if p_and_f:
+            ret.append(p_and_f)
 
     return ret
 
@@ -220,7 +406,7 @@ def main(argv=sys.argv):
 
     p.add_option("-o", "--output", help="Output file")
     p.add_option("", "--idata", 
-        help="Data format and path to pass it through in the search list, e.g. pickle:data.pkl, json:../data.json.")
+        help="Data path [and format] to find params passed when instantiating templates, e.g. data.pkl:pickle, ../data.json.")
 
     (opts, args) = p.parse_args()
 
@@ -234,12 +420,8 @@ def main(argv=sys.argv):
     output = opts.output and open(opts.output, "w") or sys.stdout
 
     if opts.idata:
-        fmt_and_path_list = parse_idata_option(opts.idata)
-
-        if fmt_and_path_list:
-            idata = load_idata(fmt_and_path_list)
-            params = idata
-            #import pprint; pprint.pprint(params)
+        path_and_formats = parse_idata_option(opts.idata)
+        params = loads_idata(path_and_formats)
 
     res = compile_template(template, params, is_file=True)
     print >> output, res
