@@ -29,6 +29,7 @@
 # SEE ALSO: python-cheetah: http://cheetahtemplate.org
 #
 import cPickle as pickle
+import getpass
 import logging
 import optparse
 import os
@@ -36,6 +37,7 @@ import os.path
 import sys
 import tempfile
 import unittest
+import zipfile
 
 from Cheetah.Template import Template
 
@@ -49,15 +51,31 @@ except ImportError:
     pass
 
 
+#PASSWORD = "sEcr3t"
+PASSWORD = "pass"
+
+
+
+def zopen(path, mode="r", passwd=PASSWORD):
+    original_path = path.rstrip(".zip").strip(os.path.sep)
+    return zipfile.ZipFile(path).open(original_path, "r", passwd)
+
+
 
 class DataLoader(object):
 
-    def __init__(self, load_fun, mode="r"):
+    def __init__(self, load_fun, mode="r", zipped=False):
         self.load_fun = load_fun
         self.mode = mode
+        self.zipped = zipped
 
     def __call__(self, path, **kwargs):
-        return self.load_fun(open(path, self.mode), **kwargs)
+        if self.zipped:
+            passwd = getpass.getpass()
+
+            return self.load_fun(zopen(path, self.mode, passwd), **kwargs)
+        else:
+            return self.load_fun(open(path, self.mode), **kwargs)
 
 
 
@@ -68,21 +86,26 @@ logging.getLogger().setLevel(logging.WARN)
 DATA_LOADERS = dict(
     pickle=DataLoader(pickle.load, "rb"),
     pkl=DataLoader(pickle.load, "rb"),
+    picklez=DataLoader(pickle.load, "rb", True),
+    pklz=DataLoader(pickle.load, "rb", True),
 )
 
 try:
     import json
     DATA_LOADERS["json"] = DataLoader(json.load)
+    DATA_LOADERS["jsonz"] = DataLoader(json.load, zipped=True)
 except ImportError:
     try:
         import simplejson
         DATA_LOADERS["json"] = DataLoader(simplejson.load)
+        DATA_LOADERS["jsonz"] = DataLoader(simplejson.load, zipped=True)
     except ImportError:
         logging.info("json module is not found. Disable JSON support...\n")
 
 try:
     import yaml
     DATA_LOADERS["yaml"] = DATA_LOADERS["yml"] = DataLoader(yaml.load)
+    DATA_LOADERS["yamlz"] = DATA_LOADERS["ymlz"] = DataLoader(yaml.load, zipped=True)
 except ImportError:
     logging.info("yaml module is not found. Disable YAML support...\n")
 
@@ -149,6 +172,15 @@ def load_idata(path, format=None, loaders=DATA_LOADERS):
     @format   str   Data format [option; guessed from the file extension if not passed]
     @loaders  dict  Data loaders for supported formats
     """
+    # if it's a zip file, try detecting the original format before zipped.
+    if format == "zip":
+        original_fmt = os.path.splitext(os.path.splitext(path)[0])[-1][1:]
+
+        if original_fmt:
+            format = original_fmt + "z"  # json -> jsonz
+        else:
+            format = None
+
     if format is None or not format:
         format = os.path.splitext(path)[-1][1:]
         if not format:
@@ -262,6 +294,49 @@ class Test_load_idata__yaml(Helper_load_idata):
 
 
 
+class Helper_load_idata_zipped(Helper_load_idata):
+
+    password = PASSWORD
+
+    def setUp(self):
+        super(Helper_load_idata_zipped, self).setUp()
+        self.original_path = self.path.rstrip(".zip")
+        print >> sys.stderr, "path=%s, original_path=%s" % (self.path, self.original_path)
+
+    def create_zipfile(self):
+        zf = zipfile.ZipFile(self.path, "w")
+        zf.setpassword(self.password)
+        zf.write(self.original_path)
+        zf.close()
+
+    def tearDown(self):
+        super(Helper_load_idata_zipped, self).tearDown()
+        os.remove(self.original_path)
+
+
+
+class Test_load_idata__pickle_zip(Helper_load_idata_zipped):
+
+    path_suffix = ".pickle.zip"
+
+    def test_load_idata__pickle(self):
+        pickle.dump(self.data, open(self.original_path, "wb"))
+        self.create_zipfile()
+        data = load_idata(self.path, "picklez")
+
+        self.assertIsNotNone(data)
+        self.assertEquals(data, self.data)
+
+    def test_load_idata__pickle_auto_detect_format(self):
+        pickle.dump(self.data, open(self.original_path, "wb"))
+        self.create_zipfile()
+        data = load_idata(self.path, "zip")
+
+        self.assertIsNotNone(data)
+        self.assertEquals(data, self.data)
+
+
+
 def loads_idata(path_and_maybe_formats, loaders=DATA_LOADERS):
     """Load input data and returns a dict.
 
@@ -336,6 +411,10 @@ def parse_idata_option_single(optstr, check_exists=False, sep=":"):
     ('/path/to/data.pickle', 'pickle')
     >>> parse_idata_option_single("data.json")
     ('data.json', 'json')
+    >>> parse_idata_option_single("/path/to/data.json.zip:jsonz")
+    ('/path/to/data.json.zip', 'jsonz')
+    >>> parse_idata_option_single("/path/to/data.yaml.zip")
+    ('/path/to/data.yaml.zip', 'yamlz')
     >>> parse_idata_option_single("yaml")
     ()
     """
@@ -344,6 +423,15 @@ def parse_idata_option_single(optstr, check_exists=False, sep=":"):
     else:
         path = optstr
         fmt = os.path.splitext(path)[-1][1:]  # TODO: More intelligent detection.
+
+        # if it's a zip file, try detecting the original format before zipped.
+        if fmt == "zip":
+            original_fmt = os.path.splitext(os.path.splitext(path)[0])[-1][1:]
+
+            if original_fmt:
+                fmt = original_fmt + "z"  # json -> jsonz
+            else:
+                fmt = ""
 
     if path and fmt:
         if check_exists and not os.path.exists(path):
