@@ -57,8 +57,12 @@ PASSWORD = "pass"
 
 
 def zopen(path, mode="r", passwd=PASSWORD):
-    original_path = path.rstrip(".zip").strip(os.path.sep)
-    return zipfile.ZipFile(path).open(original_path, "r", passwd)
+    original_path = path.rstrip(".zip").strip(os.path.sep)  # relative
+    try:
+        return zipfile.ZipFile(path).open(original_path, "r", passwd)
+    except KeyError:
+        original_path = os.path.basename(path.rstrip(".zip"))
+        return zipfile.ZipFile(path).open(original_path, "r", passwd)
 
 
 
