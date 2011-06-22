@@ -5,7 +5,7 @@
 
 ## Override these on command line as needed.
 ARCH	= x86_64
-VERSION	= 14
+VERSION	= 15
 TARGET_OS	= fedora-$(VERSION)-$(ARCH)
 
 SPEC_LOCATION	= https://github.com/ssato/misc/raw/master
@@ -17,6 +17,7 @@ python-iterpipes.spec \
 python-xlutils.spec \
 python-xlwt.spec \
 xtrace.spec \
+gnome-shell-system-monitor-applet.spec \
 $(NULL)
 
 builddirs	= $(RPM_SPECS:.spec=-build)
@@ -70,6 +71,14 @@ xtrace-build/xtrace.spec: xtrace-build
 xtrace.stamp: xtrace-build/xtrace_1.0.2.orig.tar.gz xtrace-build/xtrace.spec
 	$(make-rpms)
 
+gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec: gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build
+	cp $< $@
+
+gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz: gnome-shell-system-monitor-applet-build
+	curl --silent -L -o $@ https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet/tarball/master
+
+gnome-shell-system-monitor-applet.stamp: gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz
+	$(make-rpms)
 
 clean:
 	-rm -f check-env.stamp pre-build.stamp
