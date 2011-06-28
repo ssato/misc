@@ -23,6 +23,11 @@ $(NULL)
 builddirs	= $(RPM_SPECS:.spec=-build)
 buildstamps	= $(RPM_SPECS:.spec=.stamp)
 
+curl	= curl --silent --insecure --location
+
+
+get-rpmspec = test -f $@ || $(curl) -o $@ $(SPEC_LOCATION)/$(notdir $@)
+
 define make-rpms = 
 test -d $(dir $<)/BUILDROOT || mkdir -p $(dir $<)/BUILDROOT
 rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
@@ -33,8 +38,7 @@ rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
 	--define "_sourcedir $(shell pwd)/$(dir $<)" \
 	-bs $(dir $<)/$(@:.stamp=).spec
 mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
-mv $(dir $<)/*.src.rpm  ./ && \
-mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm ./
+mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm $(dir $<)
 endef
 
 
@@ -54,28 +58,37 @@ $(buildstamps): pre-build.stamp
 
 
 mscgen-build/mscgen-src-0.18.tar.gz: mscgen-build
-	test -f $@ || curl --silent -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+	$(curl) -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
 
 mscgen-build/mscgen.spec: mscgen-build
-	test -f $@ || curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
+	$(get-rpmspec)
 
 mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz mscgen-build/mscgen.spec
 	$(make-rpms)
 
 xtrace-build/xtrace_1.0.2.orig.tar.gz: xtrace-build
-	test -f $@ || curl --silent --insecure -o $@ https://alioth.debian.org/frs/download.php/3201/xtrace_1.0.2.orig.tar.gz
+	$(curl) -o $@ https://alioth.debian.org/frs/download.php/3201/xtrace_1.0.2.orig.tar.gz
 
 xtrace-build/xtrace.spec: xtrace-build
-	test -f $@ || curl --silent -o $@ $(SPEC_LOCATION)/$(notdir $@)
+	$(get-rpmspec)
 
 xtrace.stamp: xtrace-build/xtrace_1.0.2.orig.tar.gz xtrace-build/xtrace.spec
 	$(make-rpms)
 
+python-xlwt-build/python-xlwt.spec: python-xlwt-build
+	$(get-rpmspec)
+
+python-xlwt-build/xlwt-0.7.2.tar.gz: python-xlwt-build
+	$(curl) -o $@ http://pypi.python.org/packages/source/x/xlwt/$(notdir $@)
+
+python-xlwt.stamp: python-xlwt-build/xlwt-0.7.2.tar.gz python-xlwt-build/python-xlwt.spec
+	$(make-rpms)
+
 gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec: gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build
-	cp $< $@
+	$(get-rpmspec)
 
 gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz: gnome-shell-system-monitor-applet-build
-	curl --silent -L -o $@ https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet/tarball/master
+	$(curl) -o $@ https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet/tarball/master
 
 gnome-shell-system-monitor-applet.stamp: gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz
 	$(make-rpms)
