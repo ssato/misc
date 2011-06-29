@@ -16,6 +16,7 @@ python-errorhandler.spec \
 python-iterpipes.spec \
 python-xlutils.spec \
 python-xlwt.spec \
+python-wordaxe.spec \
 xtrace.spec \
 gnome-shell-system-monitor-applet.spec \
 $(NULL)
@@ -82,6 +83,15 @@ python-xlwt-build/xlwt-0.7.2.tar.gz: python-xlwt-build
 	$(curl) -o $@ http://pypi.python.org/packages/source/x/xlwt/$(notdir $@)
 
 python-xlwt.stamp: python-xlwt-build/xlwt-0.7.2.tar.gz python-xlwt-build/python-xlwt.spec
+	$(make-rpms)
+
+python-wordaxe-build/python-wordaxe.spec: python-wordaxe-build
+	cp $(notdir $@) $@
+
+python-wordaxe-build/wordaxe-1.0.1.zip: python-wordaxe-build
+	$(curl) -o $@ http://downloads.sourceforge.net/project/deco-cow/$(notdir $@)
+
+python-wordaxe.stamp: python-wordaxe-build/wordaxe-1.0.1.zip python-wordaxe-build/python-wordaxe.spec
 	$(make-rpms)
 
 gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec: gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build
