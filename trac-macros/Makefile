@@ -3,7 +3,7 @@
 #
 
 ARCH ?= x86_64
-TARGET_OSVERSION ?= fedora-14-$(ARCH)
+TARGET_OSVERSION ?= fedora-15-$(ARCH)
 
 SPECS_LOCATION = https://github.com/ssato/misc/raw/master/trac-macros
 
@@ -31,7 +31,12 @@ rpmbuild --buildroot $(shell pwd)/$(@:.stamp=)/BUILDROOT \
 	--define "_rpmdir $(shell pwd)/$(@:.stamp=)" \
 	--define "_srcrpmdir $(shell pwd)/$(@:.stamp=)" \
 	--define "_sourcedir $(shell pwd)/$(@:.stamp=)/dist" \
-	-bs $(@:.stamp=).spec
+	-bs $<
+endef
+
+define set-svnrev-rpmspec =
+sed 's,@SVNREV@,$(shell LANG=C svn info $(dir $@) | sed -n 's,^Revision: ,,p'),g' $< > $@.tmp && \
+mv $@.tmp $@
 endef
 
 
@@ -52,48 +57,68 @@ $(MODULE_STAMPS): pre-build.stamp
 $(MODULE_SPECS):
 	test -d .git || curl --silent -O $(SPECS_LOCATION)/$@
 
-trac-footnote-macro: trac-footnote-macro.spec
+
+# trac-footnote-macro:
+trac-footnote-macro:
 	svn co http://trac-hacks.org/svn/footnotemacro/$(TRAC_VERSION)/ $@
 
-trac-footnote-macro.stamp: trac-footnote-macro trac-footnote-macro.spec
+trac-footnote-macro/trac-footnote-macro.spec: trac-footnote-macro.spec trac-footnote-macro
+	$(set-svnrev-rpmspec)
+
+trac-footnote-macro.stamp: trac-footnote-macro/trac-footnote-macro.spec
 	$(make-srpm)
 	touch $@
 
-trac-include-macro: trac-include-macro.spec
+
+# trac-include-macro:
+trac-include-macro:
 	svn co http://trac-hacks.org/svn/includemacro/$(TRAC_VERSION)/ $@
 
-trac-include-macro.stamp: trac-include-macro trac-include-macro.spec
+trac-include-macro/trac-include-macro.spec: trac-include-macro.spec trac-include-macro
+	$(set-svnrev-rpmspec)
+
+trac-include-macro.stamp: trac-include-macro/trac-include-macro.spec
 	$(make-srpm)
 	touch $@
 
+
+# trac-markdown-macro:
 trac-markdown-macro: trac-markdown-macro.spec
-	git clone git://github.com/dwclifton/tracmarkdownmacro.git $@
-	mv $@/$(TRAC_VERSION)/* $@/
+	git clone git://github.com/dwclifton/tracmarkdownmacro.git $@.tmp
+	mv $@.tmp/$(TRAC_VERSION)/* $@.tmp/
+	mv $@.tmp $@
 
-trac-markdown-macro.stamp: trac-markdown-macro trac-markdown-macro.spec
+trac-markdown-macro.stamp: trac-markdown-macro.spec trac-markdown-macro
 	$(make-srpm)
 	touch $@
 
-trac-movie-macro: trac-movie-macro.spec
+
+# trac-movie-macro:
+trac-movie-macro:
 	svn co http://trac-hacks.org/svn/moviemacro/$(TRAC_VERSION)/ $@
 
-trac-movie-macro.stamp: trac-movie-macro trac-movie-macro.spec
+trac-movie-macro.stamp: trac-movie-macro.spec trac-movie-macro
 	$(make-srpm)
 	touch $@
 
-trac-rssembed-macro: trac-rssembed-macro.spec
+
+# trac-rssembed-macro:
+trac-rssembed-macro:
 	svn co http://trac-hacks.org/svn/rssembedmacro/$(TRAC_VERSION)/ $@
 
-trac-rssembed-macro.stamp: trac-rssembed-macro trac-rssembed-macro.spec
+trac-rssembed-macro.stamp: trac-rssembed-macro.spec trac-rssembed-macro
 	$(make-srpm)
 	touch $@
 
+
+# trac-xslt-macro:
 trac-xslt-macro: trac-xslt-macro.spec
 	svn co http://trac-hacks.org/svn/xsltmacro/$(TRAC_VERSION)/ $@
 
-trac-xslt-macro.stamp: trac-xslt-macro trac-xslt-macro.spec
+trac-xslt-macro.stamp: trac-xslt-macro.spec trac-xslt-macro
 	$(make-srpm)
 	touch $@
+
 
 build: srpms.stamp
 

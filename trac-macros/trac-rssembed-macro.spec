@@ -1,11 +1,13 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
+%if 0%{?fedora} <= 12 && 0%{?rhel} <= 5
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%endif
 %define _url    http://trac-hacks.org/wiki/RssEmbedMacro
 
 
 Name:           trac-rssembed-macro
 Version:        0.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Wiki rssembed macro for Trac
 Group:          Applications/Internet
 License:        BSD
@@ -52,5 +54,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 14 2011 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.0.1-2
+- Minor spec fixes
+
 * Sun Dec 12 2010 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.0.1-1
 - Initial build
