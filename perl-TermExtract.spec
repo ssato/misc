@@ -9,7 +9,7 @@ License:        ?
 URL:            http://gensen.dl.itc.u-tokyo.ac.jp/termextract.html
 Source0:        http://gensen.dl.itc.u-tokyo.ac.jp/soft/%{modname}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch:      
+BuildArch:      noarch
 # Correct for lots of packages, other common choices include eg. Module::Build
 BuildRequires:  perl(ExtUtils::MakeMaker)
 Requires:  perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
@@ -51,15 +51,15 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc HTML
+%doc SampleScripts
 # For noarch packages: vendorlib
 %{perl_vendorlib}/*
 # For arch-specific packages: vendorarch
-%{perl_vendorarch}/*
-%exclude %dir %{perl_vendorarch}/auto/
+#%{perl_vendorarch}/*
+#%exclude %dir %{perl_vendorarch}/auto/
 %{_mandir}/man3/*.3*
 
 
 %changelog
-Version:        4_08
 * Mon Sep 12 2011 Satoru SATOH <ssato@redhat.com> - 4_08-1
 - Initial packaging.
