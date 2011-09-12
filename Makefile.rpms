@@ -19,6 +19,7 @@ python-xlwt.spec \
 python-wordaxe.spec \
 xtrace.spec \
 gnome-shell-system-monitor-applet.spec \
+perl-TermExtract.spec \
 $(NULL)
 
 builddirs	= $(RPM_SPECS:.spec=-build)
@@ -101,6 +102,15 @@ gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab9
 	$(curl) -o $@ https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet/tarball/master
 
 gnome-shell-system-monitor-applet.stamp: gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz
+	$(make-rpms)
+
+perl-TermExtract-build/perl-TermExtract.spec: perl-TermExtract-build
+	$(get-rpmspec)
+
+perl-TermExtract-build/TermExtract-4_08.tar.gz: perl-TermExtract-build
+	$(curl) -o $@ http://gensen.dl.itc.u-tokyo.ac.jp/soft/$(notdir $@)
+
+perl-TermExtract.stamp: perl-TermExtract-build/TermExtract-4_08.tar.gz perl-TermExtract-build/perl-TermExtract.spec
 	$(make-rpms)
 
 clean:
