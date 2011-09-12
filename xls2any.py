@@ -207,7 +207,8 @@ class CsvDumper(DataDumper):
         return super(CsvDumper, self).open(flag="wb")
 
     def dump_impl(self):
-        writer = UnicodeWriter(self.open())
+        out = self.open()
+        writer = UnicodeWriter(out)
 
         writer.writerow(self.headers)
 
