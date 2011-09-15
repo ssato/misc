@@ -135,7 +135,7 @@ def tf_idf(paths):
 
     def idf(term):
         ndocs = len(paths)
-        ndocs_have_term = sum(freqs[path].get(term, False) and 1 or 0 for path in paths)
+        ndocs_have_term = sum(freqs[p].get(term, False) and 1 or 0 for p in paths)
         logging.debug(" idf: term=%s, ndocs=%d, ndocs_have_term=%d" % (term, ndocs, ndocs_have_term))
 
         return math.log(ndocs / ndocs_have_term)
@@ -144,37 +144,50 @@ def tf_idf(paths):
     idf = memoize(idf)
 
     def __tf_idf(term):
-        return dict((path, tf(term).get(path, 0) * idf(term)) for path in paths)
+        return dict(
+            (p2key(path), t) for path, t in \
+                ((p, tf(term).get(p, 0) * idf(term)) for p in paths) \
+            if t != 0
+        )
 
     return dict((term, __tf_idf(term)) for term in terms)
 
 
-def tf_idf_w_nltk(paths):
+def tf_idf_nltk(paths):
     """
-    FIXME: I still don't understand how to use nltk.TextCollection.tf_idf() and
-    something goes wrong.
+    FIXME: I don't understand how to use nltk.TextCollection.tf_idf() and I
+    still cannot get meaningful results.
 
     :param paths: A list of input files
     """
     texts = dict((path, make_text(path)) for path in paths)
-
     tc = nltk.TextCollection(t for p, t in texts.iteritems())
+    terms = list(set(t for p, t in texts.iteritems()))
 
-    tc_idf = dict()
-    for path, text in texts.iteritems():
-        tc_idf[path] = dict()
+    ret = dict()
 
-        for term in text:
-            tc_idf[path][term] = tc.tf_idf(term, text)
+    for term in terms:
+        logging.debug(" term=" + term)
+        ret[term] = dict()
 
-    return tc_idf
+        for path, text in texts.iteritems():
+            x = tc.tf_idf(term, text)
+
+            if x != 0:
+                ret[term][path] = x
+
+    return ret
 
 
 def main(argv=sys.argv):
     defaults = dict(
         debug = False,
         outdir = os.path.join(os.getcwd(), "results"),
+        method = "tf_idf",
     )
+
+    methods = ("tf_idf", "tf_idf_nltk")
+    method_help = "Term extraction method: %s [%%default]" % ", ".join(methods)
 
     p = argparse.ArgumentParser(prog=argv[0])
     p.set_defaults(**defaults)
@@ -182,6 +195,7 @@ def main(argv=sys.argv):
     p.add_argument("-D", "--debug", action="store_true", help="Debug mode")
     p.add_argument("-p", "--paths", nargs="+", help="Input file path list")
     p.add_argument("-o", "--outdir", help="Output directory [%default]")
+    p.add_argument("-M", "--method", choices=methods, help=method_help)
 
     args = p.parse_args(argv[1:])
 
@@ -194,7 +208,9 @@ def main(argv=sys.argv):
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
 
-    result = tf_idf(args.paths)
+    f = globals().get(args.method)
+
+    result = f(args.paths)
     outfile = os.path.join(args.outdir, "tf_idf.dat")
     pprint.pprint(result, open(outfile, "w"))
 
