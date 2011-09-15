@@ -17,6 +17,7 @@ python-iterpipes.spec \
 python-xlutils.spec \
 python-xlwt.spec \
 python-wordaxe.spec \
+python-topia.spec \
 xtrace.spec \
 gnome-shell-system-monitor-applet.spec \
 perl-TermExtract.spec \
@@ -38,9 +39,7 @@ rpmbuild --buildroot $(shell pwd)/$(dir $<)/BUILDROOT \
 	--define "_rpmdir $(shell pwd)/$(dir $<)" \
 	--define "_srcrpmdir $(shell pwd)/$(dir $<)" \
 	--define "_sourcedir $(shell pwd)/$(dir $<)" \
-	-bs $(dir $<)/$(@:.stamp=).spec
-mock -r $(TARGET_OS) $(dir $<)/*.src.rpm && \
-mv -f /var/lib/mock/$(TARGET_OS)/result/*.rpm $(dir $<)
+	-ba $(dir $<)/$(@:.stamp=).spec
 endef
 
 
@@ -93,6 +92,15 @@ python-wordaxe-build/wordaxe-1.0.1.zip: python-wordaxe-build
 	$(curl) -o $@ http://downloads.sourceforge.net/project/deco-cow/$(notdir $@)
 
 python-wordaxe.stamp: python-wordaxe-build/wordaxe-1.0.1.zip python-wordaxe-build/python-wordaxe.spec
+	$(make-rpms)
+
+python-topia-build/python-topia.spec: python-topia-build
+	cp $(notdir $@) $@
+
+python-topia-build/topia.termextract-1.1.0.tar.gz: python-topia-build
+	$(curl) -o $@ http://pypi.python.org/packages/source/t/topia.termextract/$(notdir $@)
+
+python-topia.stamp: python-topia-build/topia.termextract-1.1.0.tar.gz python-topia-build/python-topia.spec
 	$(make-rpms)
 
 gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec: gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build
