@@ -22,19 +22,17 @@
 # SEE ALSO: createrepo(8)
 # SEE ALSO: https://github.com/ssato/packagemaker
 #
-
 from functools import reduce as foldl
-from itertools import groupby, product
 
-import glob
+import argparse
 import logging
+import itertools
+import math
 import nltk
-import optparse
 import os
 import os.path
 import pprint
 import re
-import subprocess
 import sys
 
 
@@ -80,219 +78,128 @@ def concat(xss):
     return foldl(listplus, (xs for xs in xss), [])
 
 
-def makeText(path):
-    """
+@memoize
+def make_text(path):
+    """Returns nltk.Text instance made from given document.
+
     :param path: Input file path
     :return:  nltk.Text instance
     """
+    stopwords = nltk.corpus.stopwords.words("english")
+    symbols = [c for c in "~`!@#$%^&*()_+-=|}{\][\":';?><,./"]
+
+    is_word_ch = lambda w: re.match(r"^[a-z]+[a-z0-9_-]+$", w) 
+
+    # FIXME: Any other ideas?
+    is_word = lambda w: len(w) > 2 and is_word_ch(w) and w not in stopwords
+
     tokens = nltk.word_tokenize(open(path).read())
-    return nltk.Text(tokens)
+
+    return nltk.Text(t for t in tokens if is_word(t.lower()))
 
 
 def tf_idf(paths):
-    """
+    """Compute tf_idf for all terms in documents (paths).
+
+    tf_idf (term, doc) = tf(term, doc) * idf(term)
+
+    where tf (term, doc) = occurance(term, doc) / (occurance(term, doc) for all docs)
+          idf (term) = D / log (number_of_docs_contains term)
+          D = number of all docs
+
+    SEE ALSO: http://ja.wikipedia.org/wiki/Tf-idf
+
     :param paths: A list of input files
     """
-    stopwords = nltk.corpus.stopwords.words('english')
-    symbols = ["'", '"', '`', '.', ',', '-', '!', '?', ':', ';', '(', ')', '#']
+    freqs = dict((path, nltk.FreqDist(make_text(path))) for path in paths)
+    terms = list(set(concat(freq.keys() for _, freq in freqs.iteritems())))
 
-    is_word = lambda s: re.match(r"[a-z]+[a-zA-Z0-9_-]+", s) and not in stopwords
+    occurs = lambda term, path: freqs[path].get(term, 0)
+    sum_occurs = lambda term: sum(occurs(term, path) for path in paths)
 
-    tokens = lambda path: nltk.word_tokenize(open(path).read())
-    text = lambda path: nltk.Text(t for t in tokens(path) if is_word(t.lower()))
+    occurs = memoize(occurs)
+    sum_occurs = memoize(sum_occurs)
 
-    texts = [text(p) for p in paths]
-    terms = set(concat(list(txt) for txt in texts))
+    # /home/ssato/.cache/kbase/DOC-15754.txt
+    p2key = lambda path: os.path.basename(path)
 
-    tc = nltk.TextCollection(texts)
+    def tf(term):
+        soccurs = sum_occurs(term)
+        logging.debug(" tf: term=%s, sum_occurs=%d" % (term, soccurs))
 
+        return dict(
+            (path, x) for path, x in \
+                ((p, float(occurs(term, p)) / float(soccurs)) for p in paths) \
+            if x != 0
+        )
 
+    def idf(term):
+        ndocs = len(paths)
+        ndocs_have_term = sum(freqs[path].get(term, False) and 1 or 0 for path in paths)
+        logging.debug(" idf: term=%s, ndocs=%d, ndocs_have_term=%d" % (term, ndocs, ndocs_have_term))
 
-def opt_parser():
-    defaults = init_defaults()
-    distribution_choices = defaults["dists_full"]  # save it.
+        return math.log(ndocs / ndocs_have_term)
 
-    defaults.update(init_defaults_by_conffile())
+    tf = memoize(tf)
+    idf = memoize(idf)
 
-    p = optparse.OptionParser("""%prog COMMAND [OPTION ...] [ARGS]
+    def __tf_idf(term):
+        return dict((path, tf(term).get(path, 0) * idf(term)) for path in paths)
 
-Commands: i[init], b[uild], d[eploy], u[pdate]
-
-Examples:
-  # initialize your yum repos:
-  %prog init -s yumserver.local -u foo -m foo@example.com -F "John Doe"
-
-  # build SRPM:
-  %prog build packagemaker-0.1-1.src.rpm 
-
-  # build SRPM and deploy RPMs and SRPMs into your yum repos:
-  %prog deploy packagemaker-0.1-1.src.rpm
-  %prog d --dists rhel-6-x86_64 packagemaker-0.1-1.src.rpm
-  """
-    )
-
-    for k in ("verbose", "quiet", "debug"):
-        if not defaults.get(k, False):
-            defaults[k] = False
-
-    p.set_defaults(**defaults)
-
-    p.add_option("-C", "--config", help="Configuration file")
-
-    p.add_option("-s", "--server", help="Server to provide your yum repos.")
-    p.add_option("-u", "--user", help="Your username on the server [%default]")
-    p.add_option("-m", "--email", help="Your email address or its format string[%default]")
-    p.add_option("-F", "--fullname", help="Your full name [%default]")
-
-    p.add_option("", "--dists", help="Comma separated distribution labels including arch. "
-        "Options are some of " + distribution_choices + " [%default]")
-
-    p.add_option("-q", "--quiet", action="store_true", help="Quiet mode")
-    p.add_option("-v", "--verbose", action="store_true", help="Verbose mode")
-    p.add_option("", "--debug", action="store_true", help="Debug mode")
-
-    iog = optparse.OptionGroup(p, "Options for 'init' command")
-    iog.add_option('', "--name", help="Name of your yum repo or its format string [%default].")
-    iog.add_option("", "--subdir", help="Repository sub dir name [%default]")
-    iog.add_option("", "--topdir", help="Repository top dir or its format string [%default]")
-    iog.add_option('', "--baseurl", help="Repository base URL or its format string [%default]")
-    iog.add_option('', "--signkey", help="GPG key ID if signing RPMs to deploy")
-    p.add_option_group(iog)
-
-    return p
+    return dict((term, __tf_idf(term)) for term in terms)
 
 
-def do_command(cmd, repos, srpm=None, wait=WAIT_FOREVER):
-    f = getattr(RepoOperations, cmd)
-    threads = []
+def tf_idf_w_nltk(paths):
+    """
+    FIXME: I still don't understand how to use nltk.TextCollection.tf_idf() and
+    something goes wrong.
 
-    if srpm is not None:
-        is_noarch(srpm)  # make a result cache
+    :param paths: A list of input files
+    """
+    texts = dict((path, make_text(path)) for path in paths)
 
-    for repo in repos:
-        args = srpm is None and (repo, ) or (repo, srpm)
+    tc = nltk.TextCollection(t for p, t in texts.iteritems())
 
-        thread = threading.Thread(target=f, args=args)
-        thread.start()
+    tc_idf = dict()
+    for path, text in texts.iteritems():
+        tc_idf[path] = dict()
 
-        threads.append(thread)
+        for term in text:
+            tc_idf[path][term] = tc.tf_idf(term, text)
 
-    time.sleep(5)
-
-    for thread in threads:
-        # it will block.
-        thread.join(wait)
-
-        # Is there any possibility thread still live?
-        if thread.is_alive():
-            logging.info("Terminating the thread")
-
-            thread.join()
+    return tc_idf
 
 
 def main(argv=sys.argv):
-    (CMD_INIT, CMD_UPDATE, CMD_BUILD, CMD_DEPLOY) = ("init", "update", "build", "deploy")
+    defaults = dict(
+        debug = False,
+        outdir = os.path.join(os.getcwd(), "results"),
+    )
 
-    logformat = "%(asctime)s [%(levelname)-4s] myrepo: %(message)s"
-    logdatefmt = "%H:%M:%S" # too much? "%a, %d %b %Y %H:%M:%S"
+    p = argparse.ArgumentParser(prog=argv[0])
+    p.set_defaults(**defaults)
 
-    logging.basicConfig(format=logformat, datefmt=logdatefmt)
+    p.add_argument("-D", "--debug", action="store_true", help="Debug mode")
+    p.add_argument("-p", "--paths", nargs="+", help="Input file path list")
+    p.add_argument("-o", "--outdir", help="Output directory [%default]")
 
-    p = opt_parser()
-    (options, args) = p.parse_args(argv[1:])
+    args = p.parse_args(argv[1:])
 
-    if options.verbose:
-        logging.getLogger().setLevel(logging.INFO)
-    elif options.debug:
-        logging.getLogger().setLevel(logging.DEBUG)
-    elif options.quiet:
-        logging.getLogger().setLevel(logging.ERROR)
-    else:
-        logging.getLogger().setLevel(logging.WARN)
-
-    if not args:
+    if not args.paths:
         p.print_usage()
         sys.exit(1)
 
-    a0 = args[0]
-    if a0.startswith('i'):
-        cmd = CMD_INIT
+    logging.getLogger().setLevel(args.debug and logging.DEBUG or logging.WARN)
 
-    elif a0.startswith('u'):
-        cmd = CMD_UPDATE
+    if not os.path.exists(args.outdir):
+        os.makedirs(args.outdir)
 
-    elif a0.startswith('b'):
-        cmd = CMD_BUILD
-        assert len(args) >= 2, "'%s' command requires an argument to specify srpm[s]" % cmd
-
-    elif a0.startswith('d'):
-        cmd = CMD_DEPLOY
-        assert len(args) >= 2, "'%s' command requires an argument to specify srpm[s]" % cmd
-
-    else:
-        logging.error(" Unknown command '%s'" % a0)
-        sys.exit(1)
-
-    if options.config:
-        params = init_defaults()
-        params.update(init_defaults_by_conffile(options.config))
-
-        p.set_defaults(**params)
-
-        # re-parse to overwrite configurations with given options.
-        (options, args) = p.parse_args()
-
-    config = copy.copy(options.__dict__)
-
-    # Kept for DEBUG:
-    #pprint.pprint(config)
-    #sys.exit()
-
-    dabs = parse_dists_option(config["dists"])  # [(dist, arch, bdist_label)]
-    repos = []
-
-    # old way:
-    #dists = config["dists"].split(",")
-    #for dist, labels in groupby(dists, lambda d: d[:d.rfind("-")]):
-    #    archs = [l.split("-")[-1] for l in labels]
-
-    # extended new way:
-    for dist, dists in groupby(dabs, lambda d: d[0]):  # d[0]: dist
-        dists = list(dists)  # it's a generator and has internal state.
-
-        archs = [d[1] for d in dists]  # d[1]: arch
-        bdist_label = [d[2] for d in dists][0]  # d[2]: bdist_label
-
-        repo = Repo(
-            config["server"],
-            config["user"],
-            config["email"],
-            config["fullname"],
-            dist,
-            archs,
-            config["name"],
-            config["subdir"],
-            config["topdir"],
-            config["baseurl"],
-            config["signkey"],
-            bdist_label,
-            config["metadata_expire"],
-        )
-
-        repos.append(repo)
- 
-    srpms = args[1:]
-
-    if srpms:
-        for srpm in srpms:
-            do_command(cmd, repos, srpm)
-    else:
-        do_command(cmd, repos)
-
-    sys.exit()
+    result = tf_idf(args.paths)
+    outfile = os.path.join(args.outdir, "tf_idf.dat")
+    pprint.pprint(result, open(outfile, "w"))
 
 
 if __name__ == '__main__':
     main(sys.argv)
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:
