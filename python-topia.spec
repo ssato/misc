@@ -33,6 +33,10 @@ analysis to determine the terms and their strength.
 
 %install
 rm -rf $RPM_BUILD_ROOT
+# It looks missing:
+mkdir -p $RPM_BUILD_ROOT%{python_sitelib}/topia
+touch $RPM_BUILD_ROOT%{python_sitelib}/topia/__init__.py
+
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 
  
