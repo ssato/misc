@@ -9,8 +9,10 @@ $(curdir)/usr/share/texmf/web2c/texmf.cnf \
 $(curdir)/usr/bin/tex2pdf,mode=0755 \
 $(NULL)
 
-RELATIONS = requires:ipa-ex-mincho-fonts,ipa-ex-gothic-fonts,sazanami-mincho-fonts,sazanami-gothic-fonts,dvipdfmx,texlive-east-asian,poppler-data
+RELATIONS = requires:ipa-ex-mincho-fonts,ipa-ex-gothic-fonts,sazanami-mincho-fonts,sazanami-gothic-fonts,xdvik,dvipdfmx,texlive-east-asian,poppler-data
 URL = http://github.com/ssato/misc/texlive-data-ja
+PVERSION = 0.0.1
+
 
 PMAKER = pmaker
 PMAKER_FLAGS    = -n $(PACKAGE) \
@@ -18,6 +20,7 @@ PMAKER_FLAGS    = -n $(PACKAGE) \
 --url $(URL) \
 --workdir $(WORKDIR) \
 --destdir $(curdir) \
+--pversion $(PVERSION) \
 --upto sbuild \
 --ignore-owner \
 $(NULL)
