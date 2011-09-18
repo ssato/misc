@@ -13,12 +13,14 @@ export CMAPFONTS=$CMAPFONTS:/usr/share/poppler/cMap//
 
 
 texsrc=$1
+pdfout=$2
 
 if test -z "$texsrc"; then
     cat << EOF 
-Usage: $0 INPUT_TEX
+Usage: $0 INPUT_TEX [OUTPUT_PDF]
 
-  where INPUT_TEX = input tex file ends with '.tex' extension
+  where INPUT_TEX  = input tex file ends with '.tex' extension
+        OUTPUT_PDF = output pdf path
 
 EOF
     exit 1
@@ -31,7 +33,10 @@ set -e
 
 texsrc_ej=${texsrc/.tex/.euc-jp.tex}
 dviout=${texsrc_ej/.tex/.dvi}
-pdfout=${texsrc/.tex/.pdf}
+
+if test -z "$pdfout"; then
+    pdfout=${texsrc/.tex/.pdf}
+fi
 
 iconv -t euc-jp -f utf-8 -o $texsrc_ej $texsrc
 platex $texsrc_ej
