@@ -9,7 +9,11 @@
 #
 # * http://d.hatena.ne.jp/DOSEI/20110624/p1
 #
-export CMAPFONTS=$CMAPFONTS:/usr/share/poppler/cMap//     
+
+# Unfortunately, it does not work because dvipdfmx does not set it from
+# environment varibles at all, as far as I confirmed with the source code of
+# dvipdfmx-20090708 in Fedora 16 alpha:
+export CMAPFONTS=$CMAPFONTS:/usr/share/poppler/cMap//
 
 
 texsrc=$1
