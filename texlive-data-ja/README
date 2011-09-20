@@ -1,0 +1,45 @@
+==================================
+texlive-data-ja
+==================================
+
+Fedora 14+ (14, 15, ...) の texlive で日本語を扱うための設定などのデータを
+まとめたもの.
+
+
+PackageMaker により RPM パッケージ化してインストールして使うことを想定しています。
+
+
+* PackageMaker: https://github.com/ssato/packagemaker
+
+
+
+Files
+==================================
+
+etc/fonts/conf.d/90-texlive-local.conf
+-------------------------------------------
+
+Evince 等での出力 PDF の表示のための fontconfig の設定データ。
+IPA EX Gothic と IPA EX Mincho を使うように。
+
+
+usr/bin/tex2pdf
+-------------------------------------------
+
+platex (texlive-east-asian) は日本語 UTF-8 を処理できないようなので 
+tex ソースを一度 EUC-JP に変換の必要がある。
+
+また Tex を PDF にするには tex -(platex)-> dvi -(dvipdfmx)-> pdf と
+二つのステップをそれぞれ違うツールで処理する必要がある。
+
+正直 DVI 出力にはまったく興味がなく面倒なので用意したラッパーコマンド。
+
+
+
+usr/share/texmf/web2c/texmf.cnf
+-------------------------------------------
+
+poppler-data の提供する cMap データを利用するための override 設定データ。
+詳細については RHBZ#736242 (https://bugzilla.redhat.com/show_bug.cgi?id=736242) を参照。
+
+
