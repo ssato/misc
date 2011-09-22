@@ -4,9 +4,8 @@ Release:        1%{?dist}
 Summary:        Latex configuration and data for Japanese tex sources
 Group:          Applications/Publishing
 License:        MIT
-URL:            http://oku.edu.mie-u.ac.jp/~okumura/jsclasses
-Source0:        http://oku.edu.mie-u.ac.jp/~okumura/jsclasses/jsclasses.zip
-Source1:        http://oku.edu.mie-u.ac.jp/~okumura/texfaq/jis-tfm.zip
+URL:            https://github.com/ssato/misc/tree/master/texlive-data-ja
+Source0:        https://github.com/ssato/misc/tarball/master/%{name}-%{git}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       texlive-east-asian
@@ -16,7 +15,7 @@ Requires:       ipa-ex-mincho-fonts, ipa-ex-gothic-fonts
 
 
 %description
-This is temporal package to provide configuration and some data to fix issues
+This is a temporal package to provide configuration and some data to fix issues
 when generating DVIs/PDFs from tex sources in Japanese.
 
 
@@ -59,6 +58,7 @@ fi
 %files
 %defattr(-,root,root,-)
 %doc README
+%doc README.ja
 %{_sysconfdir}/fonts/conf.d/90-texlive-local.conf
 %{_sysconfdir}/texmf/dvipdfmx/ipaex.map
 %{_datadir}/texmf/web2c/texmf.cnf
