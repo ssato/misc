@@ -2,29 +2,21 @@ EXTRA_DIST = README.ja
 EXTRA_DIST += texlive-data-ja.spec rpm.mk
 EXTRA_DIST += apply-overrides revert-overrides
 
-abs_srcdir  ?= .
-include $(abs_srcdir)/rpm.mk
+#abs_top_srcdir  ?= $(shell pwd)
+include $(abs_top_srcdir)/rpm.mk
 
 
 pkgdata0dir = /etc/fonts/conf.d
-dist_pkgdata0_DATA = \
-etc/fonts/conf.d/90-texlive-local.conf \
-$(NULL)
+dist_pkgdata0_DATA = $(abs_top_srcdir)/etc/fonts/conf.d/90-texlive-local.conf
 
 pkgdata1dir = /etc/texmf/dvipdfmx
-dist_pkgdata1_DATA = \
-etc/texmf/dvipdfmx/ipaex.map \
-$(NULL)
+dist_pkgdata1_DATA = $(abs_top_srcdir)/etc/texmf/dvipdfmx/ipaex.map
 
 pkgdata2dir = /usr/bin
-dist_pkgdata2_DATA = \
-usr/bin/tex2pdf \
-$(NULL)
+dist_pkgdata2_DATA = $(abs_top_srcdir)/usr/bin/tex2pdf
 
 pkgdata3dir = /var/lib/texlive-data-ja-overrides/new/usr/share/texmf/web2c
-dist_pkgdata3_DATA = \
-var/lib/texlive-data-ja-overrides/new/usr/share/texmf/web2c/texmf.cnf \
-$(NULL)
+dist_pkgdata3_DATA = $(abs_top_srcdir)/var/lib/texlive-data-ja-overrides/new/usr/share/texmf/web2c/texmf.cnf
 
 
 install-data-hook::

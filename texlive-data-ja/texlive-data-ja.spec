@@ -1,4 +1,6 @@
 #%define git     f5dbe3f
+%define  savedir  /var/lib/pmaker/preserved
+%define  newdir  /var/lib/pmaker/installed
 
 
 Name:           texlive-data-ja
@@ -23,6 +25,17 @@ This is a temporal package to provide configuration and some data to fix issues
 when generating DVIs/PDFs from tex sources in Japanese.
 
 
+%package        overrides
+Summary:        Some more extra data override files owned by other packages
+Group:          Applications/Publishing
+Requires:       %{name} = %{version}-%{release}
+Requires:       texlive-texmf
+
+
+%description    overrides
+Some more extra data will override and replace other packages'.
+
+
 %prep
 %setup -q
 
@@ -35,6 +48,11 @@ make %{?_smp_mflags} V=0
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+
+mkdir -p $RPM_BUILD_ROOT/var/lib/texlive-data-ja-overrides/saved
+mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
+install -m 755 apply-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
+install -m 755 revert-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 
 
 %clean
@@ -59,6 +77,18 @@ fi
 [ -x /sbin/restorecon ] && /sbin/restorecon -R /var/lib/texmf/ || :
 
 
+%post           overrides
+if [ $1 = 1 -o $1 = 2 ]; then    # install or update
+    %{_libexecdir}/%{name}-overrides/apply-overrides
+fi
+
+
+%preun          overrides
+if [ $1 = 0 ]; then    # uninstall (! update)
+    %{_libexecdir}/%{name}-overrides/revert-overrides
+fi
+
+
 %files
 %defattr(-,root,root,-)
 %doc README
@@ -68,6 +98,15 @@ fi
 %{_datadir}/texmf/web2c/texmf.cnf
 %{_datadir}texmf/fonts/truetype/ipaex
 %{_bindir}/tex2pdf
+
+
+%files          overrides
+%defattr(-,root,root,-)
+%doc README
+%doc README.ja
+%dir /var/lib/texlive-data-ja-overrides/saved
+%{_libexecdir}/%{name}-overrides/*-overrides
+/var/lib/texlive-data-ja-overrides/new/usr/share/texmf/web2c/texmf.cnf
 
 
 %changelog
