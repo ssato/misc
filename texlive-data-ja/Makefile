@@ -5,13 +5,16 @@ WORKDIR = $(curdir)/$(PACKAGE)-build
 
 texlive_SOURCE = \
 $(curdir)/etc/fonts/conf.d/90-texlive-local.conf \
+$(curdir)/etc/texmf/dvipdfmx/ipaex.map \
 $(curdir)/usr/share/texmf/web2c/texmf.cnf \
+$(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexg.ttf \
+$(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexm.ttf \
 $(curdir)/usr/bin/tex2pdf,mode=0755 \
 $(NULL)
 
-RELATIONS = requires:ipa-ex-mincho-fonts,ipa-ex-gothic-fonts,sazanami-mincho-fonts,sazanami-gothic-fonts,xdvik,dvipdfmx,texlive-east-asian,poppler-data
+RELATIONS = requires:ipa-ex-mincho-fonts,ipa-ex-gothic-fonts,xdvik,dvipdfmx,texlive-east-asian,poppler-data
 URL = http://github.com/ssato/misc/texlive-data-ja
-PVERSION = 0.0.1
+PVERSION = 0.0.2
 
 
 PMAKER = pmaker
@@ -28,6 +31,12 @@ $(NULL)
 
 
 all: texlive-data-ja
+
+$(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexg.ttf: /usr/share/fonts/ipa-ex-gothic/ipaexg.ttf
+	cd $(dirname $@) && ln -s $< ./
+
+$(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexm.ttf: /usr/share/fonts/ipa-ex-mincho/ipaexm.ttf
+	cd $(dirname $@) && ln -s $< ./
 
 $(WORKDIR)/files.list:
 	test -d $(WORKDIR) || mkdir -p $(WORKDIR)

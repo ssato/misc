@@ -44,7 +44,7 @@ fi
 
 iconv -t euc-jp -f utf-8 -o $texsrc_ej $texsrc
 platex $texsrc_ej
-dvipdfmx -o $pdfout $dviout
+dvipdfmx -f /etc/texmf/dvipdfmx/ipaex.map -o $pdfout $dviout
 echo "*** Built: $pdfout ***"
 
 
