@@ -1,5 +1,5 @@
 AC_INIT([texlive-data-ja],[0.0.3])
-AM_INIT_AUTOMAKE([no-dist-gzip dist-xz foreign subdir-objects tar-pax])
+AM_INIT_AUTOMAKE([no-dist-gzip dist-xz foreign subdir-objects])
 
 dnl http://www.flameeyes.eu/autotools-mythbuster/automake/silent.html
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])

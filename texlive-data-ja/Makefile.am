@@ -1,4 +1,5 @@
-EXTRA_DIST = texlive-data-ja.spec rpm.mk
+EXTRA_DIST = README.ja
+EXTRA_DIST += texlive-data-ja.spec rpm.mk
 EXTRA_DIST += apply-overrides revert-overrides
 
 abs_srcdir  ?= .

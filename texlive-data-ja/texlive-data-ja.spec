@@ -1,3 +1,6 @@
+#%define git     f5dbe3f
+
+
 Name:           texlive-data-ja
 Version:        0.0.3
 Release:        1%{?dist}
@@ -5,7 +8,8 @@ Summary:        Latex configuration and data for Japanese tex sources
 Group:          Applications/Publishing
 License:        MIT
 URL:            https://github.com/ssato/misc/tree/master/texlive-data-ja
-Source0:        https://github.com/ssato/misc/tarball/master/%{name}-%{git}.tar.gz
+#Source0:        https://github.com/ssato/misc/tarball/master/%{name}-%{git}.tar.gz
+Source0:        https://github.com/ssato/misc/tarball/master/%{name}-%{version}.tar.xz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       texlive-east-asian
