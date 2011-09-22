@@ -3,12 +3,15 @@ PACKAGE = texlive-data-ja
 curdir = $(shell pwd)
 WORKDIR = $(curdir)/$(PACKAGE)-build
 
-texlive_SOURCE = \
+texlive_SOURCE0 = \
 $(curdir)/etc/fonts/conf.d/90-texlive-local.conf \
 $(curdir)/etc/texmf/dvipdfmx/ipaex.map \
 $(curdir)/usr/share/texmf/web2c/texmf.cnf \
 $(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexg.ttf \
 $(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexm.ttf \
+$(NULL)
+
+texlive_SOURCE = $(texlive_SOURCE0) \
 $(curdir)/usr/bin/tex2pdf,mode=0755 \
 $(NULL)
 
@@ -33,12 +36,12 @@ $(NULL)
 all: texlive-data-ja
 
 $(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexg.ttf: /usr/share/fonts/ipa-ex-gothic/ipaexg.ttf
-	cd $(dirname $@) && ln -s $< ./
+	cd $(dir $@) && ln -sf $< ./
 
 $(curdir)/usr/share/texmf/fonts/truetype/ipaex/ipaexm.ttf: /usr/share/fonts/ipa-ex-mincho/ipaexm.ttf
-	cd $(dirname $@) && ln -s $< ./
+	cd $(dir $@) && ln -sf $< ./
 
-$(WORKDIR)/files.list:
+$(WORKDIR)/files.list: $(texlive_SOURCE0)
 	test -d $(WORKDIR) || mkdir -p $(WORKDIR)
 	for f in $(texlive_SOURCE); do echo $$f >> $@; done
 
