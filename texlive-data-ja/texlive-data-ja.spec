@@ -18,6 +18,7 @@ Requires:       texlive-east-asian
 Requires:       dvipdfmx
 Requires:       poppler-data
 Requires:       ipa-ex-mincho-fonts, ipa-ex-gothic-fonts
+BuildRequires:  ipa-ex-mincho-fonts, ipa-ex-gothic-fonts
 
 
 %description
@@ -48,11 +49,6 @@ make %{?_smp_mflags} V=0
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-
-mkdir -p $RPM_BUILD_ROOT/var/lib/texlive-data-ja-overrides/saved
-mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
-install -m 755 apply-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
-install -m 755 revert-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 
 
 %clean
@@ -95,8 +91,7 @@ fi
 %doc README.ja
 %{_sysconfdir}/fonts/conf.d/90-texlive-local.conf
 %{_sysconfdir}/texmf/dvipdfmx/ipaex.map
-%{_datadir}/texmf/web2c/texmf.cnf
-%{_datadir}texmf/fonts/truetype/ipaex
+%{_datadir}/texmf/fonts/truetype/ipaex
 %{_bindir}/tex2pdf
 
 
@@ -110,5 +105,5 @@ fi
 
 
 %changelog
-* Thu Sep 22 2011 Satoru SATOH <ssato@redhat.com> - 0.0.3-1
+* Sat Sep 24 2011 Satoru SATOH <ssato@redhat.com> - 0.0.3-1
 - Initial (static) packaging.

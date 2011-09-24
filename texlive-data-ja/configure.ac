@@ -1,5 +1,5 @@
 AC_INIT([texlive-data-ja],[0.0.3])
-AM_INIT_AUTOMAKE([no-dist-gzip dist-xz foreign subdir-objects])
+AM_INIT_AUTOMAKE([no-dist-gzip dist-xz foreign])
 
 dnl http://www.flameeyes.eu/autotools-mythbuster/automake/silent.html
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -11,6 +11,7 @@ m4_ifdef([AC_PROG_SED],[AC_PROG_SED],[AC_SUBST([SED],[sed])])
 
 AC_CONFIG_FILES([
 Makefile
+src/Makefile
 ])
 
 AC_OUTPUT
