@@ -1,20 +1,20 @@
 #! /usr/bin/python
-# 
+#
 # gktool.py - Set or search for the secret from keyring
 #
 #
 # Copyright (c) 2008, 2009 Satoru SATOH <satoru.satoh@gmail.com>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -49,16 +49,13 @@ import os.path
 import sys
 
 
-
 try:
     import gnomekeyring as gk
 except ImportError:
-    raise RuntimeError("Python gnome-keyring module is not installed on your system.")
-
+    raise RuntimeError("gnome-keyring module is not installed on your system.")
 
 
 glib.set_application_name('gktool.py')
-
 
 
 def parse_kvpairs(s):
@@ -83,10 +80,9 @@ def parse_kvpairs(s):
     {}
     """
     try:
-        return dict([(k,v) for k,v in [x.split(':') for x in s.split(',')] if k and v])
+        return dict((k, v) for k, v in [x.split(":") for x in s.split(",")] if k and v)
     except ValueError:
         return {}
-
 
 
 class SecretManager(object):
@@ -143,26 +139,30 @@ class SecretManager(object):
         return results
 
 
-
 class NetworkSecretManager(SecretManager):
     """Network Secret Manager
     """
     type = gk.ITEM_NETWORK_PASSWORD
 
     attributes = {
-        'user':None, 'domain':None, 'server':None, 'object':None, 
-        'protocol':None, 'authtype':None, 'port': 0, 
+        user: None,
+        domain: None,
+        server: None,
+        object: None,
+        protocol: None,
+        authtype: None,
+        port: 0,
     }
 
     def check_attributes(self, attrs):
-        return all([(key in attrs.keys()) for key in self.attributes.keys()])
+        return all(key in attrs.keys() for key in self.attributes.keys())
 
     def del_empty_attributes(self, attrs):
         """
         >>> NetworkSecretManager().del_empty_attributes({'test':1, 'b':2, 'c':None, 'd':0})
         {'b': 2, 'test': 1}
         """
-        return dict(((k,v) for k,v in attrs.iteritems() if v is not None and v != 0))
+        return dict((k, v) for k, v in attrs.iteritems() if v is not None and v != 0)
 
     def create(self, name, attrs, secret, keyring=gk.get_default_keyring_sync(), force=False):
         self.check_attributes(attrs)
@@ -202,8 +202,6 @@ class NetworkSecretManager(SecretManager):
         return results
 
 
-
-
 def option_parser():
     parser = optparse.OptionParser(version='%prog 0.1', usage='%prog [OPTION ...] CMD\n\nCommands = [get]|set')
     parser.add_option("-a", "--attrs",
@@ -216,7 +214,7 @@ def option_parser():
     gog = optparse.OptionGroup(parser, "Options for 'get' command")
     default_fmt = "#%(id)d: %(display_name)s in keyring %(keyring)s"
     gog.add_option("-f", "--format", default=default_fmt,
-        help="Output result in given python string style format. \n\t" + 
+        help="Output result in given python string style format. \n\t" +
             r'[Default: "#%(id)d: %(display_name)s in keyring %(keyring)s"]')
     gog.add_option("-S", "--single", action="store_true", help="Print the first secret only even if multiple secrets are found.")
     parser.add_option_group(gog)
@@ -230,12 +228,11 @@ def option_parser():
     return parser
 
 
-
 def main():
     prog = os.path.basename(sys.argv[0]) or 'gktool.py'
     #glib.set_application_name(prog)
 
-    (GET,SET) = (0,1)
+    (GET, SET) = (0, 1)
 
     # defaults:
     verbose = False
@@ -290,11 +287,10 @@ def main():
 
         mngr.create(options.name, attrs, secret, options.keyring, force=False)
 
-
     exit(0)
 
 
 if __name__ == '__main__':
     main()
 
-# vim: set sw=4 ts=4 et ai si sm:
+# vim:sw=4 ts=4 et ai si sm:
