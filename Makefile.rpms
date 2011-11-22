@@ -58,13 +58,15 @@ $(builddirs):
 $(buildstamps): pre-build.stamp
 
 
-mscgen-build/mscgen-src-0.18.tar.gz: mscgen-build
-	$(curl) -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-0.18.tar.gz
+mscgen_VERSION	= 0.20
+
+mscgen-build/mscgen-src-$(mscgen_VERSION).tar.gz: mscgen-build
+	$(curl) -o $@ http://www.mcternan.me.uk/mscgen/software/mscgen-src-$(mscgen_VERSION).tar.gz
 
 mscgen-build/mscgen.spec: mscgen-build
 	$(get-rpmspec)
 
-mscgen.stamp: mscgen-build/mscgen-src-0.18.tar.gz mscgen-build/mscgen.spec
+mscgen.stamp: mscgen-build/mscgen-src-$(mscgen_VERSION).tar.gz mscgen-build/mscgen.spec
 	$(make-rpms)
 
 xtrace-build/xtrace_1.0.2.orig.tar.gz: xtrace-build

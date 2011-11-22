@@ -1,7 +1,7 @@
 # SEE ALSO: https://bugzilla.redhat.com/show_bug.cgi?id=630754
 
 Name:           mscgen
-Version:        0.18
+Version:        0.20
 Release:        1%{?dist}
 Summary:        Message sequence chart generator
 Group:          Applications/Multimedia
@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 22 2011 Satoru SATOH <ssato@redhat.com> - 0.20-1
+- New upstream
+
 * Sun Jan  2 2011 Satoru SATOH <ssato@redhat.com> - 0.18-1
 - New upstream
 
