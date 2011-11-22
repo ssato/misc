@@ -5,7 +5,7 @@
 
 ## Override these on command line as needed.
 ARCH	= x86_64
-VERSION	= 15
+VERSION	= 16
 TARGET_OS	= fedora-$(VERSION)-$(ARCH)
 
 SPEC_LOCATION	= https://github.com/ssato/misc/raw/master
@@ -19,7 +19,6 @@ python-xlwt.spec \
 python-wordaxe.spec \
 python-topia.spec \
 xtrace.spec \
-gnome-shell-system-monitor-applet.spec \
 perl-TermExtract.spec \
 $(NULL)
 
@@ -116,16 +115,7 @@ python-topia-build/topia.termextract-1.1.0.tar.gz: python-topia-build
 python-topia.stamp: python-topia-build/topia.termextract-1.1.0.tar.gz python-topia-build/python-topia.spec
 	$(make-rpms)
 
-gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec: gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build
-	$(get-rpmspec)
-
-gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz: gnome-shell-system-monitor-applet-build
-	$(curl) -o $@ https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet/tarball/master
-
-gnome-shell-system-monitor-applet.stamp: gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet.spec gnome-shell-system-monitor-applet-build/gnome-shell-system-monitor-applet-c03ab92.tar.gz
-	$(make-rpms)
-
-perl-TermExtract-build/perl-TermExtract.spec: perl-TermExtract-build
+erl-TermExtract-build/perl-TermExtract.spec: perl-TermExtract-build
 	$(get-rpmspec)
 
 perl-TermExtract-build/TermExtract-4_08.tar.gz: perl-TermExtract-build
