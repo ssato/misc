@@ -13,6 +13,41 @@ import optparse
 import sys
 import xmlrpclib
 
+EXAMPLE_SESSION_LOG = """
+
+----------------------------------------------------------------------------------
+Example session log:
+
+ssato@localhost% ./libvirt_xmlrpc_server_example.py -s -v &
+[1] 9380
+ssato@localhost% 10:53:41 INFO   Starting. (Exit with '^C')
+
+ssato@localhost% ./libvirt_xmlrpc_server_example.py -v listInterfaces
+localhost.localdomain - - [29/Nov/2011 10:54:01] "POST /RPC2 HTTP/1.1" 200 -
+['em1', 'lo']
+ssato@localhost% ./libvirt_xmlrpc_server_example.py -v listDevices
+localhost.localdomain - - [29/Nov/2011 10:54:14] "POST /RPC2 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "./libvirt_xmlrpc_server_example.py", line 143, in <module>
+    main()
+  File "./libvirt_xmlrpc_server_example.py", line 137, in main
+    res = c.call(api, *api_args)
+  File "./libvirt_xmlrpc_server_example.py", line 82, in call
+    (api, str(args), m)
+RuntimeError: rpc: method 'listDevices', args '()'
+Error message: <Fault 1: "<type 'exceptions.TypeError'>:listDevices() takes exactly 3 arguments (1 given)">
+ssato@localhost% ./libvirt_xmlrpc_server_example.py -v listNWFilters
+ssato@localhost% ./libvirt_xmlrpc_server_example.py -v numOfInterfaces
+localhost.localdomain - - [29/Nov/2011 10:54:55] "POST /RPC2 HTTP/1.1" 200 -
+2
+ssato@localhost% fg
+[1]  + running    ./libvirt_xmlrpc_server_example.py -s -v
+^C10:55:01 INFO   Exiting ...
+ssato@localhost%
+----------------------------------------------------------------------------------
+
+"""
+
 
 HOSTNAME = "localhost"
 PORT = 8080
@@ -88,7 +123,9 @@ def main(argv=sys.argv):
                         datefmt="%H:%M:%S",  # or "%Y-%m-%d %H:%M:%S",
                        )
 
-    o = optparse.OptionParser("%prog [Options...] [RPC_API [Arguments...]]")
+    o = optparse.OptionParser(
+        "%prog [Options...] [RPC_API [Arguments...]]" + EXAMPLE_SESSION_LOG
+    )
 
     o.add_option("-s", "--server", help="server mode", action="store_true")
     o.add_option("-v", "--verbose", help="verbose mode", action="store_true")
