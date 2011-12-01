@@ -144,15 +144,15 @@ class NetworkSecretManager(SecretManager):
     """
     type = gk.ITEM_NETWORK_PASSWORD
 
-    attributes = {
-        user: None,
-        domain: None,
-        server: None,
-        object: None,
-        protocol: None,
-        authtype: None,
-        port: 0,
-    }
+    attributes = dict(
+        user=None,
+        domain=None,
+        server=None,
+        object=None,
+        protocol=None,
+        authtype=None,
+        port=0,
+    )
 
     def check_attributes(self, attrs):
         return all(key in attrs.keys() for key in self.attributes.keys())
@@ -249,10 +249,7 @@ def main():
 
     logging.basicConfig(level=loglevel)
 
-    if options.type and options.type == 'network':
-        mngr = NetworkSecretManager()
-
-    if len(args) < 1 or args[0] not in ('get', 'set'):
+    if not args or args[0] not in ('get', 'set'):
         parser.print_usage()
         sys.exit(-1)
     else:
@@ -265,6 +262,9 @@ def main():
     else:
         logging.error(" Attributes must be specified with --attrs option.")
         sys.exit(-1)
+
+    if options.type and options.type == 'network':
+        mngr = NetworkSecretManager()
 
     if cmd == GET:
         results = mngr.find(attrs, options.single)
@@ -293,4 +293,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# vim:sw=4 ts=4 et ai si sm:
+
+# vim:sw=4 ts=4 et:
