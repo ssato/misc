@@ -1,4 +1,4 @@
-%global         pkgid removeusername@fpmurphy.com
+%global         uuid removeusername@fpmurphy.com
 
 
 Name:           gnome-shell-extension-remove-username
@@ -19,7 +19,7 @@ Remove the username displayed on top panel status menu.
 
 
 %prep
-%setup -q -n %{pkgid}
+%setup -q -n %{uuid}
 
 
 %build
@@ -28,17 +28,17 @@ Remove the username displayed on top panel status menu.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/gnome-shell/extensions/%{pkgid}
+%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/gnome-shell/extensions/%{uuid}
 for f in extension.js metadata.json
 do
-        install -m 0644 $f $RPM_BUILD_ROOT%{_datadir}/gnome-shell/extensions/%{pkgid}/
+        install -m 0644 $f $RPM_BUILD_ROOT%{_datadir}/gnome-shell/extensions/%{uuid}/
 done
 
 
 %files
 %defattr(-,root,root,-)
 %doc README
-%{_datadir}/gnome-shell/extensions/%{pkgid}/
+%{_datadir}/gnome-shell/extensions/%{uuid}/
 
 
 %changelog
