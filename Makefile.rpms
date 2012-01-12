@@ -136,6 +136,18 @@ gseru-build/removeusername-2.0.tar.gz: gseru-build
 gnome-shell-extension-remove-username.stamp: gseru-build/removeusername-2.0.tar.gz gseru-build/gnome-shell-extension-remove-username.spec
 	$(make-rpms)
 
+trayer-build:
+	mkdir -p $@
+
+trayer-build/trayer.spec: trayer-build
+	$(get-rpmspec)
+
+trayer-build/trayer-1.1.tgz: trayer-build
+	$(curl) -o $@ http://trayer.googlecode.com/files/$(notdir $@)
+
+trayer.stamp: trayer-build/trayer-1.1.tgz trayer-build/trayer.spec
+	$(make-rpms)
+
 clean:
 	-rm -f check-env.stamp pre-build.stamp
 
