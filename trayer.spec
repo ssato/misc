@@ -1,10 +1,12 @@
 Name:           trayer
-Version:        1.1
+Version:        1.1.4
 Release:        1%{?dist}
 Summary:        Lightweight GTK2-based systray for UNIX desktop
 License:        GPLv2
-URL:            http://code.google.com/p/trayer/
-Source0:        http://trayer.googlecode.com/files/%{name}-%{version}.tgz
+#URL:            http://code.google.com/p/trayer/
+URL:            https://github.com/sargon/trayer-srg
+#Source0:        %{name}-%{version}.tgz
+Source0:        sargon-trayer-srg-trayer-1.1.4-3-gb04805f.tar.gz
 BuildRequires:  libXmu-devel, gtk2-devel
 #Requires:       
 
@@ -18,7 +20,7 @@ to control programs.
 
 
 %prep
-%setup -q
+%setup -q -n sargon-trayer-srg-b04805f
 
 
 %build
@@ -38,5 +40,5 @@ install -m 755 trayer $RPM_BUILD_ROOT%{_bindir}
 
 
 %changelog
-* Fri Jan 13 2012 Satoru SATOH <ssato@redhat.com> - 1.1-1
+* Sat Jan 14 2012 Satoru SATOH <ssato@redhat.com> - 1.1.4-1
 - Initial packaging.
