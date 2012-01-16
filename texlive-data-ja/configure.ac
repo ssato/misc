@@ -20,10 +20,12 @@ AC_ARG_ENABLE([overrides],
    *) AC_MSG_ERROR([bad value ${enableval} for --enable-overrides]) ;;
   esac],[overrides=$overrides])
 AM_CONDITIONAL([USE_OVERRIDES],[test x$overrides = xtrue])
+AC_SUBST([REQ_OVERRIDES],[$overrides])
 
 
 AC_CONFIG_FILES([
 Makefile
+texlive-data-ja.spec
 src/Makefile
 ])
 

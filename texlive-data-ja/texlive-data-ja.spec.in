@@ -7,7 +7,8 @@
 #
 # Detect it dynamically:
 #%define  req_overrides  %(grep -q -e 'CMAPFONTS.*/usr/share/poppler/cMap/' /usr/share/texmf/web2c/texmf.cnf > /dev/null 2>/dev/null && echo 1 || echo 0)
-%define  req_overrides  0
+#%define  req_overrides  0
+%define  req_overrides  %(test "x@REQ_OVERRIDES@" = "xtrue" && echo 1 || echo 0)
 
 
 Name:           texlive-data-ja
@@ -26,6 +27,9 @@ Requires:       dvipdfmx
 Requires:       poppler-data
 Requires:       ipa-ex-mincho-fonts, ipa-ex-gothic-fonts
 BuildRequires:  ipa-ex-mincho-fonts, ipa-ex-gothic-fonts
+%if ! %req_overrides
+Obsoletes:      %{name}-overrides < %{version}-%{release}
+%endif
 
 
 %description
