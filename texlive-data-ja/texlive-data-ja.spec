@@ -2,9 +2,16 @@
 %define  savedir  /var/lib/pmaker/preserved
 %define  newdir  /var/lib/pmaker/installed
 
+# rhbz#736242 was fixed since texlive-texmf-2007-39
+# (Available in F16 or later version)
+#
+# Detect it dynamically:
+#%define  req_overrides  %(grep -q -e 'CMAPFONTS.*/usr/share/poppler/cMap/' /usr/share/texmf/web2c/texmf.cnf > /dev/null 2>/dev/null && echo 1 || echo 0)
+%define  req_overrides  0
+
 
 Name:           texlive-data-ja
-Version:        0.0.3
+Version:        0.0.4
 Release:        1%{?dist}
 Summary:        Latex configuration and data for Japanese tex sources
 Group:          Applications/Publishing
@@ -26,6 +33,7 @@ This is a temporal package to provide configuration and some data to fix issues
 when generating DVIs/PDFs from tex sources in Japanese.
 
 
+%if %req_overrides
 %package        overrides
 Summary:        Some more extra data override files owned by other packages
 Group:          Applications/Publishing
@@ -35,6 +43,7 @@ Requires:       texlive-texmf
 
 %description    overrides
 Some more extra data will override and replace other packages'.
+%endif
 
 
 %prep
@@ -42,7 +51,11 @@ Some more extra data will override and replace other packages'.
 
 
 %build
+%if %req_overrides
+%configure --quiet --enable-silent-rules --enable-overrides
+%else
 %configure --quiet --enable-silent-rules
+%endif
 make %{?_smp_mflags} V=0
 
 
@@ -73,6 +86,7 @@ fi
 [ -x /sbin/restorecon ] && /sbin/restorecon -R /var/lib/texmf/ || :
 
 
+%if %req_overrides
 %post           overrides
 if [ $1 = 1 -o $1 = 2 ]; then    # install or update
     %{_libexecdir}/%{name}-overrides/apply-overrides
@@ -83,6 +97,7 @@ fi
 if [ $1 = 0 ]; then    # uninstall (! update)
     %{_libexecdir}/%{name}-overrides/revert-overrides
 fi
+%endif
 
 
 %files
@@ -95,6 +110,7 @@ fi
 %{_bindir}/tex2pdf
 
 
+%if %req_overrides
 %files          overrides
 %defattr(-,root,root,-)
 %doc README
@@ -102,8 +118,12 @@ fi
 %dir /var/lib/texlive-data-ja-overrides/saved
 %{_libexecdir}/%{name}-overrides/*-overrides
 /var/lib/texlive-data-ja-overrides/new/usr/share/texmf/web2c/texmf.cnf
+%endif
 
 
 %changelog
+* Mon Jan 16 2012 Satoru SATOH <ssato@redhat.com> - 0.0.4-1
+- Made -overrides sub package not built by default as rhbz#736242 was fixed
+
 * Sat Sep 24 2011 Satoru SATOH <ssato@redhat.com> - 0.0.3-1
 - Initial (static) packaging.
