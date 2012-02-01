@@ -5,12 +5,12 @@
 
 Name:           python-xlutils
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Utilities for working with Excel files
 Group:          Development/Languages
 License:        MIT
 URL:            http://pypi.python.org/pypi/xlutils
-Source0:        xlutils-%{version}.tar.gz
+Source0:        http://pypi.python.org/packages/source/x/xlutils/xlutils-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -76,6 +76,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 1.4.1-2
+- Embedded url in source0
+
 * Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 1.4.1-1
 - New upstream release
 

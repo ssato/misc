@@ -5,12 +5,12 @@
 
 Name:           python-xlwt
 Version:        0.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A library to create Microsoft Excel (tm) spreadsheet files
 Group:          Development/Languages
 License:        BSD
 URL:            http://pypi.python.org/pypi/xlwt
-Source0:        xlwt-%{version}.tar.gz
+Source0:        http://pypi.python.org/packages/source/x/xlwt/xlwt-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -34,7 +34,6 @@ reading Excel spreadsheets.
 %build
 # Remove CFLAGS=... for noarch packages (unneeded)
 CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
-echo "deltarpm test" > TESTFILE
 
 
 %install
@@ -48,12 +47,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README.html HISTORY.html
-%doc TESTFILE
 %{python_sitelib}/*
 
 
 %changelog
+* Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 0.7.2-3
+- Embedded url in source0
+- Removed some missing file entries
+
 * Wed Jan  5 2011 Satoru SATOH <ssato@redhat.com> - 0.7.2-2
 - deltarpm test
 
