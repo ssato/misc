@@ -4,14 +4,14 @@
 
 
 Name:           python-errorhandler
-Version:        1.0.0
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        A logging framework handler that tracks when messages above a certain level
 Group:          Development/Languages
 License:        MIT
 URL:            http://pypi.python.org/pypi/errorhandler
 Source0:        errorhandler-%{version}.tar.gz
-Source1:        README.Fedora.rst
+#Source1:        README.Fedora.rst
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -36,7 +36,7 @@ before committing data back to a database.
 %build
 # Remove CFLAGS=... for noarch packages (unneeded)
 CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
-cp %SOURCE1 ./
+#cp %SOURCE1 ./
 
 
 %install
@@ -50,10 +50,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README.Fedora.rst
 %{python_sitelib}/*
 
 
 %changelog
+* Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 1.1.1-1
+- New upstream
+
 * Mon Aug 10 2009 Satoru SATOH <ssato@redhat.com> - 1.0.0-1
 - Initial packaging.
