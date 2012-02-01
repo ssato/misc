@@ -72,6 +72,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README.Fedora.rst
 %{python_sitelib}/*
+%{_bindir}/margins
 
 
 %changelog
