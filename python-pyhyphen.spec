@@ -11,7 +11,9 @@ Release:        1%{?dist}
 Summary:        A Python implementation of the hyphenation algorithm used in TeX and OpenOffice
 License:        GPLv2+
 URL:            http://code.google.com/p/pyhyphen/
-Source0:        PyHyphen-%{version}.tar.gz
+Source0:        http://pypi.python.org/packages/source/P/PyHyphen/PyHyphen-%{version}.zip
+Patch1:         pyhyphen-build.patch
+BuildRequires:  python
 BuildRequires:  python-devel
 
 
@@ -22,6 +24,7 @@ and OpenOffice based on 'libhyphen' C library originally from hnjlib.
 
 %prep
 %setup -q -n PyHyphen-%{version}
+%patch1 -p1 -b .build
 
 
 %build
@@ -30,13 +33,13 @@ CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%{__python} setup.py install -O1 --force_build_ext --skip-build --root $RPM_BUILD_ROOT
 
  
 %files
-%doc README.txt ToDo.txt LICENSE.txt
-%doc Doc
-%{python_sitelib}/*
+%doc README.txt LICENSE.txt
+#%doc Doc
+#%{python_sitelib}/*
 %{python_sitearch}/*
 
 
