@@ -51,6 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Feb 17 2012 Satoru SATOH <ssato@redhat.com> - 1.0.1-2
 - Some cleanups
+- Added runtime dependency to python-pyhyphen
 
 * Tue Jun 28 2011 Satoru SATOH <ssato@redhat.com> - 1.0.1-1
 - Initial packaging.
