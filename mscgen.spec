@@ -2,12 +2,12 @@
 
 Name:           mscgen
 Version:        0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Message sequence chart generator
 Group:          Applications/Multimedia
 License:        GPLv2+
 URL:            http://www.mcternan.me.uk/mscgen
-Source0:        %{name}-src-%{version}.tar.gz
+Source0:        http://www.mcternan.me.uk/mscgen/software/%{name}-src-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  gd-devel
 BuildRequires:  flex
@@ -34,10 +34,9 @@ into PNG or EPS images.
 %configure
 make %{?_smp_mflags}
 
-# trim <CR>;
+# trim <CR> at the tail of each lines;
 # (http://fedoraproject.org/wiki/PackageMaintainers/Common_Rpmlint_Issues#wrong-file-end-of-line-encoding)
-#for f in TODO src/parser/testinput*.msc; do sed -i 's/\r//' $f; done
-for f in TODO; do sed -i 's/\r//' $f; done
+for f in TODO; do sed -i 's/\r//g' $f; done
 
 
 %install
@@ -66,6 +65,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 0.20-2
+- Changed SOURCE0 for easy build
+
 * Tue Nov 22 2011 Satoru SATOH <ssato@redhat.com> - 0.20-1
 - New upstream
 
