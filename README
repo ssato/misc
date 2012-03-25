@@ -1,0 +1,20 @@
+About
+=============================================
+
+Here are some rpm spec files for various software and small utility scripts and so on.
+
+
+rpm spec files (*.spec)
+=============================================
+
+You may build srpms from these rpm spec files with using buildsrpm.sh in this repo like this:
+
+  ssato@localhost% ./buildsrpm.sh python-xlutils.spec /tmp
+  [Info] Found the url of source in source0: 'http://pypi.python.org/packages/source/x/xlutils/xlutils-1.5.1.tar.gz'
+  [Info] Try downloading the source ... Done
+  書き込み完了: /tmp/python-xlutils-1.5.1-1.fc16.src.rpm
+  ssato@localhost%
+
+
+Requirements: rpm-build, curl, rpm-python
+
