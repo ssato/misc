@@ -35,11 +35,23 @@ if test -f $workdir/$src0; then
     echo "[Info] Found the source: $src0"
 else
     # TODO: How to get the source0's URL ?
-    if test ! `echo $src0_url | grep -E '^(http|ftp)' 2>&1 > /dev/null`; then
+    #if test `echo $src0_url | grep -q -E '^(http|ftp)' 2>&1 > /dev/null`; then
+    echo $src0_url | grep '://' 2>&1 > /dev/null; rc=$?
+    if test $rc -eq 0; then
+        echo "[Info] Found the url of source in source0: '$src0_url'"
+    else
+        echo "[Debug] source0 is not the url of source: '$src0_url'"
         src0_url=`get_url $rpmspec`"$src0"
     fi
+
+    set -e
+    echo -ne "[Info] Try downloading the source ..."
+    curl --silent --insecure --location -o $workdir/$src0 $src0_url
+    echo " Done"
 fi
 
-test -f $workdir/$src0 || curl --insecure --location -o $workdir/$src0 $src0_url
 
 rpmbuild --define "_srcrpmdir $workdir" --define "_sourcedir $workdir" --define "_buildroot $workdir" -bs $rpmspec
+
+
+# vim:sw=4:ts=4:et:
