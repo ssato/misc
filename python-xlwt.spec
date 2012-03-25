@@ -4,8 +4,8 @@
 
 
 Name:           python-xlwt
-Version:        0.7.2
-Release:        3%{?dist}
+Version:        0.7.3
+Release:        1%{?dist}
 Summary:        A library to create Microsoft Excel (tm) spreadsheet files
 Group:          Development/Languages
 License:        BSD
@@ -51,6 +51,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 0.7.3-1
+- New upstream
+
 * Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 0.7.2-3
 - Embedded url in source0
 - Removed some missing file entries

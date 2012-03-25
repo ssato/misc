@@ -4,12 +4,12 @@
 
 Name:           python-topia
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Content Term Extraction library using POS Tagging
 Group:          Development/Languages
 License:        ZPL2.1
 URL:            http://pypi.python.org/pypi/topia.termextract
-Source0:        topia.termextract-%{version}.tar.gz
+Source0:        http://pypi.python.org/packages/source/t/topia.termextract/topia.termextract-%{version}.tar.gz
 #Source1:        README.Fedora.rst
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -51,5 +51,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 1.1.0-2
+- Changed source0 to the complete url form for easy build
+
 * Thu Sep 15 2011 Satoru SATOH <ssato@redhat.com> - 1.1.0-1
 - Initial packaging.

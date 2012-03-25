@@ -4,8 +4,8 @@
 
 
 Name:           python-xlutils
-Version:        1.4.1
-Release:        2%{?dist}
+Version:        1.5.1
+Release:        1%{?dist}
 Summary:        Utilities for working with Excel files
 Group:          Development/Languages
 License:        MIT
@@ -76,6 +76,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 1.5.1-1
+- New upstream release
+
 * Wed Feb  1 2012 Satoru SATOH <ssato@redhat.com> - 1.4.1-2
 - Embedded url in source0
 

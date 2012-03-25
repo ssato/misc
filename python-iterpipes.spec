@@ -2,15 +2,17 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
+%define modname iterpipes
+
 
 Name:           python-iterpipes
-Version:        0.3
+Version:        0.4
 Release:        1%{?dist}
 Summary:        A python library for running shell pipelines using shell-like syntax
 Group:          Development/Languages
 License:        MIT
-URL:            http://pypi.python.org/pypi/iterpipes
-Source0:        iterpipes-%{version}.tar.gz
+URL:            http://pypi.python.org/pypi/%{modname}
+Source0:        http://pypi.python.org/packages/source/i/%{modname}/%{modname}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -53,5 +55,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 0.4-1
+- New upstream release
+
 * Sun Dec 27 2009 Satoru SATOH <ssato@redhat.com> - 0.3-1
 - Initial packaging.
