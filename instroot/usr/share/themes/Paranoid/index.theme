@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Paranoid
+Type=X-GNOME-Metatheme
+Comment=Murrine Equinox Pixbuff
+
+[X-GNOME-Metatheme]
+GtkTheme=Paranoid
+MetacityTheme=Paranoid
+IconTheme=ACYL_Icon_Theme_0.9.2
+GtkColorScheme=frame_color:#1e1e1e,inactive_frame_color:#2e2e2e
+CursorTheme=default
+CursorSize=18
+NotificationTheme=standard
+BackgroundImage=/home/monkey/Pictures/paranoid_naturalmystic.png

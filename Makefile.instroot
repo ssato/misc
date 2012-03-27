@@ -1,0 +1,16 @@
+#
+# makefile to build rpms w/ packagemaker
+#
+pwd = $(shell pwd)
+
+
+build: gtk2-paranoid-theme
+
+gtk2-paranoid-theme:
+	find $(pwd)/instroot/usr/share/themes/Paranoid -type f | \
+		pmaker -C instroot/gtk2-paranoid-theme.pmaker.yaml -w /tmp --destdir $(pwd) -
+
+clean:
+	-rm -rf /tmp/gtk2-paranoid-theme
+
+.PHONY: build clean

@@ -1,0 +1,15 @@
+name: gtk2-paranoid-theme
+arch: false
+summary: Paranoid GTK2 theme
+group: User Interface/Desktops
+url: http://gnome-look.org/content/show.php/Paranoid?content=136003
+license: GPLv2+
+pversion: 0.4
+release: 1
+relations: requires:gtk-murrine-engine
+norc: true
+verbosity: 2
+
+files:
+- {path: instroot/usr/share/themes/Paranoid/}
+- attrs: {create: 0, uid: 0, gid: 0, install_path: /usr/share/themes/Paranoid/}
