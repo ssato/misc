@@ -5,7 +5,7 @@ group: User Interface/Desktops
 url: http://gnome-look.org/content/show.php/Paranoid?content=136003
 license: GPLv2+
 pversion: 0.4
-release: 1
+release: 2
 relations: requires:gtk-murrine-engine
 norc: true
 verbosity: 2

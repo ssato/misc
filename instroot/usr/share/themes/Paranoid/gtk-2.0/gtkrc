@@ -4,10 +4,13 @@
 
 #Thanks to all the Theme Hackers, Gnome Desktop Project and the Ubuntu Art Team.
 
+# Changelogs:
+# * set bg_color and base_color to black from #151515 / #141414 - ssato
+
 # Set GtkSettings color scheme property.
 # This can be overriden (via an xsetting) with eg. the gnome-appearance-properties.
 
-gtk_color_scheme = "bg_color:#151515\nselected_bg_color:#3D3D3D\nbase_color:#141414" # Background, base.
+gtk_color_scheme = "bg_color:#000000\nselected_bg_color:#3D3D3D\nbase_color:#000000" # Background, base.
 gtk_color_scheme = "fg_color:#C2C2C2\nselected_fg_color:#f2f2f2\ntext_color:#C2C2C2" # Foreground, text.
 gtk_color_scheme = "tooltip_bg_color:#000000\ntooltip_fg_color:#C2C2C2" # Tooltips.
 gtk_color_scheme = "link_color:#5E8EC2" # Hyperlinks
