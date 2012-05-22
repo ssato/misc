@@ -73,8 +73,9 @@ def _detect_filetype(filepath):
 
     
 def load_context(filepath):
-    """
-    Load context data from given file.
+    """Load context data from given file.
+
+    :param filepath: Context data file path :: str
     """
     filetype = _detect_filetype(filepath)
 
@@ -90,6 +91,19 @@ def load_context(filepath):
         return yaml.load(open(filepath))
 
     return {}  # default
+
+
+def load_contexts(paths):
+    """Load context data from given files.
+
+    :param paths: Context data file path list :: [str]
+    """
+    d = {}
+    for path in paths:
+        diff = load_context(path)
+        d.update(diff)
+
+    return d
 
 
 def render(filepath, context, template_paths=[]):
@@ -122,7 +136,7 @@ def option_parser():
     defaults = dict(
         template_paths=None,
         output=None,
-        context=None,
+        contexts=[],
         debug=False,
     )
 
@@ -132,7 +146,9 @@ def option_parser():
     p.add_option("-T", "--template-paths",
         help="Coron ':' separated template search paths [.]")
     p.add_option("-o", "--output", help="Output filename [stdout]")
-    p.add_option("-C", "--context", help="Context data file to instantiate templates")
+    p.add_option("-C", "--contexts",
+        help="Coron ':' separated context data file[s] to instantiate templates"
+    )
     p.add_option("-D", "--debug", action="store_true", help="Debug mode")
 
     return p
@@ -151,11 +167,16 @@ def main(argv):
     if options.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    ctx = load_context(options.context) if options.context else {}
+    sep = ":"
+
+    if options.contexts:
+        ctx = load_contexts(options.contexts.split(sep))
+    else:
+        ctx = {}
 
     if options.template_paths:
         try:
-            paths = options.template_paths.split(":")
+            paths = options.template_paths.split(sep)
         except:
             print(
                 "Ignored as invalid form: '%s'" % options.template_paths,
