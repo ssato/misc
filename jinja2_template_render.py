@@ -40,12 +40,31 @@ from __future__ import print_function
 
 import codecs
 import jinja2
-import json
 import logging
 import optparse
 import os.path
 import sys
-import yaml
+
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        print(
+            "JSON support is disabled as module not found.",
+            file=sys.stderr
+        )
+        json = None
+
+try:
+    import yaml
+except ImportError:
+    print(
+        "YAML support is disabled as module not found.",
+        file=sys.stderr
+    )
+    yaml = None
 
 
 sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
@@ -88,10 +107,24 @@ def load_context(filepath):
         logging.warn("Not supported filetype and skip it: " + filepath)
 
     elif filetype == FILE_JSON:
+        if json is None:
+            print(
+                "You passed JSON data but JSON support is disabled.",
+                file=sys.stderr
+            )
+            sys.exit(-1)
+
         logging.info("Loading JSON data from: " + filepath)
         return json.load(open(filepath))
 
     elif filetype == FILE_YAML:
+        if yaml is None:
+            print(
+                "You passed YAML data but YAML support is disabled.",
+                file=sys.stderr
+            )
+            sys.exit(-1)
+
         logging.info("Loading YAML data from: " + filepath)
         return yaml.load(open(filepath))
 
