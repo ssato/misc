@@ -26,10 +26,11 @@ make %{?_smp_mflags}
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+rm -f $RPM_BUILD_ROOT%{_bindir}/zipinfo  # conflicts with unzip
 
 
 %files
-%doc AUTHORS ChangeLog NEWS README Thanks TODO
+%doc AUTHORS ChangeLog NEWS README THANKS TODO
 %{_bindir}/*
 %{_mandir}/*/*
 
