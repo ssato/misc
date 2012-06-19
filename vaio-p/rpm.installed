@@ -21,6 +21,11 @@ ipa-"*"-fonts
 iperf
 ipython
 java-"*"-openjdk
+libreoffice-calc
+libreoffice-draw
+libreoffice-impress
+libreoffice-pyuno
+libreoffice-writer
 libvirt
 lv
 mercurial
@@ -33,6 +38,7 @@ optipng
 pandoc
 pinfo
 python-bugzilla
+python-docs
 python-jinja2
 python-pep8
 python-nose
