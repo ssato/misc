@@ -201,7 +201,6 @@ exiv2-libs
 expat
 faad2-libs
 farstream
-fcoe-utils
 fedora-bookmarks
 fedora-logos
 fedora-release
@@ -1468,7 +1467,6 @@ wireless-tools
 wodim
 wpa_supplicant
 wqy-zenhei-fonts
-wvdial
 x264-libs
 xapian-core-libs
 xcb-util
