@@ -13,6 +13,7 @@ Source0:        http://pypi.python.org/packages/source/p/%{orgname}/%{orgname}-%
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
+BuildRequires:  python-setuptools
 
 
 %description
