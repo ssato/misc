@@ -18,12 +18,14 @@ atmel-firmware
 baobab
 brasero
 brasero-nautilus
+cdparanoia
 cheese
 cjkuni-uming-fonts
 eekboard
 eekboard-libs
 evolution
 evolution-NetworkManager
+fcoe-utils
 fedora-release-notes
 fprintd
 fprintd-pam
@@ -96,4 +98,5 @@ xorg-x11-drv-vmware
 xorg-x11-drv-void
 xorg-x11-drv-wacom
 yum-langpacks
+wvdial
 zd1211-firmware
