@@ -70,9 +70,6 @@ def concat(xss):
 
 
 def uniq(iterable):
-    """
-    Safer version of the above.
-    """
     acc = []
     for x in iterable:
         if x not in acc:
