@@ -80,18 +80,19 @@ def uniq(iterable, cmp=cmp, key=None):
     return acc
 
 
-# RPM NVRE:
+# RPM NVRE, data NVRE = NVRE {name, version, release, epoch} :
 PKEYS = ("name", "version", "release", "epoch")
 
 
 def shorten_dict_keynames(dic, prefix, keys=[]):
     """Strip extra key prefixes from dict keys.
 
-    >>> shorten_dict_keynames({'channel_label':'foo', 'channel_name':'Foo Channel'}, 'channel_')
-    {'label': 'foo', 'name': 'Foo Channel'}
+    >>> d = {"aaa_xxx":"foo", "aaa_y":"Foo Channel"}
+    >>> expected = {"xxx":"foo", "y":"Foo Channel"}
+    >>> shorten_dict_keynames(d, "aaa_") == expected
+    True
     """
     kvs = ((k.replace(prefix, ''), v) for k, v in dic.iteritems())
-
     return dict(((k, v) for k, v in kvs if k in keys)) if keys else dict(kvs)
 
 
@@ -105,37 +106,23 @@ def connect(server=None, user=None, password=None):
     if not password:
         password = getpass.getpass('Enter your RHN login password > ')
 
-    serv = xmlrpclib.Server("https://%s/rpc/api" % server)
-    sid = serv.auth.login(user, password)  # may throw xmlrpclib.Fault.
+    srv = xmlrpclib.Server("https://%s/rpc/api" % server)
+    sid = srv.auth.login(user, password)  # may throw xmlrpclib.Fault.
 
-    return (serv, sid)
+    return (srv, sid)
 
 
-def load_rpms(listfile, sep=","):
-    """Return a list of NVRE (name, version, release, epoch) dict of package
-    constructed from given rpm list gotten by
-    'rpm -qa --qf "%{n},%{v},%{r},%{e}\n" | sort | uniq'
+def load_rpms(listfile, keys=PKEYS, sep=','):
+    """Return a list of NVRE constructed from given rpm list gotten by:
 
-    :return: packages, [{name:, version:, release:, epoch:, }]
+      rpm -qa --qf "%{n},%{v},%{r},%{e}\n" | sort | uniq
+
+    :return: [NVRE]
     """
     return [
-        dict(zip(PKEYS, line.rstrip().split(sep))) for line in
+        dict(zip(keys, line.rstrip().split(sep))) for line in
             open(listfile).readlines() if line and not line.startswith("#")
     ]
-
-
-def packages_in_channel_g(server, sid, channel, latest=False):
-    """Lists all packages in the channel.
-
-    see: http://red.ht/NI20pk
-    """
-    if latest:
-        rpc = server.channel.software.listLatestPackages
-    else:
-        rpc = server.channel.software.listAllPackages
-
-    for p in rpc(sid, channel):
-        yield shorten_dict_keynames(p, "package_", PKEYS)
 
 
 def normalize_epoch(epoch):
@@ -143,7 +130,7 @@ def normalize_epoch(epoch):
 
     >>> normalize_epoch("(none)")  # rpmdb style
     0
-    >>> normalize_epoch(" ")  # yum style
+    >>> normalize_epoch(" ")  # yum/rhn style
     0
     >>> normalize_epoch("0")
     0
@@ -156,17 +143,44 @@ def normalize_epoch(epoch):
     if isinstance(epoch, str):
         return int(epoch) if re.match(r".*(\d+).*", epoch) else 0
     else:
-        assert isinstance(epoch, int), "epoch is not an int object: " + repr(epoch)
+        assert isinstance(epoch, int), \
+            "epoch is not an int object: " + repr(epoch)
         return epoch  # int?
 
 
+def normalize(nvre):
+    """
+    >>> p = {"name": "foo", "version": "0.1", "release": 1, "epoch": " "}
+    >>> expected = p; expected["epoch"] = 0
+    >>> normalize(p) == expected
+    True
+    """
+    nvre["epoch"] = normalize_epoch(nvre["epoch"])
+    return nvre
+
+
+def packages_in_channel_g(server, sid, channel, latest=False):
+    """Yield all packages in the channel one by one.
+
+    see: http://red.ht/NI20pk
+    """
+    if latest:
+        rpc = server.channel.software.listLatestPackages
+    else:
+        rpc = server.channel.software.listAllPackages
+
+    for p in rpc(sid, channel):
+        yield normalize(shorten_dict_keynames(p, "package_", PKEYS))
+
+
 def pcmp(p1, p2):
-    """Compare packages by NVREs.
+    """Compare packages by these versions, releases and epoch numbers.
 
-    :param p1, p2: dict(name, version, release, epoch)
+    :param p1, p2: (normalized) NVRE
 
-    TODO: Make it fallback to rpm.versionCompare if yum is not available?
+    TODO: Fallback to rpm.versionCompare if yum is not available?
 
+    # special cases:
     >>> p1 = dict(name="gpg-pubkey", version="00a4d52b", release="4cb9dd70",
     ...           epoch=0,
     ... )
@@ -178,18 +192,25 @@ def pcmp(p1, p2):
     >>> pcmp(p1, p2) < 0
     True
 
+    >>> # compare by releases
     >>> p3 = dict(name="kernel", version="2.6.38.8", release="32", epoch=0)
     >>> p4 = dict(name="kernel", version="2.6.38.8", release="35", epoch=0)
     >>> pcmp(p3, p4) < 0
     True
 
+    >>> # compare by versions and releases
     >>> p5 = dict(name="rsync", version="2.6.8", release="3.1", epoch=0)
     >>> p6 = dict(name="rsync", version="3.0.6", release="4.el5", epoch=0)
     >>> pcmp(p3, p4) < 0
     True
-    """
-    p2evr = lambda p: (normalize_epoch(p["epoch"]), p["version"], p["release"])
 
+    >>> # compare by epoch numbers
+    >>> p7 = dict(name="rsync", version="2.6.8", release="3.1", epoch=2)
+    >>> p8 = dict(name="rsync", version="3.0.6", release="4.el5", epoch=0)
+    >>> pcmp(p7, p8) > 0
+    True
+    """
+    p2evr = lambda p: (p["epoch"], p["version"], p["release"])
     assert p1["name"] == p2["name"], "Trying to compare different packages!"
     return yum.compareEVR(p2evr(p1), p2evr(p2))
 
@@ -217,7 +238,8 @@ def find_latests(ps):
     """
     f = itemgetter("name")
     return [
-        sorted(g, cmp=pcmp)[-1] for _, g in groupby(sorted(ps, key=f), f)
+        normalize(sorted(g, cmp=pcmp)[-1]) for _, g in
+            groupby(sorted(ps, key=f), f)
     ]
 
 
@@ -249,8 +271,6 @@ def opts_parser():
 
 
 def main():
-    """Entry point.
-    """
     p = opts_parser()
     (options, args) = p.parse_args()
 
@@ -261,25 +281,24 @@ def main():
     logging.getLogger().setLevel(DEBUG if options.verbose else INFO)
 
     rpmlist = args[0]
-    rpms = uniq(find_latests(load_rpms(rpmlist)))
+    rpms = uniq(find_latests(load_rpms(rpmlist)))  # uniq: degenerate multiarch rpms.
     logging.debug("Loaded %d unique rpms from %s" % (len(rpms), rpmlist))
 
     logging.info("Trying to connect to %s@%s" % (options.user, options.server))
-    (serv, sid) = connect(options.server, options.user, options.passwd)
+    (srv, sid) = connect(options.server, options.user, options.passwd)
 
     ref_rpms = uniq(concat(
         [p for p in
-            packages_in_channel_g(serv, sid, c, options.latest)
+            packages_in_channel_g(srv, sid, c, options.latest)
         ] for c in options.channels
     ))
     logging.debug("Get %d unique rpms from RHNS" % len(ref_rpms))
  
     for us in find_updates_g(ref_rpms, rpms):
         for u in uniq(us):
-            #print options.format % normalize_epoch(u)
             print options.format % u
 
-    serv.auth.logout(sid)
+    srv.auth.logout(sid)
 
 
 if __name__ == '__main__':
