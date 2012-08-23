@@ -25,8 +25,10 @@
 #
 from operator import itemgetter
 from itertools import chain, groupby
+from logging import DEBUG, INFO
 
 import getpass
+import logging
 import optparse
 import re
 import sys
@@ -78,7 +80,7 @@ def uniq(iterable, cmp=cmp, key=None):
     return acc
 
 
-# NVRE:
+# RPM NVRE:
 PKEYS = ("name", "version", "release", "epoch")
 
 
@@ -223,6 +225,7 @@ def opts_parser():
     defaults = dict(
         user=None, passwd=None, server=None, channels=[], latest=False,
         format="%(name)s-%(version)s-%(release)s:%(epoch)s",
+        verbose=False,
     )
 
     p = optparse.OptionParser("%prog [OPTION ...] RPMS_LISTFILE")
@@ -240,6 +243,7 @@ def opts_parser():
     p.add_option("-l", "--latest", action="store_true",
         help="Get latest packages info only"
     )
+    p.add_option("-v", "--verbose", action="store_true", help="Verbose mode")
 
     return p
 
@@ -254,14 +258,21 @@ def main():
         p.print_help()
         sys.exit(0)
 
-    rpms = find_latests(load_rpms(args[0]))
+    logging.getLogger().setLevel(DEBUG if options.verbose else INFO)
 
+    rpmlist = args[0]
+    rpms = uniq(find_latests(load_rpms(rpmlist)))
+    logging.debug("Loaded %d unique rpms from %s" % (len(rpms), rpmlist))
+
+    logging.info("Trying to connect to %s@%s" % (options.user, options.server))
     (serv, sid) = connect(options.server, options.user, options.passwd)
+
     ref_rpms = uniq(concat(
         [p for p in
             packages_in_channel_g(serv, sid, c, options.latest)
         ] for c in options.channels
     ))
+    logging.debug("Get %d unique rpms from RHNS" % len(ref_rpms))
  
     for us in find_updates_g(ref_rpms, rpms):
         for u in uniq(us):
