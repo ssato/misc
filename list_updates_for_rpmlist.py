@@ -19,9 +19,10 @@
 # python. It is not a product supported by Red Hat and intended for production
 # use.
 # 
-# SEE ALSO: RHN API overview
-#   - https://access.redhat.com/knowledge/docs/Red_Hat_Network/API_Documentation/
-#   - https://YOUR_SATELLITE_SERVER/rhn/apidoc/
+# SEE ALSO: RHN API overview,
+#
+#   * http://red.ht/OUITaa
+#   * https://YOUR_SATELLITE_SERVER/rhn/apidoc/
 #
 from operator import itemgetter
 from itertools import chain, groupby
@@ -68,7 +69,7 @@ def concat(xss):
     return list(chain_from_iterable(xs for xs in xss))
 
 
-def uniq(iterable, cmp=cmp, key=None):
+def uniq(iterable):
     """
     Safer version of the above.
     """
@@ -257,7 +258,8 @@ def opts_parser():
     p.add_option("-p", "--passwd", help="RHN Login password")
     p.add_option("-s", "--server", help="RHN Server")
     p.add_option("-f", "--format",
-        help="specify custom output format; e.g. \"%(name)s %(id)s\""
+        help="specify custom output format (python format string), "
+            "e.g. \"%%(name)s %%(version)s\" [name-version-release:epoch]"
     )
     p.add_option("-c", "--channels", action="append",
         help="Software channel label to search the packages."
@@ -278,13 +280,18 @@ def main():
         p.print_help()
         sys.exit(0)
 
-    logging.getLogger().setLevel(DEBUG if options.verbose else INFO)
+    logging.basicConfig(
+        format="%(asctime)-15s - %(levelname)s - %(message)s",
+        level=(DEBUG if options.verbose else INFO),
+    )
 
     rpmlist = args[0]
-    rpms = uniq(find_latests(load_rpms(rpmlist)))  # uniq: degenerate multiarch rpms.
+    rpms = uniq(find_latests(load_rpms(rpmlist)))
     logging.debug("Loaded %d unique rpms from %s" % (len(rpms), rpmlist))
 
-    logging.info("Trying to connect to %s@%s" % (options.user, options.server))
+    logging.debug(
+        "Trying to connect to %s@%s" % (options.user, options.server)
+    )
     (srv, sid) = connect(options.server, options.user, options.passwd)
 
     ref_rpms = uniq(concat(
@@ -292,7 +299,10 @@ def main():
             packages_in_channel_g(srv, sid, c, options.latest)
         ] for c in options.channels
     ))
-    logging.debug("Get %d unique rpms from RHNS" % len(ref_rpms))
+    logging.debug(
+        "Got %d unique rpms in channels %s from RHNS" % \
+            (len(ref_rpms), options.channels)
+    )
  
     for us in find_updates_g(ref_rpms, rpms):
         for u in uniq(us):
