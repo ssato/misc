@@ -3,12 +3,12 @@
 #
 
 ARCH ?= x86_64
-TARGET_OSVERSION ?= fedora-15-$(ARCH)
+TARGET_OSVERSION ?= fedora-17-$(ARCH)
 
 SPECS_LOCATION = https://github.com/ssato/misc/raw/master/trac-macros
 
 # The version of trac provided in $(TARGET_OSVERSION):
-TRAC_VERSION = 0.11
+TRAC_VERSION = 0.12
 
 MODULES	:= \
 trac-footnote-macro \
@@ -60,7 +60,7 @@ $(MODULE_SPECS):
 
 # trac-footnote-macro:
 trac-footnote-macro:
-	svn co http://trac-hacks.org/svn/footnotemacro/$(TRAC_VERSION)/ $@
+	svn co http://trac-hacks.org/svn/footnotemacro/trunk/ $@
 
 trac-footnote-macro/trac-footnote-macro.spec: trac-footnote-macro.spec trac-footnote-macro
 	$(set-svnrev-rpmspec)
@@ -72,7 +72,7 @@ trac-footnote-macro.stamp: trac-footnote-macro/trac-footnote-macro.spec
 
 # trac-include-macro:
 trac-include-macro:
-	svn co http://trac-hacks.org/svn/includemacro/$(TRAC_VERSION)/ $@
+	svn co http://trac-hacks.org/svn/includemacro/trunk/ $@
 
 trac-include-macro/trac-include-macro.spec: trac-include-macro.spec trac-include-macro
 	$(set-svnrev-rpmspec)
@@ -85,7 +85,7 @@ trac-include-macro.stamp: trac-include-macro/trac-include-macro.spec
 # trac-markdown-macro:
 trac-markdown-macro: trac-markdown-macro.spec
 	git clone git://github.com/dwclifton/tracmarkdownmacro.git $@.tmp
-	mv $@.tmp/$(TRAC_VERSION)/* $@.tmp/
+	mv $@.tmp/0.11/* $@.tmp/
 	mv $@.tmp $@
 
 trac-markdown-macro.stamp: trac-markdown-macro.spec trac-markdown-macro
@@ -95,7 +95,7 @@ trac-markdown-macro.stamp: trac-markdown-macro.spec trac-markdown-macro
 
 # trac-movie-macro:
 trac-movie-macro:
-	svn co http://trac-hacks.org/svn/moviemacro/$(TRAC_VERSION)/ $@
+	svn co http://trac-hacks.org/svn/moviemacro/trunk/ $@
 
 trac-movie-macro.stamp: trac-movie-macro.spec trac-movie-macro
 	$(make-srpm)
@@ -104,7 +104,7 @@ trac-movie-macro.stamp: trac-movie-macro.spec trac-movie-macro
 
 # trac-rssembed-macro:
 trac-rssembed-macro:
-	svn co http://trac-hacks.org/svn/rssembedmacro/$(TRAC_VERSION)/ $@
+	svn co http://trac-hacks.org/svn/rssembedmacro/0.11/ $@
 
 trac-rssembed-macro.stamp: trac-rssembed-macro.spec trac-rssembed-macro
 	$(make-srpm)
@@ -113,7 +113,7 @@ trac-rssembed-macro.stamp: trac-rssembed-macro.spec trac-rssembed-macro
 
 # trac-xslt-macro:
 trac-xslt-macro: trac-xslt-macro.spec
-	svn co http://trac-hacks.org/svn/xsltmacro/$(TRAC_VERSION)/ $@
+	svn co http://trac-hacks.org/svn/xsltmacro/0.11/ $@
 
 trac-xslt-macro.stamp: trac-xslt-macro.spec trac-xslt-macro
 	$(make-srpm)

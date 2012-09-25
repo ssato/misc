@@ -5,10 +5,11 @@
 %define _url    http://trac-hacks.org/wiki/MovieMacro
 %define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 1 || echo 0)
 
+%define svnrev  0
 
 Name:           trac-movie-macro
-Version:        0.1
-Release:        2%{?dist}
+Version:        0.2dev
+Release:        1svn%{svnrev}%{?dist}
 Summary:        Wiki movie macro for Trac
 Group:          Applications/Internet
 License:        BSD
@@ -18,7 +19,7 @@ URL:            %{_url}
 #  svn co http://trac-hacks.org/svn/moviemacro/0.11/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
-Source0:        MovieMacro-%{version}.tar.bz2
+Source0:        MovieMacro-%{version}-r%{svnrev}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -27,7 +28,7 @@ BuildRequires:  curl
 %if %{_url_avail}
 BuildRequires:  w3m
 %endif
-Requires:       trac >= 0.11, python-setuptools
+Requires:       trac >= 0.12, python-setuptools
 
 
 %description
@@ -36,7 +37,7 @@ via FlowPlayer. If you want support for more online sites just create a ticket.
 
 
 %prep
-%setup -n MovieMacro-%{version} -q
+%setup -n MovieMacro-%{version}-r%{svnrev} -q
 
 
 %build
@@ -65,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 25 2012 Satoru SATOH <ssato@redhat.com> - 0.2-1
+- New upstream
+
 * Thu Jul 14 2011 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.1-2
 - Minor spec fixes
 

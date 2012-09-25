@@ -5,18 +5,18 @@
 %define _url    http://trac-hacks.org/wiki/IncludeMacro
 
 #%define svnrev  @SVNREV@
-%define svnrev  10462
+%define svnrev  0
 
 Name:           trac-include-macro
-Version:        2.1
-Release:        r%{svnrev}.1%{?dist}
+Version:        3.0.0dev
+Release:        1svn%{svnrev}%{?dist}
 Summary:        Wiki include macro for Trac
 Group:          Applications/Internet
 License:        BSD
 URL:            %{_url}
 #
 # Source comes from SVN:
-#  svn co http://trac-hacks.org/svn/includemacro/0.11/ t && \
+#  svn co http://trac-hacks.org/svn/includemacro/trunk/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
 Source0:        TracIncludeMacro-%{version}-r%{svnrev}.tar.bz2
@@ -24,7 +24,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-Requires:       trac >= 0.11, python-setuptools
+Requires:       trac >= 0.12, python-setuptools
 
 
 %description
@@ -58,6 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 25 2012 Satoru SATOH <ssato@redhat.com> - 3.0.0dev-1svn0
+- New upstream
+
 * Thu Jul 12 2011 Satoru SATOH <satoru.satoh+github@gmail.com> - 2.1-r10462.1
 - Clean up spec
 - Embedded svn revision in release tag

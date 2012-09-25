@@ -1,23 +1,20 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
-%if 0%{?fedora} <= 12 && 0%{?rhel} <= 5
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%endif
 %define _url    http://trac-hacks.org/wiki/FootNoteMacro
 %define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 1 || echo 0)
 
 #%define svnrev  @SVNREV@
-%define svnrev  10434
+%define svnrev  0
 
 Name:           trac-footnote-macro
 Version:        1.03
-Release:        r%{svnrev}.1%{?dist}
+Release:        1svn%{svnrev}%{?dist}
 Summary:        Wiki footnote macro for Trac
 Group:          Applications/Internet
 License:        BSD
 URL:            %{_url}
 #
 # Source comes from SVN:
-#  svn co http://trac-hacks.org/svn/footnotemacro/0.11/ t && \
+#  svn co http://trac-hacks.org/svn/footnotemacro/trunk/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
 Source0:        FootNoteMacro-%{version}-r%{svnrev}.tar.bz2
@@ -29,7 +26,7 @@ BuildRequires:  curl
 %if %{_url_avail}
 BuildRequires:  w3m
 %endif
-Requires:       trac >= 0.11, python-setuptools
+Requires:       trac >= 0.12, python-setuptools
 
 
 %description
@@ -66,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 25 2012 Satoru SATOH <ssato@redhat.com> - 1.03-r11767.1
+- New upstream
+
 * Thu Jul 14 2011 Satoru SATOH <satoru.satoh+github@gmail.com> - 1.03-r10434.1
 - python_sitelib looks defined in /etc/rpm/macros these days so that make it
   defined conditionaly
