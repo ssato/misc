@@ -60,14 +60,14 @@ trac-defaultcc-plugin.stamp: trac-defaultcc-plugin trac-defaultcc-plugin.spec
 	touch $@
 
 trac-ganttcalendar-plugin: trac-ganttcalendar-plugin.spec
-	git clone git://recursive-design.com/gantt-calendar.git $@
+	git clone https://github.com/jun66j5/tracganttcalendarplugin.git $@
 
 trac-ganttcalendar-plugin.stamp: trac-ganttcalendar-plugin trac-ganttcalendar-plugin.spec
 	$(make-srpm)
 	touch $@
 
 trac-graphviz-plugin: trac-graphviz-plugin.spec
-	svn co http://trac-hacks.org/svn/graphvizplugin/0.11/ $@
+	svn co http://trac-hacks.org/svn/graphvizplugin/trunk/ $@
 
 trac-graphviz-plugin.stamp: trac-graphviz-plugin trac-graphviz-plugin.spec
 	$(make-srpm)
@@ -80,10 +80,10 @@ trac-mscgen-plugin.stamp: trac-mscgen-plugin trac-mscgen-plugin.spec
 	$(make-srpm)
 	touch $@
 
-trac-reposearch-plugin: trac-reposearch-plugin.spec
-	svn co http://trac-hacks.org/svn/reposearchplugin/0.11/ $@
+trac-multireposearch-plugin: trac-multireposearch-plugin.spec
+	git clone git://github.com/boldprogressives/trac-MultiRepoSearchPlugin.git $@
 
-trac-reposearch-plugin.stamp: trac-reposearch-plugin trac-reposearch-plugin.spec
+trac-multireposearch-plugin.stamp: trac-multireposearch-plugin trac-multireposearch-plugin.spec
 	$(make-srpm)
 	touch $@
 

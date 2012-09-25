@@ -3,13 +3,12 @@
 
 
 Name:           trac-ganttcalendar-plugin
-Version:        0.1.0
+Version:        0.6.2
 Release:        1%{?dist}
 Summary:        Ticket Gantt chart and calendar plugin for Trac
 Group:          Applications/Internet
 License:        BSD
-#URL:            http://trac-hacks.org/wiki/GanttCalendarPlugin
-URL:            http://recursive-design.com/projects/gantt-calendar
+URL:            http://trac-hacks.org/wiki/GanttCalendarPlugin
 #
 # Source comes from git repo:
 #  git clone git://recursive-design.com/gantt-calendar.git
@@ -22,7 +21,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-Requires:       trac >= 0.11, python-setuptools
+Requires:       trac >= 0.12, python-setuptools
 
 
 %description
@@ -56,5 +55,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 25 2012 Satoru SATOH <ssato@redhat.com> - 0.6.2-1
+- New upstream
+
 * Sun Dec 05 2010 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.1.0-1
 - Initial build

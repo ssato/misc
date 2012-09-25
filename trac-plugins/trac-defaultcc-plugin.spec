@@ -2,11 +2,12 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define _url    http://trac-hacks.org/wiki/DefaultCcPlugin
 %define _url_avail  %(curl --silent %{_url} > /dev/null  && echo 1 || echo 0)
-%define svnrev 5293
+%define svnrev 0
+%define svnver 0.3dev-r0
 
 
 Name:           trac-defaultcc-plugin
-Version:        0.1
+Version:        0.3dev
 Release:        1svn%{svnrev}%{?dist}
 Summary:        Default Cc plugin for Trac
 Group:          Applications/Internet
@@ -17,7 +18,7 @@ URL:            %{_url}
 #  svn co http://trac-hacks.org/svn/defaultccplugin/trunk/ && \
 #  cd trunk && python setup.py sdist --formats bztar
 #
-Source0:        Default CC-%{version}-r%{svnrev}.tar.bz2
+Source0:        DefaultCc-%{version}-r%{svnrev}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -26,7 +27,7 @@ BuildRequires:  curl
 %if %{_url_avail}
 BuildRequires:  w3m
 %endif
-Requires:       trac >= 0.11, python-setuptools
+Requires:       trac >= 0.12, python-setuptools
 
 
 %description
@@ -37,7 +38,7 @@ per component through the component's admin UI.
 
 
 %prep
-%setup -n "Default CC-%{version}-r%{svnrev}" -q
+%setup -n "DefaultCc-%{version}-r%{svnrev}" -q
 
 
 %build
@@ -65,5 +66,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 25 2012 Satoru SATOH <ssato@redhat.com> - 0.3dev-1svn0
+- Rebase to new upstream
+
 * Sun Dec 05 2010 Satoru SATOH <satoru.satoh+github@gmail.com> - 0.1-1svn5293
 - Initial build

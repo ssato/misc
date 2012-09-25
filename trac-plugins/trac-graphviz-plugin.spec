@@ -1,10 +1,11 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%define svnrev 0
 
 
 Name:           trac-graphviz-plugin
 Version:        0.7.6
-Release:        1%{?dist}
+Release:        1svn%{svnrev}%{?dist}
 Summary:        Graphviz plugin for Trac
 Group:          Applications/Internet
 License:        BSD
@@ -14,7 +15,7 @@ URL:            http://trac-hacks.org/wiki/GraphvizPlugin
 #  svn co http://trac-hacks.org/svn/graphvizplugin/0.11/ t && \
 #  cd t && python setup.py sdist --formats bztar
 #
-Source0:        graphviz-%{version}dev.tar.bz2
+Source0:        graphviz-%{version}dev-r%{svnrev}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -29,7 +30,7 @@ graphs and networks using the Graphviz programs.
 
 
 %prep
-%setup -n graphviz-%{version}dev -q
+%setup -n graphviz-%{version}dev-r%{svnrev} -q
 
 
 %build
