@@ -3,12 +3,12 @@
 #
 
 ARCH ?= x86_64
-TARGET_OSVERSION ?= fedora-14-$(ARCH)
+TARGET_OSVERSION ?= fedora-17-$(ARCH)
 
 SPECS_LOCATION = https://github.com/ssato/misc/raw/master/trac-plugins
 
 # The version of trac provided in $(TARGET_OSVERSION):
-TRAC_VERSION = 0.11
+TRAC_VERSION = 0.12
 
 MODULES	:= \
 trac-defaultcc-plugin \
