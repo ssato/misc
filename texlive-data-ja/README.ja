@@ -43,4 +43,11 @@ usr/share/texmf/web2c/texmf.cnf
 poppler-data の提供する cMap データを利用するための override 設定データ。
 詳細については RHBZ#736242 (https://bugzilla.redhat.com/show_bug.cgi?id=736242) を参照。
 
+Deprecated as merged in texlive-texmf-2007-39:
+
+::
+
+  * Thu Sep 21 2011 Jindrich Novy <jnovy@redhat.com> 2007-39
+  - fix CMAPFONTS -> point to poppler path (#736242)
+
 
