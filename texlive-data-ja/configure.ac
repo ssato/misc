@@ -1,4 +1,4 @@
-AC_INIT([texlive-data-ja],[0.0.4])
+AC_INIT([texlive-data-ja],[0.0.5])
 AM_INIT_AUTOMAKE([no-dist-gzip dist-xz foreign])
 
 dnl http://www.flameeyes.eu/autotools-mythbuster/automake/silent.html

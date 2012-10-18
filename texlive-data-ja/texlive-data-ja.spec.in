@@ -12,7 +12,7 @@
 
 
 Name:           texlive-data-ja
-Version:        0.0.4
+Version:        0.0.5
 Release:        1%{?dist}
 Summary:        Latex configuration and data for Japanese tex sources
 Group:          Applications/Publishing
@@ -126,6 +126,9 @@ fi
 
 
 %changelog
+* Thu Oct 18 2012 Satoru SATOH <ssato@redhat.com> - 0.0.5-1
+- Bumped up version
+
 * Mon Jan 16 2012 Satoru SATOH <ssato@redhat.com> - 0.0.4-1
 - Made -overrides sub package not built by default as rhbz#736242 was fixed
 
