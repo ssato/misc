@@ -16,6 +16,7 @@ BuildRequires:  python-devel, python-setuptools
 BuildRequires:  libjpeg-devel, zlib-devel, freetype-devel, lcms-devel
 Requires:       python
 Requires:       libjpeg, zlib, freetype, lcms
+Conflicts:      python-imaging
 
 
 %description
