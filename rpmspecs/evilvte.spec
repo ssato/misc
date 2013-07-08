@@ -1,3 +1,11 @@
+# How to build this:
+#
+# 0. git clone https://github.com/caleb-/evilvte.git evilvte.git  [in this dir]
+# 1. tar --xz -cvf evilvte.git.tar.xz
+# 2. builsrpm evilvte.spec [in this dir]
+# 3. mock evilvte-x.y.z-a.b.c.src.rpm
+#
+
 %define gitrev 9abeb9ad38
 
 Name:           evilvte
