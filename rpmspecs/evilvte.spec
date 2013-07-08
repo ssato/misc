@@ -6,6 +6,10 @@
 # 3. mock evilvte-x.y.z-a.b.c.src.rpm
 #
 
+# TODO:
+# It's still failed to build in RHEL 6.4 env with this error:
+#  ... undefined reference to `gdk_window_get_display'.
+
 %define gitrev 9abeb9ad38
 
 Name:           evilvte
@@ -16,9 +20,16 @@ License:        GPLv2
 URL:            http://www.calno.com/evilvte/
 Source0:        %{name}.git.tar.xz
 Patch0:         evilvte-custom.patch
+%if 0%{?rhel}
+BuildRequires:  gtk2-devel
+BuildRequires:  glib2-devel
+BuildRequires:  vte-devel
+Requires:       gtk2, glib2, vte
+%else
 BuildRequires:  gtk3-devel
 BuildRequires:  vte3-devel
 Requires:       gtk3, vte3
+%endif
 
 
 %description
@@ -35,7 +46,11 @@ almost all VTE features and build-time configuration.
 
 
 %build
+%if 0%{?rhel}
+./configure --prefix=/usr --with-gtk=2.0
+%else
 ./configure --prefix=/usr --with-gtk=3.0
+%endif
 make %{?_smp_mflags}
 
 
