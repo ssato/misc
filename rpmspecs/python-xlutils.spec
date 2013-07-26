@@ -1,10 +1,9 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 
 Name:           python-xlutils
-Version:        1.5.1
+Version:        1.6.0
 Release:        1%{?dist}
 Summary:        Utilities for working with Excel files
 Group:          Development/Languages
@@ -17,7 +16,11 @@ BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 Requires:       python-xlrd
 Requires:       python-xlwt
-Requires:       python-errorhandler
+# for testing:
+#Requires:       python-errorhandler
+#Requires:       python-manuel
+#Requires:       python-mock
+#Requires:       python-testfixtures >= 1.6.1
 
 
 %description
@@ -37,31 +40,13 @@ they are collected together seperately here.
 # Remove CFLAGS=... for noarch packages (unneeded)
 CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 
-cat << EOF > README.Fedora.rst
-This package provides a collection of utilities for working with Excel files.
-Since these utilities may require either or both of the xlrd and xlwt packages,
-they are collected together seperately here.
-
-Currently available are:
-
-xlutils.copy
-    Tools for copying xlrd.Book objects to xlwt.Workbook objects.
-xlutils.display
-    Utility functions for displaying information about xlrd-related objects in a user-friendly and safe fashion.
-xlutils.filter
-    A mini framework for splitting and filtering Excel files into new Excel files.
-xlutils.margins
-    Tools for finding how much of an Excel file contains useful data.
-xlutils.save
-    Tools for serializing xlrd.Book objects back to Excel files.
-xlutils.styles
-    Tools for working with formatting information expressed in styles. 
-EOF
-
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+
+# The followings are packaged as doc.
+rm -rf $RPM_BUILD_ROOT%{python_sitelib}/xlwt/{doc,examples}
 
  
 %clean
@@ -70,12 +55,17 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README.Fedora.rst
+%doc README.txt docs
 %{python_sitelib}/*
 %{_bindir}/margins
 
 
 %changelog
+* Fri Jul 26 2013 Satoru SATOH <ssato@redhat.com> - 1.6.0-1
+- New upstream release
+- Removed README.Fedora.txt as upstream version now contains README.txt
+- Fixed runtime dependencies
+
 * Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 1.5.1-1
 - New upstream release
 

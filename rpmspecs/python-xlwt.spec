@@ -1,10 +1,8 @@
-# sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 
 Name:           python-xlwt
-Version:        0.7.3
+Version:        0.7.5
 Release:        1%{?dist}
 Summary:        A library to create Microsoft Excel (tm) spreadsheet files
 Group:          Development/Languages
@@ -32,8 +30,7 @@ reading Excel spreadsheets.
 
 
 %build
-# Remove CFLAGS=... for noarch packages (unneeded)
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+%{__python} setup.py build
 
 
 %install
@@ -47,10 +44,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
+%doc README.html HISTORY.html
+%doc xlwt/examples xlwt/doc
 %{python_sitelib}/*
 
 
 %changelog
+* Fri Jul 26 2013 Satoru SATOH <ssato@redhat.com> - 0.7.5-1
+- New upstream
+- Cleanup this RPM SPEC
+
 * Mon Mar 26 2012 Satoru SATOH <ssato@redhat.com> - 0.7.3-1
 - New upstream
 
