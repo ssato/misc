@@ -1,6 +1,21 @@
 diff -up v4.03-9411/src/makefiles/linux_64bit.mak.destdir v4.03-9411/src/makefiles/linux_64bit.mak
 --- v4.03-9411/src/makefiles/linux_64bit.mak.destdir	2014-01-07 07:56:51.117045999 +0900
-+++ v4.03-9411/src/makefiles/linux_64bit.mak	2014-01-07 08:04:52.880077677 +0900
++++ v4.03-9411/src/makefiles/linux_64bit.mak	2014-01-07 11:11:14.454321575 +0900
+@@ -33,10 +33,10 @@ OPTIONS_COMPILE_RELEASE=-DNDEBUG -DVPN_S
+ OPTIONS_LINK_RELEASE=-O2 -fsigned-char -m64 -lm -ldl -lrt -lpthread -lssl -lcrypto -lreadline -lncurses -lz
+ 
+ INSTALL_BINDIR=/usr/bin/
+-INSTALL_VPNSERVER_DIR=/usr/vpnserver/
+-INSTALL_VPNBRIDGE_DIR=/usr/vpnbridge/
+-INSTALL_VPNCLIENT_DIR=/usr/vpnclient/
+-INSTALL_VPNCMD_DIR=/usr/vpncmd/
++INSTALL_VPNSERVER_DIR=/usr/lib64/softether/vpnserver/
++INSTALL_VPNBRIDGE_DIR=/usr/lib64/softether/vpnbridge/
++INSTALL_VPNCLIENT_DIR=/usr/lib64/softether/vpnclient/
++INSTALL_VPNCMD_DIR=/usr/lib64/softether/vpncmd/
+ 
+ ifeq ($(DEBUG),YES)
+ 	OPTIONS_COMPILE=$(OPTIONS_COMPILE_DEBUG)
 @@ -377,6 +377,8 @@ bin/vpncmd/hamcore.se2: src/bin/BuiltHam
  tmp/objs/vpncmd.o: src/vpncmd/vpncmd.c $(HEADERS_MAYAQUA) $(HEADERS_CEDAR) $(OBJECTS_MAYAQUA) $(OBJECTS_CEDAR)
  	$(CC) $(OPTIONS_COMPILE) -c src/vpncmd/vpncmd.c -o tmp/objs/vpncmd.o

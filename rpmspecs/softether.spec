@@ -43,14 +43,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/vpnclient
 %{_bindir}/vpncmd
 %{_bindir}/vpnserver
-/usr/vpnbridge/hamcore.se2
-/usr/vpnbridge/vpnbridge
-/usr/vpnclient/hamcore.se2
-/usr/vpnclient/vpnclient
-/usr/vpncmd/hamcore.se2
-/usr/vpncmd/vpncmd
-/usr/vpnserver/hamcore.se2
-/usr/vpnserver/vpnserver
+%{_libdir}/softether/vpnbridge/hamcore.se2
+%{_libdir}/softether/vpnbridge/vpnbridge
+%{_libdir}/softether/vpnclient/hamcore.se2
+%{_libdir}/softether/vpnclient/vpnclient
+%{_libdir}/softether/vpncmd/hamcore.se2
+%{_libdir}/softether/vpncmd/vpncmd
+%{_libdir}/softether/vpnserver/hamcore.se2
+%{_libdir}/softether/vpnserver/vpnserver
 
 %changelog
 * Tue Jan  7 2014 Satoru SATOH <ssato@redhat.com> - 4.03_9411-1
