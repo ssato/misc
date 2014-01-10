@@ -1,0 +1,118 @@
+#==============================================================================
+#                               conkyrc_ssato
+# Date    : 01/10/2014
+# Author  : Satoru SATOH <ssato redhat.com>
+# Version : 0.0.1
+# License : Distributed under the terms of GNU GPL version 2 or later
+# 
+# This version is a modification of conkyrc_seamod wich is modification of conkyrc_lunatico
+# 
+# conkyrc_seamod:    http://seajey.deviantart.com/art/Conky-Seamod-v0-1-283461046
+# conkyrc_orange:    http://gnome-look.org/content/show.php?content=137503&forumpage=0
+# conkyrc_lunatico:  http://gnome-look.org/content/show.php?content=142884
+#
+# Install:
+#    1. mkdir ~/.conky and put this file and clock_and_system_monitor_rings.lua
+#    2. (cd && ln -s ~/.conky/conkyrc ./)
+#
+#==============================================================================
+
+background yes
+update_interval 5
+
+cpu_avg_samples 1
+net_avg_samples 2
+temperature_unit celsius
+
+double_buffer yes
+no_buffers yes
+text_buffer_size 2048
+
+gap_x 1210
+gap_y 90
+minimum_size 300 900
+maximum_width 350
+own_window yes
+own_window_type override
+own_window_transparent yes
+own_window_argb_visual yes
+own_window_type normal
+own_window_class conky-semi
+own_window_hints undecorate,sticky,skip_taskbar,skip_pager,below
+border_inner_margin 0
+border_outer_margin 0
+alignment tr
+
+draw_shades no
+draw_outline no
+draw_borders no
+draw_graph_borders no
+
+override_utf8_locale yes
+use_xft yes
+xftfont Source Sans Pro:size=10
+xftalpha 0.5
+uppercase no
+
+# Defining colors
+default_color FFFFFF
+# Shades of Gray
+color1 DDDDDD
+color2 AAAAAA
+color3 888888
+# Orange
+color4 EF5A29
+# Green
+color5 77B753
+
+# Loading lua script for drawning rings
+lua_load ~/.conky/clock_and_system_monitor_rings.lua
+lua_draw_hook_post main
+
+## System information using conky capabilities
+
+# Header with base system info
+TEXT
+${voffset 35}
+${offset 35}${color4}${font sans:size=16}${time %e}${color1}${font sans:size=12}${time %A}
+${offset 35}${color2}${voffset -2}${font sans:size=9}${time %b}${voffset -2} ${color3}${font sans:size=12}${time %Y}${font}
+
+${voffset -75}
+${offset 135}${font Source Sans Pro:size=10,weight:bold}${color4}SYSTEM ${hr 2}
+${alignr -10}${font Source Sans Pro:size=10,weight:normal}${color1}$sysname $kernel
+${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Battery: $battery
+${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Uptime: $uptime
+
+# Showing CPU Graph
+${offset 120}${cpugraph 40,183 666666 666666}${voffset -25}
+${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}CPU
+# Showing TOP 3 CPU-consumers
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color4}${top name 1}${alignr}${top cpu 1}%
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color1}${top name 2}${alignr}${top cpu 2}%
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color2}${top name 3}${alignr}${top cpu 3}%
+
+#Showing memory part with TOP 3
+${offset 120}${memgraph 40,183 666666 666666}${voffset -25}
+${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}MEM
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color4}${top_mem name 1}${alignr}${top_mem mem 1}%
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color1}${top_mem name 2}${alignr}${top_mem mem 2}%
+${offset 130}${font Source Sans Pro:size=10,weight:normal}${color2}${top_mem name 3}${alignr}${top_mem mem 3}%
+
+# Showing disk partitions: root, home and Data
+${offset 120}${diskiograph 33,183 666666 666666}${voffset -25}
+${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}DISKS
+${offset 130}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /}
+${offset 130}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /home}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /home}
+
+# Network data (my desktop have only LAN). ETHERNET ring is mostly useless but looks pretty, main info is in the graphs
+${offset 62}${font Source Sans Pro:size=10,weight:bold}${color5}ETHERNET
+${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}em1:
+${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source Sans Pro:size=9,weight:normal}$color2${upspeed em1} / ${totalup}
+${offset 62}${upspeedgraph em1 20,120 4B1B0C FF5C2B 100 -l}
+${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed em1} / ${totaldown}
+${offset 185}${downspeedgraph em1 20,120 324D23 77B753 100 -l}
+${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}wlp3s0:
+${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source Sans Pro:size=9,weight:normal}$color2${upspeed wlp3s0} / ${totalup}
+${offset 62}${upspeedgraph wlp3s0 20,120 4B1B0C FF5C2B 100 -l}
+${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed wlp3s0} / ${totaldown}
+${offset 185}${downspeedgraph wlp3s0 20,120 324D23 77B753 100 -l}
