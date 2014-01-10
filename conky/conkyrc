@@ -29,7 +29,7 @@ no_buffers yes
 text_buffer_size 2048
 
 gap_x 1210
-gap_y 80
+gap_y 100
 minimum_size 300 900
 maximum_width 350
 own_window yes
