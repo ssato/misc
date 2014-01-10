@@ -29,7 +29,7 @@ no_buffers yes
 text_buffer_size 2048
 
 gap_x 1210
-gap_y 90
+gap_y 80
 minimum_size 300 900
 maximum_width 350
 own_window yes
@@ -53,6 +53,7 @@ use_xft yes
 xftfont Source Sans Pro:size=10
 xftalpha 0.5
 uppercase no
+if_up_strictness address
 
 # Defining colors
 default_color FFFFFF
@@ -73,15 +74,18 @@ lua_draw_hook_post main
 
 # Header with base system info
 TEXT
-${voffset 35}
+${voffset 30}
 ${offset 35}${color4}${font sans:size=16}${time %e}${color1}${font sans:size=12}${time %A}
 ${offset 35}${color2}${voffset -2}${font sans:size=9}${time %b}${voffset -2} ${color3}${font sans:size=12}${time %Y}${font}
 
-${voffset -75}
+${voffset -130}
 ${offset 135}${font Source Sans Pro:size=10,weight:bold}${color4}SYSTEM ${hr 2}
 ${alignr -10}${font Source Sans Pro:size=10,weight:normal}${color1}$sysname $kernel
-${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Battery: $battery
 ${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Uptime: $uptime
+${voffset 1}
+${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/${offset 175} /g' | sed 's/'" $JOUR"'/${color2}'" $JOUR"'${color1}/1'}
+
+${voffset -20}
 
 # Showing CPU Graph
 ${offset 120}${cpugraph 40,183 666666 666666}${voffset -25}
@@ -106,13 +110,21 @@ ${offset 130}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Sou
 
 # Network data (my desktop have only LAN). ETHERNET ring is mostly useless but looks pretty, main info is in the graphs
 ${offset 62}${font Source Sans Pro:size=10,weight:bold}${color5}ETHERNET
+${if_up em1}
 ${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}em1:
 ${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source Sans Pro:size=9,weight:normal}$color2${upspeed em1} / ${totalup}
 ${offset 62}${upspeedgraph em1 20,120 4B1B0C FF5C2B 100 -l}
 ${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed em1} / ${totaldown}
 ${offset 185}${downspeedgraph em1 20,120 324D23 77B753 100 -l}
+${else}
+${voffset -70}
+${endif}
+${if_up wlp3s0}
 ${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}wlp3s0:
 ${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source Sans Pro:size=9,weight:normal}$color2${upspeed wlp3s0} / ${totalup}
 ${offset 62}${upspeedgraph wlp3s0 20,120 4B1B0C FF5C2B 100 -l}
 ${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed wlp3s0} / ${totaldown}
 ${offset 185}${downspeedgraph wlp3s0 20,120 324D23 77B753 100 -l}
+${else}
+${voffset -70}
+${endif}

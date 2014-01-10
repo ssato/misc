@@ -22,7 +22,7 @@ clock_h = {
     {
     name='time',                   arg='%H',                    max_value=12,
     x=70,                          y=65,
-    graph_radius=55,
+    graph_radius=60,
     graph_thickness=3,
     graph_unit_angle=30,           graph_unit_thickness=30,
     graph_bg_colour=0xffffff,      graph_bg_alpha=0.0,
@@ -40,7 +40,7 @@ clock_m = {
     {
     name='time',                   arg='%M',                    max_value=60,
     x=70,                          y=65,
-    graph_radius=55,
+    graph_radius=60,
     graph_thickness=2,
     graph_unit_angle=6,            graph_unit_thickness=6,
     graph_bg_colour=0xffffff,      graph_bg_alpha=0.1,
@@ -58,7 +58,7 @@ clock_s = {
     {
     name='time',                   arg='%S',                    max_value=60,
     x=70,                          y=65,
-    graph_radius=45,
+    graph_radius=50,
     graph_thickness=2,
     graph_unit_angle=6,            graph_unit_thickness=2,
     graph_bg_colour=0xffffff,      graph_bg_alpha=0.0,
@@ -78,7 +78,7 @@ clock_s = {
 gauge = {
 {
     name='cpu',                    arg='cpu0',                  max_value=100,
-    x=70,                          y=175,
+    x=70,                          y=205,
     graph_radius=45,
     graph_thickness=5,
     graph_start_angle=180,
@@ -99,7 +99,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu1',                  max_value=100,
-    x=70,                          y=175,
+    x=70,                          y=205,
     graph_radius=35,
     graph_thickness=5,
     graph_start_angle=180,
@@ -120,7 +120,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu2',                  max_value=100,
-    x=70,                          y=175,
+    x=70,                          y=205,
     graph_radius=25,
     graph_thickness=5,
     graph_start_angle=180,
@@ -141,7 +141,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu3',                  max_value=100,
-    x=70,                          y=175,
+    x=70,                          y=205,
     graph_radius=15,
     graph_thickness=5,
     graph_start_angle=180,
@@ -162,7 +162,7 @@ gauge = {
 },
 {
     name='memperc',                arg='',                      max_value=100,
-    x=70,                          y=290,
+    x=70,                          y=330,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -182,9 +182,9 @@ gauge = {
     caption_fg_colour=0xFFFFFF,    caption_fg_alpha=0.5,
 },
 {
-    name='swapperc',                arg='',                      max_value=100,
-    x=70,                          y=290,
-    graph_radius=35,
+    name='swapperc',               arg='',                      max_value=100,
+    x=70,                          y=330,
+    graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,
     graph_unit_angle=2.7,          graph_unit_thickness=2.7,
@@ -204,7 +204,7 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/home/',                     max_value=100,
-    x=70,                          y=410,
+    x=70,                          y=445,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -225,8 +225,8 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/',                     max_value=100,
-    x=70,                          y=410,
-    graph_radius=35,
+    x=70,                          y=445,
+    graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,
     graph_unit_angle=2.7,          graph_unit_thickness=2.7,
