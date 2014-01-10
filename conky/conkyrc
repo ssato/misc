@@ -89,7 +89,7 @@ ${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/${offset
 ${voffset -20}
 
 # Showing CPU Graph
-${offset 140}${cpugraph 40,183 666666 666666}${voffset -25}
+${offset 130}${cpugraph 40,183 666666 666666}${voffset -25}
 ${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}CPU
 # Showing TOP 3 CPU-consumers
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color4}${top name 1}${alignr}${top cpu 1}%
@@ -97,17 +97,17 @@ ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color1}${top name 2}
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color2}${top name 3}${alignr}${top cpu 3}%
 
 #Showing memory part with TOP 3
-${offset 140}${memgraph 40,183 666666 666666}${voffset -25}
+${offset 130}${memgraph 40,183 666666 666666}${voffset -25}
 ${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}MEM
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color4}${top_mem name 1}${alignr}${top_mem mem 1}%
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color1}${top_mem name 2}${alignr}${top_mem mem 2}%
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color2}${top_mem name 3}${alignr}${top_mem mem 3}%
 
 # Showing disk partitions: root, home and Data
-${offset 140}${diskiograph 33,183 666666 666666}${voffset -25}
+${offset 135}${diskiograph 33,183 666666 666666}${voffset -25}
 ${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}DISKS
-${offset 130}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /}
-${offset 130}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /home}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /home}
+${offset 135}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /}
+${offset 135}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /home}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /home}
 
 # Network data (my desktop have only LAN). ETHERNET ring is mostly useless but looks pretty, main info is in the graphs
 ${offset 62}${font Source Sans Pro:size=10,weight:bold}${color5}ETHERNET
