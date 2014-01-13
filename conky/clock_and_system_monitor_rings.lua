@@ -78,7 +78,7 @@ clock_s = {
 gauge = {
 {
     name='cpu',                    arg='cpu0',                  max_value=100,
-    x=70,                          y=205,
+    x=70,                          y=190,
     graph_radius=45,
     graph_thickness=5,
     graph_start_angle=180,
@@ -99,7 +99,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu1',                  max_value=100,
-    x=70,                          y=205,
+    x=70,                          y=190,
     graph_radius=35,
     graph_thickness=5,
     graph_start_angle=180,
@@ -120,7 +120,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu2',                  max_value=100,
-    x=70,                          y=205,
+    x=70,                          y=190,
     graph_radius=25,
     graph_thickness=5,
     graph_start_angle=180,
@@ -141,7 +141,7 @@ gauge = {
 },
 {
     name='cpu',                    arg='cpu3',                  max_value=100,
-    x=70,                          y=205,
+    x=70,                          y=190,
     graph_radius=15,
     graph_thickness=5,
     graph_start_angle=180,
@@ -162,7 +162,7 @@ gauge = {
 },
 {
     name='memperc',                arg='',                      max_value=100,
-    x=70,                          y=330,
+    x=70,                          y=310,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -183,7 +183,7 @@ gauge = {
 },
 {
     name='swapperc',               arg='',                      max_value=100,
-    x=70,                          y=330,
+    x=70,                          y=310,
     graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,
@@ -204,7 +204,7 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/home/',                     max_value=100,
-    x=70,                          y=445,
+    x=70,                          y=425,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -225,7 +225,7 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/',                     max_value=100,
-    x=70,                          y=445,
+    x=70,                          y=425,
     graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,
