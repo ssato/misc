@@ -40,7 +40,7 @@ default look.
 
 %if 0%{?with_python3}
 %package -n     python3-%{pymodname}
-Summary:        Python library for neroimaging and cognitive data analysis
+Summary:        Python library for statistical data visualization
 Requires:       python3-numpy
 Requires:       python3-scipy
 Requires:       python3-matplotlib
