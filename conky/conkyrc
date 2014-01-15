@@ -30,7 +30,7 @@ text_buffer_size 2048
 
 gap_x 1210
 #gap_x 10
-gap_y 70
+gap_y 100
 minimum_size 300 900
 maximum_width 350
 own_window yes
@@ -119,13 +119,15 @@ ${offset 135}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Sou
 ${voffset -30}
 ${offset 62}${font Source Sans Pro:size=10,weight:bold}${color5}ETHERNET
 ${if_up em1}
+${voffset -35}
 ${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}em1:
 ${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source Sans Pro:size=9,weight:normal}$color2${upspeed em1} / ${totalup}
 ${offset 62}${upspeedgraph em1 20,120 4B1B0C FF5C2B 100 -l}
 ${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed em1} / ${totaldown}
 ${offset 185}${downspeedgraph em1 20,120 324D23 77B753 100 -l}
+${voffset -50}
 ${else}
-${voffset -70}
+${voffset -65}
 ${endif}
 ${if_up wlp3s0}
 ${offset 62}${font Source Sans Pro:size=9,weight:bold}${color5}wlp3s0:
@@ -133,6 +135,4 @@ ${offset 62}${color1}${font Source Sans Pro:size=9,weight:bold}Up: ${font Source
 ${offset 62}${upspeedgraph wlp3s0 20,120 4B1B0C FF5C2B 100 -l}
 ${voffset -52}${offset 185}${color1}${font Source Sans Pro:size=9,weight:bold}Down: ${font Source Sans Pro:size=9,weight:normal}$color2${downspeed wlp3s0} / ${totaldown}
 ${offset 185}${downspeedgraph wlp3s0 20,120 324D23 77B753 100 -l}
-${else}
-${voffset -70}
 ${endif}
