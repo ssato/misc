@@ -84,7 +84,9 @@ ${offset 135}${font Source Sans Pro:size=10,weight:bold}${color4}SYSTEM ${hr 2}
 ${alignr -10}${font Source Sans Pro:size=10,weight:normal}${color1}$sysname $kernel
 ${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Uptime: $uptime
 ${voffset 1}
-${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/${offset 175} /g' | sed 's/'" $JOUR"'/${color4}'" $JOUR"'${color1}/1'}
+#${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed -n '2,$ { s/^/${offset 175} /p; }' | sed 's/'" $JOUR"'/${color4}'" $JOUR"'${color1}/'}
+#${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/$\{offset 175\} /g' | sed 's/'" $JOUR"'/${color4}'" $JOUR"'${color1}/1'}
+${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/$\{offset 175\} /g'}
 
 ${voffset -35}
 
