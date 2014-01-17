@@ -1,3 +1,5 @@
+# TODO: build i386 RPMs.
+
 %global debug_package %{nil}
 %global pkglibexecdir %{_libexecdir}/go
 
@@ -10,8 +12,12 @@ License:        BSD
 URL:            http://golang.org
 #Source0:       https://code.google.com/p/go/downloads/list
 Source0:        %{name}%{version}.src.tar.gz
+%if 0%{?fedora}
 Patch0:         go-1.2_test_fixpath_hostname.patch
 BuildRequires:  hostname
+%else
+BuildRequires:  net-tools
+%endif
 
 %description
 Go is an open source programming language that makes it easy to build simple,
@@ -19,7 +25,9 @@ reliable, and efficient software.
 
 %prep
 %setup -q -n %{name}
+%if 0%{?fedora}
 %patch0 -p1 -b .fixpath
+%endif
 
 %build
 
@@ -28,11 +36,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # see: http://golang.org/doc/install/source#environmen
 export GOROOT=$RPM_BUILD_ROOT/%{pkglibexecdir}
-#export GOROOT_FINAL=$RPM_BUILD_ROOT/usr
-#export GOBIN=$RPM_BUILD_ROOT%{_bindir}
 export GOBIN=$GOROOT
 export GOOS=linux
-export GOARCH=amd64
 cd src
 ./all.bash
 
@@ -40,7 +45,10 @@ cd src
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
 cat << "EOF" > $RPM_BUILD_ROOT%{_bindir}/go
 #! /bin/bash
-GOROOT=%{pkglibexecdir} %{pkglibexecdir}/go $@
+ncpus=$(( $(sed -ne 's/^processor.*/1 + /p;' /proc/cpuinfo) + 0))
+
+GOMAXPROCS=${GOMAXPROCS:-${ncpus}} GOROOT=%{pkglibexecdir} \
+  %{pkglibexecdir}/go $@
 EOF
 chmod +x $RPM_BUILD_ROOT%{_bindir}/go
 
@@ -50,5 +58,5 @@ chmod +x $RPM_BUILD_ROOT%{_bindir}/go
 %{pkglibexecdir}/*
 
 %changelog
-* Wed Jan 15 2014 Satoru SATOH <ssato@redhat.com> - 1.2-1
+* Thu Jan 16 2014 Satoru SATOH <ssato@redhat.com> - 1.2-1
 - Initial packaging.
