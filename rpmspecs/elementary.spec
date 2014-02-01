@@ -1,5 +1,5 @@
 Name:           elementary
-Version:        1.8.3
+Version:        1.8.4
 Release:        1%{?dist}
 Summary:        Basic widget set that is easy to use based on EFL
 License:        LGPLv2+
@@ -81,6 +81,9 @@ fi
 %{_libdir}/cmake/Elementary/*.cmake
 
 %changelog
+* Fri Jan 31 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.4-1
+- Update to 1.8.4
+
 * Fri Jan 24 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.3-1
 - Update to 1.8.3
 

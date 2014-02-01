@@ -1,5 +1,5 @@
 Name:           efl
-Version:        1.8.4
+Version:        1.8.5
 Release:        1%{?dist}
 Summary:        Enlightenment Foundation libraries
 License:        LGPLv2.1+ and GPLv2.1+ and BSD
@@ -150,6 +150,9 @@ find %{buildroot} -name '*.a' -delete
 %{_libdir}/cmake/*/*.cmake
 
 %changelog
+* Fri Jan 31 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.5-1
+- New upstream release
+
 * Fri Jan 24 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.4-1
 - Update to 1.8.4
 - Merged all Enlightenment core libraries into EFL

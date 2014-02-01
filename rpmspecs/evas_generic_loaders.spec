@@ -11,6 +11,8 @@ BuildRequires:  poppler-devel
 BuildRequires:  LibRaw-devel 
 BuildRequires:  librsvg2-devel 
 BuildRequires:  libspectre-devel
+BuildRequires:  gstreamer-plugins-base-devel
+BuildRequires:  libspectre-devel
 
 %Description
 These are additional "generic" loaders for Evas that are stand-alone
