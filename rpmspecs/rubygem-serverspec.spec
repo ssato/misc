@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        RSpec tests for your servers configured by Puppet, Chef or anything else
 Group:          Development/Languages
 License:        MIT
-URL:            http://serverspec.org/
+URL:            http://serverspec.org
 Source0:        https://rubygems.org/gems/%{gem_name}-%{version}.gem
 Requires:       ruby(release)
 Requires:       ruby(rubygems) 
@@ -23,7 +23,6 @@ Provides:       rubygem(%{gem_name}) = %{version}
 
 %description
 RSpec tests for your servers configured by Puppet, Chef or anything else
-
 
 %package        doc
 Summary:        Documentation for %{name}
@@ -61,10 +60,10 @@ cp -pa .%{_bindir}/* \
 
 find %{buildroot}%{gem_instdir}/bin -type f | xargs chmod a+x
 
-# Remove files unnecessary in Fedora/RHEL.
+# Remove unneeded files:
 rm -f %{buildroot}%{gem_instdir}/.{gitignore,travis.yml}
 rm -f %{buildroot}%{gem_instdir}/{Gemfile,Guardfile,Rakefile,WINDOWS_SUPPORT.md,serverspec.gemspec}
-rm -rf %{buildroot}%{gem_instdir}/spec/{aix,darwin,debian,freebsd,gentoo,plamo,smartos,solaris*,support,windows}/
+#rm -rf %{buildroot}%{gem_instdir}/spec/{aix,darwin,debian,freebsd,gentoo,plamo,smartos,solaris*,support,windows}/
 find %{buildroot}%{gem_instdir}/spec -type f | sed "s,^%{buildroot},," > specs.list
 
 %files -f specs.list
@@ -81,5 +80,5 @@ find %{buildroot}%{gem_instdir}/spec -type f | sed "s,^%{buildroot},," > specs.l
 %doc %{gem_instdir}/LICENSE.txt
 
 %changelog
-* Mon Feb 10 2014  <ssato@localhost.localdomain> - 0.15.2-1
+* Mon Feb 10 2014 Satoru SATOH <satoru.satoh@gmail.com> - 0.15.2-1
 - Initial package
