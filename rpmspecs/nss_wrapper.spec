@@ -6,6 +6,7 @@ License:        BSD
 URL:            http://cwrap.org/nss_wrapper.html
 Source0:        https://ftp.samba.org/pub/cwrap/%{name}-%{version}.tar.gz
 BuildRequires:  cmake
+BuildRequires:  libcmocka-devel
 
 %description
 Cwrap is a set of tools to create a fully isolated network environment to test
@@ -29,7 +30,7 @@ Development files for %{name}.
 %setup -q
 
 %build
-mkdir build && cd build && %cmake ..
+mkdir build && cd build && %cmake .. -DUNIT_TESTING=ON
 make %{?_smp_mflags}
 
 %install
@@ -41,8 +42,8 @@ install -m 644 build/nss_wrapper.pc $RPM_BUILD_ROOT%{_datadir}/pkgconfig
 install -m 644 build/src/libnss_wrapper.so* $RPM_BUILD_ROOT%{_libdir}
 
 # TODO: Implement this.
-#%check
-#ctest
+%check
+cd build && ctest ..
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
