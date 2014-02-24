@@ -48,21 +48,7 @@
 # 0
 # ssato@localhost% PIDFILE=/tmp/foo.pid LOCKFILE=/tmp/foo.lock ./foo status; echo $?
 # 3
-# ssato@localhost% ./foo test
-# Setup before tests of 'foo': ensure ./foo is stopped ...        OK
-# Check if to start from stopped state exits with exit code 0 ... OK
-# Check if to start from started state exits with exit code 0 ... OK
-# Check if to restart from started state exits with exit code 0 ...       Stopping foo: 
-# Starting foo: 
-# OK
-# Check if 'status' on started state exits with exit code 0 ...   OK
-# Check if to stop from started state exits with exit code 0 ...  Stopping foo: 
-# OK
-# Check if 'status' on stopped state exits with exit code 3 ...   OK
-# Check if to stop from stopped state exits with exit code 0 ...  OK
-# Check if to restart from stopped state exits with exit code 0 ...       Starting foo: 
-# OK
-# ssato@localhost%
+#
 
 # Edit and customize this:
 #MY_APP_NAME=foo
@@ -71,12 +57,12 @@ MY_APP_NAME=${0##*/}
 . /etc/rc.d/init.d/functions
 test -f /etc/sysconfig/${MY_APP_NAME} && . /etc/sysconfig/${MY_APP_NAME}
 
-# Start foo in the C locale by default.
+# Start it in the C locale by default.
 MY_APP_LANG=${MY_APP_LANG-"C"}
 
 prog=${MY_APP_NAME}  # e.g. /usr/sbin/httpd
-pidfile=${PIDFILE-/var/run/foo.pid}
-lockfile=${LOCKFILE-/var/lock/subsys/foo}
+pidfile=${PIDFILE-/var/run/${MY_APP_NAME}.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/${MY_APP_NAME}}
 STOP_TIMEOUT=${STOP_TIMEOUT-10}
 
 start () {
@@ -91,63 +77,25 @@ start () {
     return $rc
 }
 
-# When stopping foo, a delay (of default 10 second) is required before
-# SIGKILLing the foo parent; this gives enough time for the foo parent to
+# When stopping MY_APP_NAME, a delay (of default 10 second) is required before
+# SIGKILLing the MY_APP_NAME parent; this gives enough time for the MY_APP_NAME parent to
 # SIGKILL any errant children.
 stop() {
 	echo -n $"Stopping $prog: "
 	# Likewise. See the comment in 'start' shell function also.
-	#killproc -p ${pidfile} -d ${STOP_TIMEOUT} $foo
+	#killproc -p ${pidfile} -d ${STOP_TIMEOUT} $MY_APP_NAME
 	local rc=$?
 	echo
 	[ $rc = 0 ] && rm -f ${lockfile} ${pidfile}
 }
 
 my_status () {
-    #status -p ${pidfile} $foo; rc=$?
+    #status -p ${pidfile} $MY_APP_NAME; rc=$?
     # if test $rc -eq 0; then
     test -f ${lockfile} && return 0 || return 3
     # else
     #     exit 1
     # fi
-}
-
-function test_helper () {
-    local expected_rc=$1
-    local test_desc="$2"
-    local test_body="$3"
-
-    echo -ne "Check if ${test_desc:?} exits with exit code ${expected_rc:?} ...\t"
-    eval "${test_body:?}"; rc=$?
-    if test $rc -ne ${expected_rc}; then
-        echo "Failed. rc=$rc"
-        exit -1
-    else
-        echo "OK"
-    fi
-}
-
-# system (application) tests.
-# see also: http://refspecs.linuxbase.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
-system_test () {
-    echo -ne "Setup before tests of '$MY_APP_NAME': ensure $0 is stopped ...\t"
-    $0 stop
-    if test $? -ne 0; then
-        echo "Failed to stop $0. Aborting..."
-        exit -1
-    fi
-    echo "OK"
-
-    test_env="PIDFILE=/tmp/${MY_APP_NAME}.pid LOCKFILE=/tmp/${MY_APP_NAME} VERBOSE='0'"
-    test_helper 0 "to start from stopped state" "${test_env} $0 start"
-    test_helper 0 "to start from started state" "${test_env} $0 start"
-    test_helper 0 "to restart from started state" "${test_env} $0 restart"
-    test_helper 0 "'status' on started state" "${test_env} $0 status"
-    test_helper 0 "to stop from started state" "${test_env} $0 stop"
-    test_helper 3 "'status' on stopped state" "${test_env} $0 status"
-    test_helper 0 "to stop from stopped state" "${test_env} $0 stop"
-    test_helper 0 "to restart from stopped state" "${test_env} $0 restart"
-    $0 stop
 }
 
 case "$1" in
@@ -183,9 +131,6 @@ case "$1" in
         else
             rc=0
         fi
-        ;;
-  test|systemtest)
-        system_test; rc=$?
         ;;
   *)
         echo $"Usage: $prog (start|stop|status|restart|condrestart|try-restart)"

@@ -32,8 +32,8 @@ function show_help () {
     cat <<EOH
 ${USAGE}
 Options:
-    -E=ENV_STRINGS   Environment variable definitions will be passed to your
-                     init script, ex. -E="LANG=C PIDFILE=/tmp/t.pid".
+    -E ENV_STRINGS   Environment variable definitions will be passed to your
+                     init script, ex. -E "LANG=C PIDFILE=/tmp/t.pid".
 EOH
 }
 
