@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Init script script tester.
+# Init script test tool.
 #
 # Copyright (C) 2014 Red Hat, Inc.
 # Author: Satoru SATOH <ssato redhat.com>
@@ -9,7 +9,7 @@
 # How to test your init script:
 #   1. Stop your application before tests.
 #   2. Run this script with specifing your init script like this:
-#        # ./init_script_tester.sh /path/to/your/init_script    
+#        # ./init_script_tester.sh [-E env_strings...] /path/to/your/init_script    
 #
 # Example session log:
 #
