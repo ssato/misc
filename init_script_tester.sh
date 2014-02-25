@@ -7,11 +7,11 @@
 # License: MIT
 #
 # How to test your init script:
-#   1. Stop your application before tests.
-#   2. Run this script with specifing your init script like this:
+#   1. Stop your application with your init script before running tests.
+#   2. Run this script with specifing the path to your init script like this:
 #        # ./init_script_tester.sh [-E env_strings...] /path/to/your/init_script    
 #
-# Example session log:
+# Here is an example session log:
 #
 # ssato@localhost% ./init_script_tester.sh -E "PIDFILE=/tmp/t.pid LOCKFILE=/tmp/t.lock" ./init_script_example.sh
 # Make sure that './init_script_example.sh' is stopped ...        OK
