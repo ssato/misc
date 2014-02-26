@@ -69,11 +69,11 @@ run_troublemaker () {
     local troublemaker="$3"
 
     echo -ne "[Info] Prepare to test force-stop certainly from abnormal state...\t"
-    ${test_env:?} ${target} status; rc=$?
+    eval "${test_env:?} ${target} status >/dev/null"; rc=$?
     if test $rc -eq 0; then  # It's running.
         :  # Nothing to do.
     elif test $rc -eq 3; then  # It's stopped.
-        eval "${test_env:?} ${target} start >/dev/null"; rc=$?
+        eval "${test_env} ${target} start >/dev/null"; rc=$?
         if test $rc -ne 0; then
             echo "NG; failed to start ${target}."
             exit 1
