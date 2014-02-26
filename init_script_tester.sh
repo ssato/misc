@@ -68,10 +68,18 @@ run_troublemaker () {
     local test_env="$2"
     local troublemaker="$3"
 
-    echo -ne "[Info] Prepare to test force-stop from abnormal state...\t"
-    eval "${test_env:?} ${target} start >/dev/null"; rc=$?
-    if test $rc -ne 0; then
-        echo "NG; failed to start ${target}."
+    echo -ne "[Info] Prepare to test force-stop certainly from abnormal state...\t"
+    ${test_env:?} ${target} status; rc=$?
+    if test $rc -eq 0; then  # It's running.
+        :  # Nothing to do.
+    elif test $rc -eq 3; then  # It's stopped.
+        eval "${test_env:?} ${target} start >/dev/null"; rc=$?
+        if test $rc -ne 0; then
+            echo "NG; failed to start ${target}."
+            exit 1
+        fi
+    else
+        echo "NG; unknown state"
         exit 1
     fi
     eval "${troublemaker:?}"; rc=$?
@@ -80,7 +88,7 @@ run_troublemaker () {
         exit 1
     fi
     echo "Done"
-    test_helper 0 "to force-stop from abnormal state" "${test_env} ${target} stop"
+    test_helper 0 "to force-stop certainly from abnormal state" "${test_env} ${target} stop"
 }
 
 # see also: http://refspecs.linuxbase.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
