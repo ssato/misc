@@ -1,5 +1,5 @@
 Name:           efl
-Version:        1.8.5
+Version:        1.9.1
 Release:        1%{?dist}
 Summary:        Enlightenment Foundation libraries
 License:        LGPLv2.1+ and GPLv2.1+ and BSD
@@ -14,8 +14,9 @@ BuildRequires:  fontconfig-devel
 BuildRequires:  freetype-devel
 BuildRequires:  fribidi-devel
 BuildRequires:  giflib-devel
-BuildRequires:  gstreamer-devel
-BuildRequires:  gstreamer-plugins-base-devel
+BuildRequires:  gstreamer1-devel
+BuildRequires:  gstreamer1-plugins-base-devel
+BuildRequires:  harfbuzz-devel
 BuildRequires:  iputils 
 BuildRequires:  libblkid-devel
 BuildRequires:  libmount-devel
@@ -40,7 +41,9 @@ BuildRequires:  libpng-devel
 BuildRequires:  libsndfile-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  lua-devel
+BuildRequires:  luajit-devel
 BuildRequires:  mesa-libGL-devel
+BuildRequires:  mesa-libEGL-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  systemd-devel
@@ -104,7 +107,11 @@ Development files, examples, man and HTML documentation for efl package.
             --disable-notify-win32    \
             --disable-libtool-lock    \
             --disable-static          \
-            --enable-ibus
+            --enable-gstreamer1       \
+            --enable-ibus             \
+            --enable-harfbuzz         \
+            --enable-egl              \
+            --enable-systemd
 
 #            --disable-doc             \
 make %{?_smp_mflags} V=1
@@ -150,6 +157,9 @@ find %{buildroot} -name '*.a' -delete
 %{_libdir}/cmake/*/*.cmake
 
 %changelog
+* Sat Mar 15 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.9.1-1
+- New upstream release
+
 * Fri Jan 31 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.5-1
 - New upstream release
 
