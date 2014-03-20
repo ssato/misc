@@ -5,7 +5,7 @@ Summary:        Enlightenment Foundation libraries
 License:        LGPLv2.1+ and GPLv2.1+ and BSD
 Group:          System Environment/Libraries
 Url:            http://enlightenment.org
-Source:         http://download.enlightenment.org/rel/%{name}/%{name}-%{version}.tar.gz
+Source:         http://download.enlightenment.org/rel/libs/%{name}/%{name}-%{version}.tar.gz
 # From efl/README:
 BuildRequires:  bullet-devel
 BuildRequires:  dbus-devel
