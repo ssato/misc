@@ -1,18 +1,19 @@
 Name:           evas_generic_loaders
-Version:        1.8.1
+Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Extra loaders for GPL loaders and unstable libraries
 License:        GPLv2+
 URL:            http://www.enlightenment.org
-Source0:        http://download.enlightenment.org/rel/%{name}/%{name}-%{version}.tar.gz
-BuildRequires:  libeina-devel
-BuildRequires:  gstreamer-devel 
-BuildRequires:  poppler-devel 
+Source0:        http://download.enlightenment.org/rel/libs/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  LibRaw-devel 
+BuildRequires:  eina-devel
+BuildRequires:  gstreamer-devel
+BuildRequires:  gstreamer-plugins-base-devel
 BuildRequires:  librsvg2-devel 
 BuildRequires:  libspectre-devel
-BuildRequires:  gstreamer-plugins-base-devel
 BuildRequires:  libspectre-devel
+BuildRequires:  poppler-devel
+BuildRequires:  zlib-devel
 
 %Description
 These are additional "generic" loaders for Evas that are stand-alone
@@ -27,7 +28,7 @@ in as a loader.
 %setup -q
 
 %build
-%configure --disable-static
+%configure
 make %{?_smp_mflags} V=1
 
 %install
@@ -39,6 +40,9 @@ make install DESTDIR=%{buildroot}
 
 
 %changelog
+* Thu Mar 20 2014 - Satoru SATOH <satoru.satoh@gmail.com> - 1.9.0-1
+- New upstream
+
 * Fri Jan 24 2014 - Satoru SATOH <satoru.satoh@gmail.com> - 1.8.1-1
 - New upstream
 
