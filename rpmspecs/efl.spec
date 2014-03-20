@@ -157,7 +157,7 @@ find %{buildroot} -name '*.a' -delete
 %{_libdir}/cmake/*/*.cmake
 
 %changelog
-* Sat Mar 15 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.9.1-1
+* Thu Mar 20 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.9.1-1
 - New upstream release
 
 * Fri Jan 31 2014 Satoru SATOH <satoru.satoh@gmail.com> - 1.8.5-1
