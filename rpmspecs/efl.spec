@@ -94,6 +94,32 @@ Enlightenment Foundation Library
 Summary:        Development files for efl
 License:        LGPLv2+
 Requires:       %{name}%{?_isa} = %{version}-%{release}
+Provides:       ecore-devel = %{version}-%{release}
+Provides:       edje-devel = %{version}-%{release}
+Provides:       eet-devel = %{version}-%{release}
+Provides:       eeze-devel = %{version}-%{release}
+Provides:       efreet-devel = %{version}-%{release}
+Provides:       eina-devel = %{version}-%{release}
+Provides:       eio-devel = %{version}-%{release}
+Provides:       embryo-devel = %{version}-%{release}
+Provides:       emotion-devel = %{version}-%{release}
+Provides:       eo-devel = %{version}-%{release}
+Provides:       escape-devel = %{version}-%{release}
+Provides:       ethumb-devel = %{version}-%{release}
+Provides:       evas-devel = %{version}-%{release}
+Obsoletes:      ecore-devel < %{version}-%{release}
+Obsoletes:      edje-devel < %{version}-%{release}
+Obsoletes:      eet-devel < %{version}-%{release}
+Obsoletes:      eeze-devel < %{version}-%{release}
+Obsoletes:      efreet-devel < %{version}-%{release}
+Obsoletes:      eina-devel < %{version}-%{release}
+Obsoletes:      eio-devel < %{version}-%{release}
+Obsoletes:      embryo-devel < %{version}-%{release}
+Obsoletes:      emotion-devel < %{version}-%{release}
+Obsoletes:      eo-devel < %{version}-%{release}
+Obsoletes:      escape-devel < %{version}-%{release}
+Obsoletes:      ethumb-devel < %{version}-%{release}
+Obsoletes:      evas-devel < %{version}-%{release}
 
 %description    devel
 Development files, examples, man and HTML documentation for efl package.
