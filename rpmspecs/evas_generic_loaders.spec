@@ -1,4 +1,4 @@
-Name:           evas-generic-loaders
+Name:           evas_generic_loaders
 Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Extra loaders for GPL loaders and unstable libraries
