@@ -1,4 +1,4 @@
-Name:           evas_generic_loaders
+Name:           evas-generic-loaders
 Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Extra loaders for GPL loaders and unstable libraries
@@ -6,7 +6,8 @@ License:        GPLv2+
 URL:            http://www.enlightenment.org
 Source0:        http://download.enlightenment.org/rel/libs/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  LibRaw-devel 
-BuildRequires:  eina-devel
+#BuildRequires:  eina-devel
+BuildRequires:  efl-devel
 BuildRequires:  gstreamer-devel
 BuildRequires:  gstreamer-plugins-base-devel
 BuildRequires:  librsvg2-devel 
@@ -40,8 +41,10 @@ make install DESTDIR=%{buildroot}
 
 
 %changelog
-* Thu Mar 20 2014 - Satoru SATOH <satoru.satoh@gmail.com> - 1.9.0-1
+* Fri Mar 21 2014 - Satoru SATOH <satoru.satoh@gmail.com> - 1.9.0-1
 - New upstream
+- Fix the rpm name; s/_/-/g
+- Switched a build dependency to efl-devel successor of eina-devel instead of eina-devel
 
 * Fri Jan 24 2014 - Satoru SATOH <satoru.satoh@gmail.com> - 1.8.1-1
 - New upstream
