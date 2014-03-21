@@ -92,7 +92,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/*.desktop
 %{_bindir}/enlightenment_remote
 %{_bindir}/enlightenment_start
 %{_libdir}/enlightenment
-/%{_unitdir}/e18.service
+%{_userunitdir}/e18.service
 
 %files data -f %{name}.lang
 %{_datadir}/xsessions/enlightenment.desktop
