@@ -116,6 +116,9 @@ run_testcases () {
     test_helper 0 "to restart from stopped state" "${test_env} ${target} restart"
     test_helper 0 "to stop from restared state" "${test_env} ${target} stop"
 
+    # Some more strict test cases: 
+    #test_helper 2 "to pass invalid arguements" "${test_env} ${target} invalid_arguemnt_xyz"
+
     # Special cases:
     if test "x$troublemaker" != "x"; then
         run_troublemaker ${target} "${test_env}" "${troublemaker}"
