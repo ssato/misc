@@ -134,7 +134,7 @@ case "$1" in
         ;;
   *)
         echo $"Usage: $prog (start|stop|status|restart|condrestart|try-restart)"
-        rc=1
+        rc=2  # Means invalid or excess arguments.
 esac
 exit $rc
 
