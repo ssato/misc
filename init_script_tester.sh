@@ -15,7 +15,8 @@
 # Here is an example session log:
 #
 # ssato@localhost% ./init_script_tester.sh \
-# > -E "PIDFILE=/tmp/t.pid LOCKFILE=/tmp/t.lock" > -T "rm -f /tmp/t.pid" \
+# > -E "PIDFILE=/tmp/t.pid LOCKFILE=/tmp/t.lock" \
+# > -T "rm -f /tmp/t.pid" \
 # > ./init_script_example.sh
 # [Info] Prepare to test './init_script_example.sh' (make sure it's stopped)...  Done
 #   Check if to start from stopped state exits with exit code 0 ...       OK
