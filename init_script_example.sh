@@ -8,7 +8,7 @@
 #
 # Install:
 #   1. Modify this script to fit with your application or something and your
-#      purpose. Do not forget test it by run it with 'test' argument also.
+#      purpose. Do not forget test it with init_script_tester.sh.
 #
 #   2. Install it in /etc/rc.d/init.d/ with appropriate attributes (permission,
 #      owner, group and SELinux label, etc.) and name represents the
