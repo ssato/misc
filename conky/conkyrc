@@ -30,7 +30,7 @@ text_buffer_size 2048
 
 #gap_x 1210
 gap_x 20
-gap_y 100
+gap_y 280
 minimum_size 300 900
 maximum_width 350
 own_window yes

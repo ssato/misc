@@ -92,7 +92,7 @@ run_troublemaker () {
     test_helper 0 "to force-stop certainly from abnormal state" "${test_env} ${target} stop"
 }
 
-# see also: http://refspecs.linuxbase.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+# see also: http://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
 run_testcases () {
     local target=$1
     local test_env="$2"
