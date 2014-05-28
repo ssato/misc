@@ -23,6 +23,9 @@ http://${file_server}/ssato/yum/fedora/20/x86_64/fedora-nrt-ssato-release-20-1.f
 
 # rpms to install additionally if not installed:
 rpms="
+NetworkManager-openvpn-gnome
+NetworkManager-vpnc-gnome
+NetworkManager-ssh-gnome
 apg
 audit
 autofs
@@ -47,6 +50,7 @@ cups-pk-helper
 curl
 dnf
 docker-io
+evince
 fakeroot
 firefox
 firewalld-config
@@ -55,6 +59,8 @@ gcc-c++
 gimp-data-extras
 git-annex
 git-svn
+gnome-backgrounds
+gnome-classic-session
 gnome-tweak-tool
 golang
 golang-godoc
@@ -62,6 +68,8 @@ golang-gotype
 golang-src
 golang-vim
 graphviz-python
+grub2-efi
+grub2-starfield-theme
 gstreamer1
 gstreamer1-plugins-bad-free
 gstreamer1-plugins-base
@@ -73,16 +81,16 @@ ibus-skk
 ibus-wayland
 inkscape
 iperf
+iw
 iwl6000-firmware
 iwl6000g2a-firmware
 iwl6000g2b-firmware
+lv
 mlocate
 mock
 mscgen
 msmtp
 mutt
-NetworkManager-openvpn-gnome
-NetworkManager-vpnc-gnome
 nfs-utils
 openssh-askpass
 openssh-clients
@@ -90,6 +98,7 @@ openssh-server
 p7zip
 pigz
 pinfo
+plymouth-theme-spin'*'
 pyflakes
 pylint
 python-flake8
