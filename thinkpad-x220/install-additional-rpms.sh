@@ -76,6 +76,11 @@ gstreamer1-plugins-base
 gstreamer1-plugins-good
 gstreamer1-plugins-good-extras
 gstreamer-ffmpeg
+gvfs-archive
+gvfs-fuse
+gvfs-gphoto2
+gvfs-smb
+gvfs-mtp
 hardlink
 ibus-skk
 ibus-wayland
