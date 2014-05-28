@@ -62,6 +62,7 @@ git-svn
 gnome-backgrounds
 gnome-classic-session
 gnome-tweak-tool
+gnupg
 golang
 golang-godoc
 golang-gotype
