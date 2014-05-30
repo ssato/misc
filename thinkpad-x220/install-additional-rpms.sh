@@ -91,6 +91,7 @@ iw
 iwl6000-firmware
 iwl6000g2a-firmware
 iwl6000g2b-firmware
+leafpad
 lv
 mlocate
 mock
