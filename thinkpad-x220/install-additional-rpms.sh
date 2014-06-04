@@ -48,6 +48,7 @@ cups-filesystem
 cups-filters
 cups-pk-helper
 curl
+dconf-editor
 dnf
 docker-io
 evince
@@ -108,12 +109,14 @@ pinfo
 plymouth-theme-spin'*'
 pyflakes
 pylint
+python-docs
 python-flake8
 python-nose
 python-pep8
 python-pip
 python-pygments
 python-tablib
+rpmlint
 samba-client
 scratch
 screen
