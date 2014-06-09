@@ -1,0 +1,23 @@
+diff -up ATS2-Postiats-0.0.8/bin/patscc_env.sh.in.contrib ATS2-Postiats-0.0.8/bin/patscc_env.sh.in
+--- ATS2-Postiats-0.0.8/bin/patscc_env.sh.in.contrib	2014-06-09 12:18:00.584378328 +0900
++++ ATS2-Postiats-0.0.8/bin/patscc_env.sh.in	2014-06-09 14:30:27.890697555 +0900
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ #
+ # Author: Likai Liu (likai AT cs DOT bu DOT edu)
+@@ -10,9 +10,10 @@ PACKAGE_TARNAME=@PACKAGE_TARNAME@
+ PACKAGE_VERSION=@PACKAGE_VERSION@
+ prefix=@prefix@
+ 
+-if [ ! "$PATSHOME" ] ; then
+-  export PATSHOME="$prefix/lib/${PACKAGE_TARNAME}-${PACKAGE_VERSION}"
+-fi
++[ ! "$PATSHOME" ] && export PATSHOME="${prefix}/lib/${PACKAGE_TARNAME}-${PACKAGE_VERSION}"
++
++# see http://www.ats-lang.org/DOWNLOAD/#installation_atscntrb
++export PATSHOMERELOC=${PATSHOMERELOC:-${PATSHOME}}
+ 
+ if [ ! -d "$PATSHOME" ] ; then
+   echo "ATS-Postiats should have been available at '${PATSHOME}'"; exit 1

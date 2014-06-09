@@ -1,9 +1,12 @@
 %global arcname ATS2-Postiats
 %global debug_package %{nil}
-%global includedir %{_prefix}/include
+%global dist_version 0.0.8
+%global dist_name ats2-postiats
+%global pkgincldir %{_includedir}/%{dist_name}-%{dist_version}
+%global pkglibdir %{_prefix}/lib/%{dist_name}-%{dist_version}
 
 Name:           ats2
-Version:        0.0.8
+Version:        %{dist_version}
 Release:        1%{?dist}
 Summary:        Programming language with advanced type systems
 License:        GPLv3
@@ -12,6 +15,7 @@ URL:            http://www.ats-lang.org
 Source0:        %{arcname}-%{version}.tgz
 Source1:        %{arcname}-include-%{version}.tgz
 Source2:        %{arcname}-contrib-%{version}.tgz
+Patch1:         ats2-contrib-env.patch
 BuildRequires:  gmp-devel
 
 %description
@@ -38,6 +42,7 @@ Development files for %{name}.
 
 %prep
 %setup -q -n %{arcname}-%{version} -a 1 -a 2
+%patch1 -p1 -b .contrib-env
 
 %build
 %configure
@@ -47,21 +52,20 @@ make
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT%{includedir}
-cp -a %{arcname}-include-%{version} $RPM_BUILD_ROOT%{includedir}/ats2-postiats-%{version}
-cp -a %{arcname}-contrib-%{version}/contrib $RPM_BUILD_ROOT%{includedir}/ats2-postiats-%{version}/
+mkdir -p $RPM_BUILD_ROOT%{pkgincldir}
+cp -a %{arcname}-include-%{version} $RPM_BUILD_ROOT%{pkgincldir}
+cp -a %{arcname}-contrib-%{version}/contrib $RPM_BUILD_ROOT%{pkglibdir}/
 cp -a %{arcname}-contrib-%{version}/document ./contrib_document
 #rm -f $RPM_BUILD_ROOT%{_includeddir}/ats2-postiats-%{version}/{COPYING,README}
 
 %files
-%doc RELEASE/
+%doc RELEASE/ contrib_document/
 %{_bindir}/*
-%{_prefix}/lib*/ats2-postiats-%{version}
+%{pkglibdir}/*
 
 %files          devel
-%doc contrib_document
-%{includedir}/*
+%{pkgincldir}/*
 
 %changelog
-* Sat Jun  7 2014 Satoru SATOH <ssato@redhat.com> - 0.0.8-1
+* Mon Jun  9 2014 Satoru SATOH <ssato@redhat.com> - 0.0.8-1
 - Initial packaging.
