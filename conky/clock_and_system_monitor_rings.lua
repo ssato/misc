@@ -162,7 +162,7 @@ gauge = {
 },
 {
     name='memperc',                arg='',                      max_value=100,
-    x=70,                          y=310,
+    x=70,                          y=300,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -183,7 +183,7 @@ gauge = {
 },
 {
     name='swapperc',               arg='',                      max_value=100,
-    x=70,                          y=310,
+    x=70,                          y=300,
     graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,
@@ -204,7 +204,7 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/home/',                     max_value=100,
-    x=70,                          y=425,
+    x=70,                          y=410,
     graph_radius=45,
     graph_thickness=7,
     graph_start_angle=180,
@@ -225,7 +225,7 @@ gauge = {
 },
 {
     name='fs_used_perc',           arg='/',                     max_value=100,
-    x=70,                          y=425,
+    x=70,                          y=410,
     graph_radius=30,
     graph_thickness=7,
     graph_start_angle=180,

@@ -28,9 +28,10 @@ double_buffer yes
 no_buffers yes
 text_buffer_size 2048
 
-#gap_x 1210
+#gap_x 1240
+#gap_y 105
 gap_x 20
-gap_y 280
+gap_y 260
 minimum_size 300 900
 maximum_width 350
 own_window yes
@@ -75,7 +76,7 @@ lua_draw_hook_post main
 
 # Header with base system info
 TEXT
-${voffset 30}
+${voffset 15}
 ${offset 35}${color4}${font sans:size=16}${time %e}${color1}${font sans:size=12}${time %A}
 ${offset 35}${color2}${voffset -2}${font sans:size=9}${time %b}${voffset -2} ${color3}${font sans:size=10}${time %Y}${font}
 
@@ -103,7 +104,7 @@ ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color2}${top name 4}
 #Showing memory part with TOP 3
 ${voffset -8}
 #${offset 130}${memgraph 40,183 666666 666666}${voffset -25}
-${offset  90}${font Source Sans Pro:size=10,weight:bold}${color5}MEM
+${offset  100}${font Source Sans Pro:size=10,weight:bold}${color5}MEM
 ${voffset -36}
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color4}${top_mem name 1}${alignr}${top_mem mem 1}%
 ${offset 130}${font Source Sans Pro:size=10,weight:normal}${color1}${top_mem name 2}${alignr}${top_mem mem 2}%
@@ -118,7 +119,7 @@ ${offset 135}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Sou
 ${offset 135}${font Source Sans Pro:size=9,weight:bold}${color1}Free: ${font Source Sans Pro:size=9,weight:normal}${fs_free /home}${alignr}${font Source Sans Pro:size=9,weight:bold}Used: ${font Source Sans Pro:size=9,weight:normal}${fs_used /home}
 
 # Network data (my desktop have only LAN). ETHERNET ring is mostly useless but looks pretty, main info is in the graphs
-${voffset -30}
+${voffset -25}
 ${offset 62}${font Source Sans Pro:size=10,weight:bold}${color5}ETHERNET
 ${if_up em1}
 ${voffset -35}
