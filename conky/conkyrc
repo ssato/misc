@@ -28,10 +28,11 @@ double_buffer yes
 no_buffers yes
 text_buffer_size 2048
 
-#gap_x 1240
-#gap_y 105
+alignment br
 gap_x 20
-gap_y 260
+gap_y 800
+#gap_x 1240
+#gap_y 200
 minimum_size 300 900
 maximum_width 350
 own_window yes
@@ -43,7 +44,6 @@ own_window_class conky-semi
 own_window_hints undecorate,sticky,skip_taskbar,skip_pager,below
 border_inner_margin 0
 border_outer_margin 0
-alignment tr
 
 draw_shades no
 draw_outline no
@@ -86,8 +86,7 @@ ${alignr -10}${font Source Sans Pro:size=10,weight:normal}${color1}$sysname $ker
 ${alignr}${font Source Sans Pro:size=10,weight:normal}${color1}Uptime: $uptime
 ${voffset 1}
 #${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed -n '2,$ { s/^/${offset 175} /p; }' | sed 's/'" $JOUR"'/${color4}'" $JOUR"'${color1}/'}
-#${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/$\{offset 175\} /g' | sed 's/'" $JOUR"'/${color4}'" $JOUR"'${color1}/1'}
-${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/$\{offset 175\} /g'}
+${alignr}${font sans:size=9}${execp JOUR=$(date +%e) ; cal | sed '1d' | sed 's/^/$\{offset 175\} /g'}
 
 ${voffset -35}
 
