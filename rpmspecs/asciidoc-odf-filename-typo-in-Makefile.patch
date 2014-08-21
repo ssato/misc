@@ -1,0 +1,12 @@
+diff -up asciidoc-odf.git/Makefile.typo asciidoc-odf.git/Makefile
+--- asciidoc-odf.git/Makefile.typo	2014-08-21 15:15:42.918999809 +0900
++++ asciidoc-odf.git/Makefile	2014-08-21 15:15:53.908176221 +0900
+@@ -56,7 +56,7 @@ install: templates
+ 	@echo "= Installing hp theme"
+ 	install -Dp -m0644 themes/hp/hp.odt.styles $(DESTDIR)$(sysconfdir)/asciidoc/themes/hp/hp.odt.styles
+ 	@echo "=Installing bnpp filter"
+-	install -Dp -m0644 themes/bnpp/bnp.odt.styles $(DESTDIR)$(sysconfdir)/asciidoc/themes/bnpp/bnpp.odt.styles
++	install -Dp -m0644 themes/bnpp/bnpp.odt.styles $(DESTDIR)$(sysconfdir)/asciidoc/themes/bnpp/bnpp.odt.styles
+ 	@echo "=Installing code filter"
+ 	install -Dp -m0755 filters/code/code-filter.py $(DESTDIR)$(sysconfdir)/asciidoc/filters/code/code-filter.py
+ ### Old cruft
