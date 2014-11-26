@@ -1,0 +1,12 @@
+diff -up conky_colors-master/Makefile.destdir conky_colors-master/Makefile
+--- conky_colors-master/Makefile.destdir	2014-11-27 03:42:23.221297884 +0900
++++ conky_colors-master/Makefile	2014-11-27 03:43:18.613057392 +0900
+@@ -14,7 +14,7 @@ install: conky-colors conkyrc
+ 	cp -v conky-colors $(DESTDIR)/usr/bin
+ 	cp -v -r conkycolors $(DESTDIR)/usr/share
+ 	cp -v -r fonts/conkycolors $(DESTDIR)/usr/share/fonts
+-	ln -fs $(DESTDIR)/usr/share/conkycolors/bin/conkyTask $(DESTDIR)/usr/bin/ct
++	cd $(DESTDIR)/usr/bin && ln -fs ../share/conkycolors/bin/conkyTask ./ct
+ 	chmod +x $(DESTDIR)/usr/share/conkycolors/scripts/*
+ 	chmod +x $(DESTDIR)/usr/share/conkycolors/bin/*
+ 	chmod -R 755 $(DESTDIR)/usr/share/conkycolors/
