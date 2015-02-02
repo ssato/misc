@@ -33,7 +33,6 @@ import logging
 import optparse
 import os.path
 import os
-import pprint  # for debug
 import sys
 import xlrd
 
@@ -81,7 +80,7 @@ class UnicodeWriter(object):
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
-        #self.writer.writerow([s.encode("utf-8") for s in row])
+        # self.writer.writerow([s.encode("utf-8") for s in row])
         cs = []
         for s in row:
             try:
@@ -107,7 +106,8 @@ class UnicodeWriter(object):
 
 def show(cell_type, cell_value, datemode):
     """
-    @see showable_cell_value in examples/xlrdnameAPIdemo.py in python-xlrd dist.
+    :see: showable_cell_value in examples/xlrdnameAPIdemo.py in
+        python-xlrd dist.
     """
     if cell_type == xlrd.XL_CELL_EMPTY:
         v = ''
@@ -118,7 +118,9 @@ def show(cell_type, cell_value, datemode):
             e1, e2 = sys.exc_info()[:2]
             v = "%s:%s" % (e1.__name__, e2)
     elif cell_type == xlrd.XL_CELL_ERROR:
-        v = xlrd.error_text_from_code.get(cell_value, '<Unknown error code 0x%02x>' % cell_value)
+        v = xlrd.error_text_from_code.get(cell_value,
+                                          '<Unknown error code 0x%02x>' %
+                                          cell_value)
     else:
         v = cell_value
 
@@ -178,7 +180,8 @@ class DataDumper(object):
             self.row_start = 1
 
     def get_headers(self, worksheet):
-        return [normalize_key(val) or "-" for idx, val in sheet_cell_values_in_the_row_g(worksheet, 0)]
+        return [normalize_key(val) or "-" for idx, val
+                in sheet_cell_values_in_the_row_g(worksheet, 0)]
 
     def open(self, flag="w"):
         return open(self.output, flag)
@@ -190,7 +193,8 @@ class DataDumper(object):
         raise NotImplementedError("Children classes must implement this!")
 
     def dump(self):
-        logging.info(" Try to dump data in sheet '%s' to '%s'" % (self.worksheet.name, self.output))
+        logging.info("Try to dump data in sheet '%s' to '%s'",
+                     self.worksheet.name, self.output)
         self.dump_impl()
         logging.info(" Done: %s" % self.output)
 
@@ -219,7 +223,8 @@ class JsonDumper(DataDumper):
     suffix = ".json"
 
     def dump_impl(self):
-        data = [dict(zip(self.headers, rowdata)) for rowdata in self.foreach_sheet_cells_by_row()]
+        data = [dict(zip(self.headers, rowdata)) for rowdata
+                in self.foreach_sheet_cells_by_row()]
         json.dump(data, self.open(), ensure_ascii=False, indent=2)
 
 
@@ -269,14 +274,15 @@ Examples:
 
     cog = optparse.OptionGroup(p, "Common Options")
     cog.add_option("", "--dumper", type="choice", choices=dumper_choices,
-        help="Select dump format from " + ", ".join(dumper_choices) + " [%default]")
+                   help=("Select dump format from %s [%default]" %
+                         ", ".join(dumper_choices)))
     cog.add_option("", "--names", help="Comma separated filenames")
     cog.add_option("", "--headers",
-        help="Comma separated list of headers [default: cell contents in 1st row of input .xls]")
+                   help="Comma separated list of headers [default: cell "
+                        "contents in 1st row of input .xls]")
     cog.add_option("-o", "--outdir", help="Specify output dir [%default]")
     cog.add_option("-v", "--verbose", help="Verbose mode", action="store_true")
     cog.add_option("-q", "--quiet", help="Quiet mode", action="store_true")
-    #cog.add_option('-T', '--test', help='Test mode - running test suites', default=False, action="store_true")
     p.add_option_group(cog)
 
     return p
@@ -284,7 +290,6 @@ Examples:
 
 def main(dumper_map=DUMPERS):
     loglevel = logging.WARN
-    sheet_names = {}
 
     parser = opts_parser()
     (options, args) = parser.parse_args()
