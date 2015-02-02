@@ -25,19 +25,16 @@
 #
 # Requirements: python, python-xlrd (http://pypi.python.org/pypi/xlrd/)
 #
-
 import codecs
 import cStringIO
 import csv
+import itertools
 import logging
 import optparse
 import os.path
 import os
 import sys
 import xlrd
-
-from itertools import groupby
-
 
 try:
     from collections import OrderedDict as dict
@@ -155,7 +152,7 @@ def fst(tpl_or_list):
 
 
 def foreach_sheet_cells_by_row(sheet, row_start=1):
-    for k, g in groupby(sheet_cell_values_g(sheet, row_start), fst):
+    for k, g in itertools.groupby(sheet_cell_values_g(sheet, row_start), fst):
         yield [t[2] for t in g]
 
 
@@ -228,10 +225,8 @@ class JsonDumper(DataDumper):
         json.dump(data, self.open(), ensure_ascii=False, indent=2)
 
 
-DUMPERS = dict(
-    csv=CsvDumper,  # default
-    json=JsonDumper,
-)
+DUMPERS = dict(csv=CsvDumper,  # default
+               json=JsonDumper)
 
 
 def xls_to(xls_file, dumper, outdir, names=[], headers=[], dumper_map=DUMPERS):
