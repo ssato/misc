@@ -23,7 +23,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#
 # Requirements: python, python-xlrd (http://pypi.python.org/pypi/xlrd/)
 #
 
@@ -66,12 +65,12 @@ except ImportError:
                 raise RuntimeError("Not supported.")
 
 
-
-# @see http://docs.python.org/release/2.5.2/lib/csv-examples.html
 class UnicodeWriter(object):
     """
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
+
+    :see: http://docs.python.org/release/2.5.2/lib/csv-examples.html
     """
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
@@ -104,7 +103,6 @@ class UnicodeWriter(object):
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
-
 
 
 def show(cell_type, cell_value, datemode):
@@ -163,7 +161,6 @@ def normalize_key(key_str):
     return key_str.lower().replace(" ", "_")
 
 
-
 class DataDumper(object):
 
     suffix = ".dat"
@@ -198,7 +195,6 @@ class DataDumper(object):
         logging.info(" Done: %s" % self.output)
 
 
-
 class CsvDumper(DataDumper):
 
     suffix = ".csv"
@@ -218,7 +214,6 @@ class CsvDumper(DataDumper):
         out.close()
 
 
-
 class JsonDumper(DataDumper):
 
     suffix = ".json"
@@ -228,12 +223,10 @@ class JsonDumper(DataDumper):
         json.dump(data, self.open(), ensure_ascii=False, indent=2)
 
 
-
 DUMPERS = dict(
     csv=CsvDumper,  # default
     json=JsonDumper,
 )
-
 
 
 def xls_to(xls_file, dumper, outdir, names=[], headers=[], dumper_map=DUMPERS):
@@ -254,7 +247,6 @@ def xls_to(xls_file, dumper, outdir, names=[], headers=[], dumper_map=DUMPERS):
         dmpr.dump()
 
 
-## main:
 def opts_parser(dumper_map=DUMPERS):
     p = optparse.OptionParser("""%prog [OPTION ...] XLS_FILE
 
@@ -315,7 +307,6 @@ def main(dumper_map=DUMPERS):
     xls_file = args[0]
 
     xls_to(xls_file, options.dumper, options.outdir, names, headers)
-
 
 
 if __name__ == '__main__':
