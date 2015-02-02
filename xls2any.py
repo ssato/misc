@@ -2,7 +2,7 @@
 #
 # Generate a series of CSV files from an Excel (.xls) file.
 #
-# Copyright (C) 2010, 2011 Red Hat, Inc.
+# Copyright (C) 2010 - 2015 Red Hat, Inc.
 # Red Hat Author(s): Satoru SATOH <ssato@redhat.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
