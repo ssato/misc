@@ -22,7 +22,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Requirements: python-sqlite3 (python < 2.6), python-xlrd, json or simplejson
+# Requirements:
+#   - python-sqlite3 (python < 2.6)
+#   - python-xlrd
+#   - anyconfig, or json / simplejson and yaml
+#     - anyconfig: https://github.com/ssato/python-anyconfig,
+#                  https://copr.fedoraproject.org/coprs/ssato/python-anyconfig/
 #
 import cStringIO as StringIO
 import codecs
@@ -30,15 +35,20 @@ import copy
 import csv
 import logging
 import optparse
+import os.path
 import os
 import sqlite3
 import sys
 import xlrd
 
 try:
-    import json
+    import anyconfig
 except ImportError:
-    import simplejson as json
+    import yaml
+    try:
+        import json
+    except ImportError:
+        import simplejson as json
 
 
 """xlsto.py
@@ -52,7 +62,7 @@ Usage:
 
 Data spec:
 
-data spec format is JSON. Here is an example.
+data spec format is JSON or yaml. Here is an example.
 
 [
   {
@@ -103,10 +113,20 @@ def rename_if_exists(target, suffix='.bak'):
 
 
 def load_specs(specfile):
-    """Loads given data spec and returns it as an internal representation.
+    """
+    Loads given data spec and returns it as an internal representation.
     See the spec example above also.
     """
-    return json.load(open(specfile, 'r'))
+    try:
+        return anyconfig.load(specfile)
+    except NameError:  # It means anyconfig is not available.
+        sfext = os.path.splitext(specfile)[-1][1:]
+        if sfext in ("json", "jsn"):
+            load = json.load
+        else:  # try yaml.load by default.
+            load = yaml.load
+
+        return load(open(specfile))
 
 
 def load_datasets(specfile, filepath):
