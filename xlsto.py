@@ -2,7 +2,7 @@
 #
 # xlsto.py - Convert Excel files to other formats, e.g. csv, sql db.
 #
-# Copyright (C) 2008 - 2010 Satoru SATOH <satoru.satoh at gmail.com>
+# Copyright (C) 2008 - 2015 Satoru SATOH <satoru.satoh at gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#
 # Requirements: python-sqlite3 (python < 2.6), python-xlrd, json or simplejson
 #
-
 import cStringIO as StringIO
 import codecs
 import copy
@@ -46,7 +44,7 @@ except ImportError:
 """xlsto.py
 
 Usage:
- 
+
   ./xlsto.py [Options ...] DATASPEC_FILE
 
   (-h or --help option will shows usage)
@@ -59,20 +57,23 @@ data spec format is JSON. Here is an example.
 [
   {
     "location": "http://example.com/pub/xls/",  # optional
-    "filepath": "SampleData.xls",  # file path  
+    "filepath": "SampleData.xls",  # file path
     "description": "Sample Data List",
     "sheets": [
       {
         "name": "Sheet1",
-        "table_name": "sample_data_list",  # database table name will be used in sql db.
+        "table_name": "sample_data_list",  # database table name will be used
+                                           # in sql db.
         "description": "Sample Data List",
-        "keys": [[3,0],[3,1],[3,2],[3,3],"test_key0"],  # cell or string list of col names.
-                                                        # 
-        "marker_idx": 0,   # The index of the col to check whether data exists in row or not.
-                           # If omitted, 0 will be used.
-        "data_range": [[4,-1],[0,12]]  # data range [[row_bein, row_end], [col_bein, col_end]].
-                                       # Indices start with 0 and -1 indicates infinite, 
-                                       # that is, will be detected automatically.
+        "keys": [[3,0],[3,1],[3,2],[3,3],"test_key0"],  # cell or string list
+                                                        # of col names.
+        "marker_idx": 0,   # The index of the col to check whether data exists
+                           # in row or not. If omitted, 0 will be used.
+        "data_range": [[4,-1],[0,12]]  # data range [[row_bein, row_end],
+                                       #             [col_bein, col_end]].
+                                       # Indices start with 0 and -1 indicates
+                                       # infinite, that is, will be detected
+                                       # automatically.
       },
       ...
     ]
@@ -86,14 +87,15 @@ def normalize_key(key):
     """Normalize key name to be used as SQL key name.
 
     >>> normalize_key('Key Name')
-    key_name
+    'key_name'
     >>>
     """
     return key.lower().strip().replace(' ', '_')
 
 
 def rename_if_exists(target, suffix='.bak'):
-    """If the file $target (file or dir) exists, it will be renamed and backed
+    """
+    If the file $target (file or dir) exists, it will be renamed and backed
     up as 'TARGET.${suffix}'. (The default suffix is '.bak'.)
     """
     if os.path.exists(target):
@@ -112,7 +114,7 @@ def load_datasets(specfile, filepath):
     in specfile and returns these as dict objects.
     """
     for filespec in load_specs(specfile):
-        book = xlrd.open_workbook(filepath)  # might throw IndexError, IOError, etc.
+        book = xlrd.open_workbook(filepath)  # throw IndexError, IOError, etc.
 
         for sheet_idx in range(0, len(filespec['sheets'])):
             sheet = book.sheet_by_index(sheet_idx)
@@ -120,13 +122,15 @@ def load_datasets(specfile, filepath):
             dataset = copy.copy(sheetspec)
 
             midx = filespec['sheets'][sheet_idx].get('marker_idx', 0)
-            rows,cols = sheetspec['data_range']
+            (rows, cols) = sheetspec['data_range']
             if rows[1] == -1:
                 rows[1] = sheet.nrows
 
             # TODO: exceptions handling. (IndexError, etc.)
-            keys = [(isinstance(c, list) and sheet.cell_value(*c) or c) for c in sheetspec['keys']]
-            values = [sheet.row(rx)[cols[0]:cols[1]+1] for rx in range(*rows) if sheet.row(rx)[midx].value]
+            keys = [(isinstance(c, list) and sheet.cell_value(*c) or c) for c
+                    in sheetspec['keys']]
+            values = [sheet.row(rx)[cols[0]:cols[1]+1] for rx in range(*rows)
+                      if sheet.row(rx)[midx].value]
 
             dataset['keynames'] = [normalize_key(k) for k in keys]
             dataset['values'] = values
@@ -145,7 +149,8 @@ class UnicodeWriter:
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
-        self.writer.writerow([isinstance(s, unicode) and s.encode("utf-8") or s for s in row])
+        self.writer.writerow([isinstance(s, unicode) and s.encode("utf-8") or s
+                              for s in row])
         data = self.queue.getvalue()
         data = data.decode("utf-8")
         data = self.encoder.encode(data)
@@ -196,18 +201,18 @@ def db_process_dataset(dbfile, dataset):
     keynames = dataset['keynames']
     values = dataset['values']
 
-    keys = ', '.join(keynames).replace('?','')
+    keys = ', '.join(keynames).replace('?', '')
     placeholders = ', '.join('?' * len(keynames))
 
     # 1. create table:
-    #sql = "create table %s (%s) if not exists" % (table, keys)
     sql = "create table %s (%s)" % (table, keys)
     logging.info("sql = '%s'" % sql)
     conn.execute(sql)
     conn.commit()
 
     # 2. insert dataset into the table:
-    sql = "insert or replace into %s (%s) values (%s)" % (table, keys, placeholders)
+    sql = "insert or replace into %s (%s) values (%s)" % (table, keys,
+                                                          placeholders)
     logging.info("sql = '%s'" % sql)
 
     for xs in values:
@@ -231,17 +236,20 @@ def db_create(specfile, filepath, dbfile, force):
 
 
 def opts_parser():
-    parser = optparse.OptionParser('%prog [OPTION ...] INPUT_FILE')
-    parser.add_option('-s', '--spec', help='specify "spec" file defines XLS data structure [guessed from input file]')
-    parser.add_option('-o', '--output', dest='output', default='output',
-        help='specify database file for "sqlite" output or dir for "csv" output. [default: output.db or output/]')
-    parser.add_option('-t', '--output-type', dest='type',
-        help='Specify the output type, csv or sqlite [default].')
-    parser.add_option('-f', '--force', dest='force', action='store_true',
-        help='Force overwrite existing file/dir.', default=False)
-    parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
-        help='Verbose mode.', default=False)
-    return parser
+    psr = optparse.OptionParser('%prog [OPTION ...] INPUT_FILE')
+    psr.add_option('-s', '--spec',
+                   help="specify 'spec' file defines XLS data structure "
+                        "[guessed from input file]")
+    psr.add_option('-o', '--output', dest='output', default='output',
+                   help="specify database file for 'sqlite' output or dir "
+                        "for 'csv' output. [default: output.db or output/]")
+    psr.add_option('-t', '--output-type', dest='type',
+                   help='Specify the output type, csv or sqlite [default].')
+    psr.add_option('-f', '--force', dest='force', action='store_true',
+                   help='Force overwrite existing file/dir.', default=False)
+    psr.add_option('-v', '--verbose', dest='verbose', action='store_true',
+                   help='Verbose mode.', default=False)
+    return psr
 
 
 def main():
@@ -285,5 +293,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4:ts=4:expandtab:
