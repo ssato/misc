@@ -269,7 +269,7 @@ Examples:
 
     cog = optparse.OptionGroup(p, "Common Options")
     cog.add_option("", "--dumper", type="choice", choices=dumper_choices,
-                   help=("Select dump format from %s [%default]" %
+                   help=("Select dump format from %s [%%default]" %
                          ", ".join(dumper_choices)))
     cog.add_option("", "--names", help="Comma separated filenames")
     cog.add_option("", "--headers",
