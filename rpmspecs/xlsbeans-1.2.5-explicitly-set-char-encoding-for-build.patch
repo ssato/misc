@@ -1,0 +1,13 @@
+diff -up xlsbeans-1.2.5/pom.xml.utf-8 xlsbeans-1.2.5/pom.xml
+--- xlsbeans-1.2.5/pom.xml.utf-8	2015-02-09 03:55:13.634555600 +0900
++++ xlsbeans-1.2.5/pom.xml	2015-02-09 03:56:02.255808493 +0900
+@@ -4,6 +4,9 @@
+   <groupId>jp.sf.amateras.xlsbeans</groupId>
+   <artifactId>xlsbeans</artifactId>
+   <packaging>jar</packaging>
++  <properties>
++    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++  </properties>
+   <version>1.2.5</version>
+   <name>XLSBeans</name>
+   <url>http://maven.apache.org</url>

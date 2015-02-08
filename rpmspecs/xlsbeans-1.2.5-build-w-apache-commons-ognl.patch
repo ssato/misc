@@ -1,0 +1,40 @@
+diff -up xlsbeans-1.2.5/pom.xml.ognl xlsbeans-1.2.5/pom.xml
+--- xlsbeans-1.2.5/pom.xml.ognl	2015-02-09 03:25:49.536662457 +0900
++++ xlsbeans-1.2.5/pom.xml	2015-02-09 03:30:48.675065942 +0900
+@@ -73,8 +73,8 @@
+       <version>3.6</version>
+     </dependency>
+     <dependency>
+-      <groupId>ognl</groupId>
+-      <artifactId>ognl</artifactId>
++      <groupId>org.apache.commons</groupId>
++      <artifactId>commons-ognl</artifactId>
+       <version>3.0.2</version>
+     </dependency>
+     <dependency>
+diff -up xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/DynamicAnnotationBuilder.java.ognl xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/DynamicAnnotationBuilder.java
+--- xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/DynamicAnnotationBuilder.java.ognl	2015-02-09 03:25:40.559800394 +0900
++++ xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/DynamicAnnotationBuilder.java	2015-02-09 03:32:39.570361942 +0900
+@@ -7,8 +7,8 @@ import java.lang.reflect.Proxy;
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+-import ognl.Ognl;
+-import ognl.OgnlContext;
++import org.apache.commons.ognl.Ognl;
++import org.apache.commons.ognl.OgnlContext;
+ 
+ /**
+  * Creates {@link java.lang.annotation.Annotation} instances
+diff -up xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/MultipleLoaderClassResolver.java.ognl xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/MultipleLoaderClassResolver.java
+--- xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/MultipleLoaderClassResolver.java.ognl	2015-02-09 03:25:32.219928543 +0900
++++ xlsbeans-1.2.5/src/main/java/net/java/amateras/xlsbeans/xml/MultipleLoaderClassResolver.java	2015-02-09 03:29:10.523574123 +0900
+@@ -5,7 +5,7 @@ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.Map;
+ 
+-import ognl.ClassResolver;
++import org.apache.commons.ognl.ClassResolver;
+ 
+ /**
+  * ClassResolver loading from multiple ClassLoader in Ognl.
