@@ -1,0 +1,12 @@
+diff -up jagg/src/jagg-core/src/test/java/net/sf/jagg/test/PerformanceTest.java.skiptests jagg/src/jagg-core/src/test/java/net/sf/jagg/test/PerformanceTest.java
+--- jagg/src/jagg-core/src/test/java/net/sf/jagg/test/PerformanceTest.java.skiptests	2015-02-09 20:49:56.610920291 +0900
++++ jagg/src/jagg-core/src/test/java/net/sf/jagg/test/PerformanceTest.java	2015-02-09 20:49:16.326506092 +0900
+@@ -37,7 +37,7 @@ import net.sf.jagg.test.model.Record;
+  * @author Randy Gettman
+  * @since 0.3.0
+  */
+-//@org.junit.Ignore
++@org.junit.Ignore
+ public class PerformanceTest
+ {
+    /**

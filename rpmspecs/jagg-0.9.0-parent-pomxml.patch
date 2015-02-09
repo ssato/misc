@@ -1,0 +1,31 @@
+diff -up jagg/pom.xml.parent jagg/pom.xml
+--- jagg/pom.xml.parent	2015-02-09 21:15:20.070889014 +0900
++++ jagg/pom.xml	2015-02-09 20:39:07.560233995 +0900
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++    <groupId>net.sf.jagg</groupId>
++    <artifactId>jagg</artifactId>
++    <version>0.9.0</version>
++    <packaging>pom</packaging>
++    <name>jagg-core</name>
++    <url>http://jagg.sourceforge.net</url>
++    <description>
++        jAgg is a Java 5.0 API that supports “group by” operations on Lists of Java objects: aggregate operations such as count, sum, max, min, avg, and many more. It also allows custom aggregate operations.
++    </description>
++    <modules>
++        <module>src/jagg-core</module>
++    </modules>
++</project>
+diff -up jagg/src/jagg-core/pom.xml.parent jagg/src/jagg-core/pom.xml
+--- jagg/src/jagg-core/pom.xml.parent	2015-02-09 20:45:12.958014035 +0900
++++ jagg/src/jagg-core/pom.xml	2015-02-09 20:41:05.871543836 +0900
+@@ -4,6 +4,7 @@
+         <groupId>net.sf.jagg</groupId>
+         <artifactId>jagg</artifactId>
+         <version>0.9.0</version>
++        <relativePath>../../pom.xml</relativePath>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+     <groupId>net.sf.jagg</groupId>
