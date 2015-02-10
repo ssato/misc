@@ -1,0 +1,12 @@
+diff -up jett/src/jett-core/pom.xml.hsqldb jett/src/jett-core/pom.xml
+--- jett/src/jett-core/pom.xml.hsqldb	2015-02-09 22:37:31.280339863 +0900
++++ jett/src/jett-core/pom.xml	2015-02-09 22:37:41.536192825 +0900
+@@ -60,7 +60,7 @@
+             <scope>test</scope>
+         </dependency>
+         <dependency>
+-            <groupId>hsqldb</groupId>
++            <groupId>org.hsqldb</groupId>
+             <artifactId>hsqldb</artifactId>
+             <version>1.8.0.10</version>
+             <scope>test</scope>

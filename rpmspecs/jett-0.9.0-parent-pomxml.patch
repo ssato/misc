@@ -1,0 +1,34 @@
+diff -up jett/pom.xml.parent jett/pom.xml
+--- jett/pom.xml.parent	2015-02-09 22:06:45.273742145 +0900
++++ jett/pom.xml	2015-02-09 22:06:39.150829717 +0900
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++    <groupId>net.sf.jett</groupId>
++    <artifactId>jett</artifactId>
++    <version>0.9.0</version>
++    <packaging>pom</packaging>
++    <name>jett-core</name>
++    <url>http://jett.sourceforge.net</url>
++    <description>
++        JETT is a Java 5.0 API that reads an Excel spreadsheet as a template,
++        takes your data, and creates a new Excel spreadsheet that contains your
++        data, formatted as in the template. It works with .xls and .xlsx
++        template spreadsheets.
++    </description>
++    <modules>
++        <module>src/jett-core</module>
++    </modules>
++</project>
+diff -up jett/src/jett-core/pom.xml.parent jett/src/jett-core/pom.xml
+--- jett/src/jett-core/pom.xml.parent	2015-02-09 22:03:50.292244780 +0900
++++ jett/src/jett-core/pom.xml	2015-02-09 22:04:21.381800128 +0900
+@@ -4,6 +4,7 @@
+         <groupId>net.sf.jett</groupId>
+         <artifactId>jett</artifactId>
+         <version>0.9.0</version>
++        <relativePath>../../pom.xml</relativePath>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+     <groupId>net.sf.jett</groupId>
