@@ -180,8 +180,8 @@ class DataDumper(object):
         return [normalize_key(val) or "-" for idx, val
                 in sheet_cell_values_in_the_row_g(worksheet, 0)]
 
-    def open(self, flag="w"):
-        return open(self.output, flag)
+    def open(self, flag="wb"):
+        return codecs.open(self.output, flag, encoding='utf-8')
 
     def foreach_sheet_cells_by_row(self):
         return foreach_sheet_cells_by_row(self.worksheet, self.row_start)
