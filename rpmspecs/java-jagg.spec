@@ -2,11 +2,11 @@
 
 Name:           java-%{short_name}
 Version:        0.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Java Aggregation operation library
 Group:          Development/Libraries
 License:        LGPLv3
-URL:            https://github.com/takezoe/%{short_name}
+URL:            https://%{short_name}.sourceforge.net
 Source0:        http://sourceforge.net/projects/jagg/files/%{version}/%{short_name}-%{version}-distr.zip
 Patch0:         jagg-0.9.0-parent-pomxml.patch
 Patch1:         jagg-0.9.0-skip-some-tests.patch
@@ -48,5 +48,8 @@ This package provides %{summary}.
 %doc readme.txt
 
 %changelog
+* Mon Feb  9 2015 Satoru SATOH <ssato at redhat.com> - 0.9.0-2
+- Fix Url
+
 * Mon Feb  9 2015 Satoru SATOH <ssato at redhat.com> - 0.9.0-1
 - Initial package
