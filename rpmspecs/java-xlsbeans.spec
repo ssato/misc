@@ -2,7 +2,7 @@
 
 Name:           java-%{short_name}
 Version:        1.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Java library for mapping Excel sheets to POJO
 Group:          Development/Libraries
 License:        ASL 2.0
@@ -21,10 +21,7 @@ BuildRequires:  mvn(org.tukaani:xz)
 BuildRequires:  mvn(net.sourceforge.jexcelapi:jxl)
 BuildRequires:  mvn(org.apache.poi:poi)
 BuildRequires:  mvn(org.apache.poi:poi-ooxml)
-#BuildRequires:  mvn(ognl:ognl)
 BuildRequires:  mvn(org.apache.commons:commons-ognl)
-#BuildRequires:  osgi(org.apache.commons.commons-ognl)
-#BuildRequires:  apache-commons-ognl
 BuildRequires:  mvn(org.apache.maven.wagon:wagon-ssh)
 
 %description
@@ -39,6 +36,7 @@ This package provides %{summary}.
 
 %prep
 %setup -q -n %{short_name}-%{version}
+# NOTE: Is it possible to pass the path of pom.xml to pom_change_dep ?
 #%pom_change_dep ognl:ognl org.apache.commons:commons-ognl
 %patch0 -p1 -b .ognl
 %patch1 -p1 -b .datefmt
@@ -58,5 +56,8 @@ This package provides %{summary}.
 %doc LICENSE README.md excel.png
 
 %changelog
+* Mon Feb  9 2015 Satoru SATOH <ssato at redhat.com> - 1.2.5-2
+- Clean up RPM SPEC
+
 * Mon Feb  9 2015 Satoru SATOH <ssato at redhat.com> - 1.2.5-1
 - Initial package
