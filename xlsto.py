@@ -62,12 +62,10 @@ Usage:
 
 Data spec:
 
-data spec format is JSON or yaml. Here is an example.
+The format of spec file is in JSON or yaml. Here is an example:
 
-[
   {
     "location": "http://example.com/pub/xls/",  # optional
-    "filepath": "SampleData.xls",  # file path
     "description": "Sample Data List",
     "sheets": [
       {
@@ -85,11 +83,25 @@ data spec format is JSON or yaml. Here is an example.
                                        # infinite, that is, will be detected
                                        # automatically.
       },
+    ]
+  }
+
+  or multiple specs:
+
+  {
+    "specs": [
+      {
+        "location": ...,
+        "filepath": "SampleData.xls",  # Input file path
+        "sheets": [
+          {
+            ...
+          }
+        ]
+      },
       ...
     ]
-  },
-  ...
-]
+  }
 """
 
 
@@ -116,6 +128,8 @@ def load_specs(specfile):
     """
     Loads given data spec and returns it as an internal representation.
     See the spec example above also.
+
+    :return: A list of spec objects :: [spec]
     """
     try:
         return anyconfig.load(specfile)
@@ -126,36 +140,68 @@ def load_specs(specfile):
         else:  # try yaml.load by default.
             load = yaml.load
 
-        return load(open(specfile))
+        spec = load(open(specfile))
+
+        return spec["specs"] if "specs" in spec else [spec]
 
 
-def load_datasets(specfile, filepath):
-    """Loads datasets from Excel workbooks (files) according to each file spec
-    in specfile and returns these as dict objects.
+def load_dataset(filespec, filepath):
     """
-    for filespec in load_specs(specfile):
-        book = xlrd.open_workbook(filepath)  # throw IndexError, IOError, etc.
+    Loads dataset from Excel files by following given file spec and returns it
+    as dict objects.
 
-        for sheet_idx in range(0, len(filespec['sheets'])):
-            sheet = book.sheet_by_index(sheet_idx)
-            sheetspec = filespec['sheets'][sheet_idx]
-            dataset = copy.copy(sheetspec)
+    :param filespec: Input file spec
+    :param filepath: Input file path
+    :return: Yield result data set
+    """
+    if not os.path.exists(filepath):
+        logging.error("Input file '%s' does not exists!", filepath)
+        sys.exit(-1)
 
-            midx = filespec['sheets'][sheet_idx].get('marker_idx', 0)
-            (rows, cols) = sheetspec['data_range']
-            if rows[1] == -1:
-                rows[1] = sheet.nrows
+    book = xlrd.open_workbook(filepath)  # throw IndexError, IOError, etc.
 
-            # TODO: exceptions handling. (IndexError, etc.)
-            keys = [(isinstance(c, list) and sheet.cell_value(*c) or c) for c
-                    in sheetspec['keys']]
-            values = [sheet.row(rx)[cols[0]:cols[1]+1] for rx in range(*rows)
-                      if sheet.row(rx)[midx].value]
+    for sheet_idx in range(0, len(filespec['sheets'])):
+        sheet = book.sheet_by_index(sheet_idx)
+        sheetspec = filespec['sheets'][sheet_idx]
+        dataset = copy.copy(sheetspec)
 
-            dataset['keynames'] = [normalize_key(k) for k in keys]
-            dataset['values'] = values
+        midx = filespec['sheets'][sheet_idx].get('marker_idx', 0)
+        (rows, cols) = sheetspec['data_range']
+        if rows[1] == -1:
+            rows[1] = sheet.nrows
 
-            yield dataset
+        # TODO: exceptions handling. (IndexError, etc.)
+        keys = [(isinstance(c, list) and sheet.cell_value(*c) or c) for c
+                in sheetspec['keys']]
+        values = [sheet.row(rx)[cols[0]:cols[1]+1] for rx in range(*rows)
+                  if sheet.row(rx)[midx].value]
+
+        dataset['keynames'] = [normalize_key(k) for k in keys]
+        dataset['values'] = values
+
+        yield dataset
+
+
+def load_datasets(specfile, filepath=None):
+    """
+    Loads datasets from Excel workbooks (files) according to each file spec in
+    given specfile and returns these as dict objects.
+
+    :param specfile: Spec file path
+    :param filepath: Input file path
+    :return: Yield result data set
+    """
+    for i, filespec in enumerate(load_specs(specfile)):
+        if filepath is None:
+            if "filepath" in filespec:
+                filepath = filespec["filepath"]
+            else:
+                logging.warn("Input filepath was not given in #%d spec", i)
+                continue
+
+        for x in load_dataset(specfile, filepath):
+            if x is not None:
+                yield x
 
 
 # CSV related:
@@ -256,11 +302,9 @@ def db_create(specfile, filepath, dbfile, force):
 
 
 def opts_parser():
-    psr = optparse.OptionParser('%prog [OPTION ...] INPUT_FILE')
-    psr.add_option('-s', '--spec',
-                   help="specify 'spec' file defines XLS data structure "
-                        "[guessed from input file]")
-    psr.add_option('-o', '--output', dest='output', default='output',
+    psr = optparse.OptionParser('%prog [OPTION ...] XLS_FILE_SPEC')
+    psr.add_option('-i', '--input', default=None, help="Input file")
+    psr.add_option('-o', '--output', default='output',
                    help="specify database file for 'sqlite' output or dir "
                         "for 'csv' output. [default: output.db or output/]")
     psr.add_option('-t', '--output-type', dest='type',
@@ -292,25 +336,16 @@ def main():
         parser.print_help()
         sys.exit(-1)
 
-    filepath = args[0]
-
-    if options.spec:
-        specfile = options.spec
-    else:
-        specfile = filepath[:filepath.rfind('.')] + '.spec'
+    specfile = args[0]
 
     if not os.path.exists(specfile):
         print >> sys.stderr, "Spec file '%s' does not exists!" % specfile
         sys.exit(-1)
 
-    if not os.path.exists(filepath):
-        print >> sys.stderr, "Input file '%s' does not exists!" % filepath
-        sys.exit(-1)
-
-    create_f(specfile, filepath, out, options.force)
+    create_f(specfile, options.input, out, options.force)
 
 
 if __name__ == '__main__':
     main()
 
-# vim:sw=4:ts=4:expandtab:
+# vim:sw=4:ts=4:et:
