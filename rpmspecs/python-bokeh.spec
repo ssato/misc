@@ -14,7 +14,7 @@
 %define pymodname bokeh
 
 Name:           python-%{pymodname}
-Version:        0.3
+Version:        0.8.1
 Release:        1%{?dist}
 Summary:        A python interactive visualization library for large datasets that natively uses the latest web technologies
 License:        BSD
@@ -26,6 +26,7 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 Requires:       python
+Requires:       python-dateutil
 Requires:       python-flask
 Requires:       python-jinja2
 Requires:       python-markupsafe
@@ -45,7 +46,11 @@ Requires:       python-wsgiref
 Requires:       python-pygments
 Requires:       pystache
 Requires:       python-markdown
+Requires:       python-tornado
+Requires:       python-colorama
+Requires:       python-zmq
 Requires:       PyYAML
+Requires:       redis
 %if 0%{?with_python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -73,6 +78,7 @@ This package contains server for %{name}.
 %package -n     python3-%{pymodname}
 Summary:        A python interactive visualization library for large datasets that natively uses the latest web technologies
 Requires:       python3
+Requires:       python3-dateutil
 Requires:       python3-flask
 Requires:       python3-jinja2
 Requires:       python3-markupsafe
@@ -92,6 +98,9 @@ Requires:       python3-wsgiref
 Requires:       python3-pygments
 Requires:       python3-pystache
 Requires:       python3-markdown
+Requires:       python3-tornado
+Requires:       python3-colorama
+Requires:       python3-zmq
 Requires:       python3-PyYAML
 
 %description -n python3-%{pymodname}
@@ -131,7 +140,7 @@ popd
 %endif
  
 %files
-%doc README.md QUICKSTART.md CHANGELOG docs examples tutorial
+%doc LICENSE.txt PKG-INFO examples
 %{python_sitelib}/*
 
 %files          server
@@ -140,10 +149,13 @@ popd
 %if 0%{?with_python3}
 %files -n       python3-%{pymodname}
 %defattr(644,root,root,755)
-%doc README.md QUICKSTART.md CHANGELOG docs examples tutorial
+%doc LICENSE.txt PKG-INFO examples
 %{python3_sitelib}/*
 %endif
 
 %changelog
+* Tue Mar 10 2015 Satoru SATOH <ssato@redhat.com> - 0.8.1-1
+- Latest upstream release
+
 * Mon Jan 13 2014 Satoru SATOH <ssato@redhat.com> - 0.3-1
 - Initial packaging
