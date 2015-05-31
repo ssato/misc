@@ -14,14 +14,13 @@
 %define pymodname bokeh
 
 Name:           python-%{pymodname}
-Version:        0.8.1
+Version:        0.9.0
 Release:        1%{?dist}
 Summary:        A python interactive visualization library for large datasets that natively uses the latest web technologies
 License:        BSD
 Group:          Development/Languages
 URL:            http://bokeh.pydata.org
-#Source0:        https://github.com/ContinuumIO/%{pymodname}/archive/%{version}.tar.gz
-Source0:        %{pymodname}-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/source/b/%{pymodname}/%{pymodname}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
@@ -154,6 +153,9 @@ popd
 %endif
 
 %changelog
+* Sun May 31 2015 Satoru SATOH <ssato@redhat.com> - 0.9.0-1
+- New upstream release
+
 * Tue Mar 10 2015 Satoru SATOH <ssato@redhat.com> - 0.8.1-1
 - Latest upstream release
 

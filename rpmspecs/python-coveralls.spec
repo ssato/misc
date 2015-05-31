@@ -2,7 +2,7 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-coveralls
-Version:        2.4.2
+Version:        2.5.0
 Release:        1%{?dist}
 Summary:        A python module to interface with the coveralls.io API
 Group:          Development/Languages
@@ -49,5 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/*
 
 %changelog
+* Sun May 31 2015 Satoru SATOH <ssato@redhat.com> - 2.5.0-1
+- New upstream
+
 * Fri Oct  3 2014 Satoru SATOH <ssato@redhat.com> - 2.4.2-1
 - Initial packaging.
