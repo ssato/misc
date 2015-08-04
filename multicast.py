@@ -16,7 +16,7 @@
 #
 # 2009-11-26 Initial public release
 # 2010-03-08 Merged a patch from Eduardo-san: added a client loop, timestamps
-#            and serial ids on every packet sent. 
+#            and serial ids on every packet sent.
 # 2010-03-10 Added new option -i, --interval to set sending interval (client)
 #            and make statistics output when exit (server)
 # 2015-08-04 Some refactoring: remove extra empty lines, fix PEP8/Pylint errors
@@ -35,7 +35,7 @@
 #
 """multicast.py - check sending / receiving UDP multicast messages
 
-Usage: 
+Usage:
 
   Server side: python multicast.py -s [Options]
   Client side: python multicast.py [Options] MESSAGE
@@ -145,7 +145,8 @@ class MulticastSocket(socket.socket):
             pass
 
         if ttl > 1:
-            self.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, struct.pack('b', ttl))
+            self.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL,
+                            struct.pack('b', ttl))
 
         self.grp_addr = grp_addr
         self.if_addr = if_addr
@@ -191,7 +192,7 @@ class MulticastServer(object):
                 self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
         self.sock.bind(('', port))
-        logging.debug("Bound: %s:%d" % (self.sock.if_addr, port))
+        logging.debug("Bound: %s:%d", self.sock.if_addr, port)
 
         self.sock.join()
 
@@ -230,7 +231,7 @@ class MulticastServer(object):
                     id = int(id)
                     time_sent = float(time_sent)
                 except ValueError:
-                    logging.warn("Unexpected formatted data was received. Skip it.")
+                    logging.warn("Received unexpected formatted data. Skip it")
                     continue
 
                 last_ids = packets.get((ip4_addr, port), [])
@@ -250,7 +251,7 @@ class MulticastServer(object):
                     logging.debug("Inversion! #%d %s is younger than last one "
                                   "(#%d).", id, from_s, last_id)
                 elif id == last_id:
-                    logging.debug("DUP segment! #%d %s" % (id, from_s))
+                    logging.debug("DUP segment! #%d %s", id, from_s)
                 else:
                     if id > (last_id + 1):
                         last_received = packets[(ip4_addr, port)]
@@ -281,7 +282,8 @@ class MulticastClient(object):
     """Multicast Client object to send packets to multicast network.
     """
 
-    def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1, datafmt=DATA_FMT):
+    def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1,
+                 datafmt=DATA_FMT):
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
         self.grp_addr = grp_addr
         self.port = port
@@ -295,7 +297,8 @@ class MulticastClient(object):
             seq = 1
 
             while True:
-                segment = self.datafmt % {'seq':seq, 'time':time.time(), 'data': data}
+                segment = self.datafmt % {'seq':seq, 'time':time.time(),
+                                          'data': data}
                 ssize = self.sock.sendto(segment, (self.grp_addr, self.port))
 
                 if ssize < len(segment):
@@ -394,7 +397,10 @@ def main():
         srv.run()
     else:
         try:
-            data = len(args) > 0 and args[0] or raw_input('Type any to sendto > ')
+            if len(args) > 0:
+                data = args[0]
+            else:
+                data = raw_input('Type any to sendto > ')
         except EOFError:
             sys.exit(0)
 
