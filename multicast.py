@@ -152,6 +152,8 @@ class MulticastSocket(socket.socket):
         self.if_addr = if_addr
 
     def __del__(self):
+        """Destructor.
+        """
         self.leave()
         self.close()
 
@@ -172,10 +174,25 @@ class MulticastSocket(socket.socket):
                       self.grp_addr, self.if_addr)
 
     def leave(self):
-        # FIXME: Likewise (see above note).
+        """
+        Likewise (see above note).
+        """
         self.setsockopt(socket.SOL_IP, socket.IP_DROP_MEMBERSHIP, self.mreq)
         logging.debug("Left the multicast network: %s on %s",
                       self.grp_addr, self.if_addr)
+
+
+def dump_stat(packets):
+    """Dump packets stat.
+    """
+    for cli, seqs in packets.iteritems():
+        cli_s = "%s:%d" % cli
+        rcvd = ["#%d" % i for i in seqs]
+        lost = ["#%d" % i for i in range(1, max(seqs)) if i not in seqs]
+        (rcvd_n, lost_n) = (len(rcvd), len(lost))
+        # (rcvd_s, lost_s) = (", ".join(rcvd), ", ".join(lost))
+        logging.info("%s: Received=%d, (maybe) Lost=%d",
+                     cli_s, rcvd_n, lost_n)
 
 
 class MulticastServer(object):
@@ -184,6 +201,14 @@ class MulticastServer(object):
 
     def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1,
                  reuse=False):
+        """
+        @param  grp_addr:  Multicast network address
+        @param  if_addr:   Interface address to use for.
+        @param  ttl:       time to live.
+        @param  reuse:     socket reuse flag.
+
+        SEE ALSO: getsockopt(2), ip(7)
+        """
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
 
         if reuse:
@@ -197,19 +222,13 @@ class MulticastServer(object):
         self.sock.join()
 
     def __del__(self):
+        """Destructor.
+        """
         del self.sock
 
-    def dump_stat(self, packets):
-        for cli, ids in packets.iteritems():
-            cli_s = "%s:%d" % cli
-            rcvd = ["#%d" % id for id in ids]
-            lost = ["#%d" % id for id in range(1, max(ids)) if id not in ids]
-            (rcvd_n, lost_n) = (len(rcvd), len(lost))
-            # (rcvd_s, lost_s) = (", ".join(rcvd), ", ".join(lost))
-            logging.info("%s: Received=%d, (maybe) Lost=%d",
-                         cli_s, rcvd_n, lost_n)
-
     def loop(self, interval=1):
+        """Main event loop.
+        """
         packets = dict()
 
         try:
@@ -226,41 +245,41 @@ class MulticastServer(object):
                     sys.exit(0)
 
                 # @see DATA_FMT
-                (id, time_sent, data) = tup
+                (seq, time_sent, data) = tup
                 try:
-                    id = int(id)
+                    seq = int(seq)
                     time_sent = float(time_sent)
                 except ValueError:
                     logging.warn("Received unexpected formatted data. Skip it")
                     continue
 
-                last_ids = packets.get((ip4_addr, port), [])
-                if last_ids:
-                    last_id = last_ids[-1]
+                last_seqs = packets.get((ip4_addr, port), [])
+                if last_seqs:
+                    last_seq = last_seqs[-1]
                 else:
-                    last_id = 0
+                    last_seq = 0
                     packets[(ip4_addr, port)] = []
 
                 delta = time.time() - time_sent
                 from_s = "from %s:%d" % (ip4_addr, port)
 
                 logging.info("Received '%s' (#%d) %s, time=%f",
-                             data, id, from_s, delta)
+                             data, seq, from_s, delta)
 
-                if id < last_id:
+                if seq < last_seq:
                     logging.debug("Inversion! #%d %s is younger than last one "
-                                  "(#%d).", id, from_s, last_id)
-                elif id == last_id:
-                    logging.debug("DUP segment! #%d %s", id, from_s)
+                                  "(#%d).", seq, from_s, last_seq)
+                elif seq == last_seq:
+                    logging.debug("DUP segment! #%d %s", seq, from_s)
                 else:
-                    if id > (last_id + 1):
+                    if seq > (last_seq + 1):
                         last_received = packets[(ip4_addr, port)]
-                        losts = ["#%d" % i for i in range(last_id + 1, id)
+                        losts = ["#%d" % i for i in range(last_seq + 1, seq)
                                  if i not in last_received]
                         losts_s = ", ".join(losts)
                         logging.debug("LOST segments! %s %s", losts_s, from_s)
 
-                packets[(ip4_addr, port)].append(id)
+                packets[(ip4_addr, port)].append(seq)
                 # TODO: Send back to client.
                 # ssize = self.sock.sendto(segment, (ip4_addr, port))
                 # if ssize < len(segment):
@@ -270,11 +289,13 @@ class MulticastServer(object):
 
         except (KeyboardInterrupt, SystemExit):
             logging.info("Exiting...")
-            self.dump_stat(packets)
+            dump_stat(packets)
         except:
             traceback.print_exc()
 
     def run(self):
+        """Server main.
+        """
         self.loop()
 
 
@@ -284,6 +305,13 @@ class MulticastClient(object):
 
     def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1,
                  datafmt=DATA_FMT):
+        """
+        @param  grp_addr:  Multicast network address
+        @param  if_addr:   Interface address to use for.
+        @param  ttl:       time to live.
+
+        SEE ALSO: getsockopt(2), ip(7)
+        """
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
         self.grp_addr = grp_addr
         self.port = port
@@ -293,6 +321,8 @@ class MulticastClient(object):
             self.sock.join() # I think this is necessary for such cases.
 
     def loop(self, data, count=0, interval=1):
+        """Main event loop.
+        """
         try:
             seq = 1
 
@@ -318,48 +348,50 @@ class MulticastClient(object):
             traceback.print_exc()
 
 
-def opts_parser(mcast_addr_default, port_default, **kwargs):
-    p = optparse.OptionParser("%prog [OPTION ...]\n\n"
-                              "  Server mode: %prog [OPTION ...],\n"
-                              "  Client mode: %prog [OPTION ...] "
-                              "[DATA_TO_SEND]")
+def opts_parser(mcast_addr_default, port_default):
+    """Option parser.
+    """
+    psr = optparse.OptionParser("%prog [OPTION ...]\n\n"
+                                "  Server mode: %prog [OPTION ...],\n"
+                                "  Client mode: %prog [OPTION ...] "
+                                "[DATA_TO_SEND]")
 
-    p.add_option('-s', '--server', action="store_true", default=False,
-                 help='Server mode. [Default: client mode]')
+    psr.add_option('-s', '--server', action="store_true", default=False,
+                   help='Server mode. [Default: client mode]')
 
     # options in jgroup's test code:
     # common: bind_addr, mcast_addr, port, (receive|send)_on_all_interfaces
     # server (receiver): no unique options
     # client (sender): ttl
-    p.add_option('-M', '--mcast_addr', default=mcast_addr_default,
-                 dest='mcast_addr',
-                 help='Multicast network address to join/sendto. [%default]')
-    p.add_option('-I', '--if_addr', default=IP4_ADDR_ANY, dest='if_addr',
-                 help="Interface address to listen on. [IPv4 ADDR_ANY, i.e. "
-                      "automatically selected]")
-    p.add_option('-p', '--port', default=port_default, type="int",
-                 help='Port to listen on/connect. [%default]')
-    p.add_option('-t', '--ttl', default=1, type="int",
-                 help='Time-to-live for multicast packets [%default]')
+    psr.add_option('-M', '--mcast_addr', default=mcast_addr_default,
+                   dest='mcast_addr',
+                   help='Multicast network address to join/sendto. [%default]')
+    psr.add_option('-I', '--if_addr', default=IP4_ADDR_ANY, dest='if_addr',
+                   help="Interface address to listen on. [IPv4 ADDR_ANY, i.e. "
+                        "automatically selected]")
+    psr.add_option('-p', '--port', default=port_default, type="int",
+                   help='Port to listen on/connect. [%default]')
+    psr.add_option('-t', '--ttl', default=1, type="int",
+                   help='Time-to-live for multicast packets [%default]')
 
-    p.add_option('-q', '--quiet', action="store_true",
-                 help="Quiet mode; suppress debug message")
+    psr.add_option('-q', '--quiet', action="store_true",
+                   help="Quiet mode; suppress debug message")
 
-    sog = optparse.OptionGroup(p, "Options for server mode")
+    sog = optparse.OptionGroup(psr, "Options for server mode")
     sog.add_option('-r', '--reuse', action="store_true", default=False,
                    help='Reuse socket? [no]')
-    p.add_option_group(sog)
+    psr.add_option_group(sog)
 
-    cog = optparse.OptionGroup(p, "Options for client mode")
+    cog = optparse.OptionGroup(psr, "Options for client mode")
     cog.add_option('-c', '--count', type="int", default=0,
                    help="Stop after sending COUNT packets. By default, it "
                         "will send packets forever [%default].")
     cog.add_option('-i', '--interval', type="int", default=1,
                    help="Wait  interval  seconds between sending each "
                         "packet. [%default].")
-    p.add_option_group(cog)
+    psr.add_option_group(cog)
 
-    return p
+    return psr
 
 
 def main():
