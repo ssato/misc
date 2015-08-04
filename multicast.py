@@ -20,7 +20,8 @@
 # 2010-03-10 Added new option -i, --interval to set sending interval (client)
 #            and make statistics output when exit (server)
 # 2015-08-04 Some refactoring: remove extra empty lines, fix PEP8/Pylint errors
-#            and warnings, etc.
+#            and warnings, do not format logging messages, indentation fixes,
+#            etc.
 #
 # References:
 #   * Demo/sockets/mcast.py in python dist.
@@ -38,7 +39,6 @@ Usage:
 
   Server side: python multicast.py -s [Options]
   Client side: python multicast.py [Options] MESSAGE
-
 
 Example:
 
@@ -121,6 +121,9 @@ DATA_FMT = "%(seq)09d %(time)s %(data)s"
 
 
 class MulticastSocket(socket.socket):
+    """Multicast Socket object to send/receive multicast packets easily.
+    """
+
     def __init__(self, grp_addr, if_addr=IP4_ADDR_ANY, ttl=1):
         """
         @param  grp_addr:  Multicast network address
@@ -152,24 +155,34 @@ class MulticastSocket(socket.socket):
         self.close()
 
     def join(self):
-        # FIXME: Check the return value of setsockopt.
-        #
-        # Unfortunately, the following code does not work because
-        # socket.getsockopt will return None.
-        #
-        #if self.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, self.mreq) != 0:
-        #    logging.error("Could not join '%s' on '%s:%d'" % (grp_addr, if_addr, port))
+        """
+        FIXME: Check the return value of setsockopt.
+
+        Unfortunately, the following code does not work because
+        socket.getsockopt will return None.
+
+        if self.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP,
+                           self.mreq) != 0:
+            logging.error("Could not join '%s' on '%s:%d'",
+                          grp_addr, if_addr, port)
+        """
         self.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, self.mreq)
-        logging.debug("Joined the multicast network: %s on %s" % (self.grp_addr, self.if_addr))
+        logging.debug("Joined the multicast network: %s on %s",
+                      self.grp_addr, self.if_addr)
 
     def leave(self):
         # FIXME: Likewise (see above note).
         self.setsockopt(socket.SOL_IP, socket.IP_DROP_MEMBERSHIP, self.mreq)
-        logging.debug("Left the multicast network: %s on %s" % (self.grp_addr, self.if_addr))
+        logging.debug("Left the multicast network: %s on %s",
+                      self.grp_addr, self.if_addr)
 
 
 class MulticastServer(object):
-    def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1, reuse=False):
+    """Multicast Server object to join multicast networks and listen forever.
+    """
+
+    def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1,
+                 reuse=False):
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
 
         if reuse:
@@ -191,9 +204,9 @@ class MulticastServer(object):
             rcvd = ["#%d" % id for id in ids]
             lost = ["#%d" % id for id in range(1, max(ids)) if id not in ids]
             (rcvd_n, lost_n) = (len(rcvd), len(lost))
-            #(rcvd_s, lost_s) = (", ".join(rcvd), ", ".join(lost))
-
-            logging.info("%s: Received = %d, (maybe) Lost = %d" % (cli_s, rcvd_n, lost_n))
+            # (rcvd_s, lost_s) = (", ".join(rcvd), ", ".join(lost))
+            logging.info("%s: Received=%d, (maybe) Lost=%d",
+                         cli_s, rcvd_n, lost_n)
 
     def loop(self, interval=1):
         packets = dict()
@@ -230,26 +243,28 @@ class MulticastServer(object):
                 delta = time.time() - time_sent
                 from_s = "from %s:%d" % (ip4_addr, port)
 
-                logging.info("Received '%s' (#%d) %s, time=%f" % (data, id, from_s, delta))
+                logging.info("Received '%s' (#%d) %s, time=%f",
+                             data, id, from_s, delta)
 
                 if id < last_id:
-                    logging.debug("Inversion! #%d %s is younger than last one (#%d)." % (id, from_s, last_id))
+                    logging.debug("Inversion! #%d %s is younger than last one "
+                                  "(#%d).", id, from_s, last_id)
                 elif id == last_id:
                     logging.debug("DUP segment! #%d %s" % (id, from_s))
                 else:
                     if id > (last_id + 1):
                         last_received = packets[(ip4_addr, port)]
-                        losts = ["#%d" % i for i in range(last_id + 1, id) if i not in last_received]
+                        losts = ["#%d" % i for i in range(last_id + 1, id)
+                                 if i not in last_received]
                         losts_s = ", ".join(losts)
-                        logging.debug("LOST segments! %s %s" % (losts_s, from_s))
+                        logging.debug("LOST segments! %s %s", losts_s, from_s)
 
                 packets[(ip4_addr, port)].append(id)
-
                 # TODO: Send back to client.
-                #ssize = self.sock.sendto(segment, (ip4_addr, port))
-                #if ssize < len(segment):
-                #    logging.warn("Failed to send back to the client: %s (port: %d)" % (ip4_addr, port))
-
+                # ssize = self.sock.sendto(segment, (ip4_addr, port))
+                # if ssize < len(segment):
+                #    logging.warn("Failed to send back to the client: %s "
+                #                 "(port: %d)", ip4_addr, port)
                 time.sleep(interval)
 
         except (KeyboardInterrupt, SystemExit):
@@ -263,6 +278,9 @@ class MulticastServer(object):
 
 
 class MulticastClient(object):
+    """Multicast Client object to send packets to multicast network.
+    """
+
     def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1, datafmt=DATA_FMT):
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
         self.grp_addr = grp_addr
@@ -281,9 +299,9 @@ class MulticastClient(object):
                 ssize = self.sock.sendto(segment, (self.grp_addr, self.port))
 
                 if ssize < len(segment):
-                    logging.warn("Failed to send: '%s'" % segment)
+                    logging.warn("Failed to send: '%s'", segment)
                 else:
-                    logging.info("Sent data: '%s'" % segment)
+                    logging.info("Sent data: '%s'", segment)
 
                 if count > 0 and seq >= count:
                     return ssize == len(segment)
@@ -299,36 +317,43 @@ class MulticastClient(object):
 
 def opts_parser(mcast_addr_default, port_default, **kwargs):
     p = optparse.OptionParser("%prog [OPTION ...]\n\n"
-        "  Server mode: %prog [OPTION ...],\n"
-        "  Client mode: %prog [OPTION ...] [DATA_TO_SEND]"
-    )
+                              "  Server mode: %prog [OPTION ...],\n"
+                              "  Client mode: %prog [OPTION ...] "
+                              "[DATA_TO_SEND]")
 
     p.add_option('-s', '--server', action="store_true", default=False,
-        help='Server mode. [Default: client mode]')
+                 help='Server mode. [Default: client mode]')
 
     # options in jgroup's test code:
     # common: bind_addr, mcast_addr, port, (receive|send)_on_all_interfaces
     # server (receiver): no unique options
     # client (sender): ttl
     p.add_option('-M', '--mcast_addr', default=mcast_addr_default,
-        dest='mcast_addr', help='Multicast network address to join/sendto. [%default]')
+                 dest='mcast_addr',
+                 help='Multicast network address to join/sendto. [%default]')
     p.add_option('-I', '--if_addr', default=IP4_ADDR_ANY, dest='if_addr',
-        help='Interface address to listen on. [IPv4 ADDR_ANY, i.e. automatically selected]')
+                 help="Interface address to listen on. [IPv4 ADDR_ANY, i.e. "
+                      "automatically selected]")
     p.add_option('-p', '--port', default=port_default, type="int",
-        help='Port to listen on/connect. [%default]')
-    p.add_option('-t', '--ttl', default=1, type="int", help='Time-to-live for multicast packets [%default]')
+                 help='Port to listen on/connect. [%default]')
+    p.add_option('-t', '--ttl', default=1, type="int",
+                 help='Time-to-live for multicast packets [%default]')
 
-    p.add_option('-q', '--quiet', action="store_true", help="Quiet mode; suppress debug message")
+    p.add_option('-q', '--quiet', action="store_true",
+                 help="Quiet mode; suppress debug message")
 
     sog = optparse.OptionGroup(p, "Options for server mode")
-    sog.add_option('-r', '--reuse', action="store_true", default=False, help='Reuse socket? [no]')
+    sog.add_option('-r', '--reuse', action="store_true", default=False,
+                   help='Reuse socket? [no]')
     p.add_option_group(sog)
 
     cog = optparse.OptionGroup(p, "Options for client mode")
     cog.add_option('-c', '--count', type="int", default=0,
-        help="Stop after sending COUNT packets. By default, it will send packets forever [%default].")
+                   help="Stop after sending COUNT packets. By default, it "
+                        "will send packets forever [%default].")
     cog.add_option('-i', '--interval', type="int", default=1,
-        help="Wait  interval  seconds between sending each packet. [%default].")
+                   help="Wait  interval  seconds between sending each "
+                        "packet. [%default].")
     p.add_option_group(cog)
 
     return p
@@ -354,7 +379,8 @@ def main():
     try:
         # logging.basicConfig() in python older than 2.4 cannot handle kwargs,
         # then exception 'TypeError' will be thrown.
-        logging.basicConfig(level=loglevel, format=logformat, datefmt=logdatefmt)
+        logging.basicConfig(level=loglevel, format=logformat,
+                            datefmt=logdatefmt)
     except TypeError:
         # To keep backward compatibility. See above comment also.
         logging.getLogger().setLevel(loglevel)
@@ -368,13 +394,11 @@ def main():
         srv.run()
     else:
         try:
-            data = (len(args) > 0 and args[0] or raw_input('Type any to sendto > '))
+            data = len(args) > 0 and args[0] or raw_input('Type any to sendto > ')
         except EOFError:
             sys.exit(0)
 
-        cli = MulticastClient(options.mcast_addr,
-                              options.port,
-                              options.if_addr,
+        cli = MulticastClient(options.mcast_addr, options.port, options.if_addr,
                               options.ttl)
         cli.loop(data, options.count, options.interval)
 
