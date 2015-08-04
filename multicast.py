@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python -tt
 #
 # Test UDP multicast communication between nodes.
 #
@@ -9,10 +9,8 @@
 #  * Eduardo Damato <edamato@redhat.com>: Idea and basic implementation of
 #    client loop, timestamps and serial ids on every packets.
 #
-#
 # NOTE: This is just an example script of multicast communication in python. It
 # is not a product supported by Red Hat and intended for production use.
-#
 #
 # Changelog:
 #
@@ -21,12 +19,19 @@
 #            and serial ids on every packet sent. 
 # 2010-03-10 Added new option -i, --interval to set sending interval (client)
 #            and make statistics output when exit (server)
+# 2015-08-04 Some refactoring: remove extra empty lines, fix PEP8/Pylint errors
+#            and warnings, etc.
 #
 # References:
 #   * Demo/sockets/mcast.py in python dist.
 #   * http://wiki.python.org/moin/UdpCommunication#Multicasting.3F
 #
-
+# See also:
+#
+# - https://fedorahosted.org/omping/
+# - https://access.redhat.com/articles/22304
+# - https://access.redhat.com/solutions/653293
+#
 """multicast.py - check sending / receiving UDP multicast messages
 
 Usage: 
@@ -68,7 +73,6 @@ Example:
     Wed, 10 Mar 2010 03:29:16 DEBUG    Left the multicast network: 229.192.0.1 on 192.168.52.51
     [root@rhel-5-cluster-1 ~]#
 
-
   clients:
 
     [root@rhel-5-cluster-1 ~]# python /shared/multicast.py -I 192.168.52.51 -c 2 hello
@@ -96,7 +100,6 @@ Example:
     Wed, 10 Mar 2010 03:28:34 DEBUG    Left the multicast network: 229.192.0.1 on 192.168.52.52
     [root@rhel-5-cluster-2 ~]#
 
-
 Notes:
 
  * It's always better to specify the interface (address) for multicast
@@ -104,10 +107,7 @@ Notes:
 
  * If you're running kvm nodes inside the NAT-ed network, you maybe have to
    set ttl to 2.
-
 """
-
-
 import logging
 import optparse
 import socket
@@ -116,10 +116,8 @@ import sys
 import time
 import traceback
 
-
 IP4_ADDR_ANY = '0.0.0.0'  # socket.INADDR_ANY
 DATA_FMT = "%(seq)09d %(time)s %(data)s"
-
 
 
 class MulticastSocket(socket.socket):
@@ -168,7 +166,6 @@ class MulticastSocket(socket.socket):
         # FIXME: Likewise (see above note).
         self.setsockopt(socket.SOL_IP, socket.IP_DROP_MEMBERSHIP, self.mreq)
         logging.debug("Left the multicast network: %s on %s" % (self.grp_addr, self.if_addr))
-
 
 
 class MulticastServer(object):
@@ -265,7 +262,6 @@ class MulticastServer(object):
         self.loop()
 
 
-
 class MulticastClient(object):
     def __init__(self, grp_addr, port, if_addr=IP4_ADDR_ANY, ttl=1, datafmt=DATA_FMT):
         self.sock = MulticastSocket(grp_addr, if_addr, ttl)
@@ -299,7 +295,6 @@ class MulticastClient(object):
             logging.info("Exiting...")
         except:
             traceback.print_exc()
-
 
 
 def opts_parser(mcast_addr_default, port_default, **kwargs):
@@ -387,4 +382,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# vim: set sw=4 ts=4 et ai si sm:
+# vim:sw=4:ts=4:et:
