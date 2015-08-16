@@ -50,19 +50,19 @@ bash -x build.sh
 %install
 rm -rf %{buildroot}
 bash -x install.sh /usr/bin %{buildroot}
-mkdir -p %{buildroot}/etc/%{name}
-test "x%{_libdir}" != x/usr/lib && mv %{buildroot}/usr/lib %{buildroot}%{_libdir}
-mv %{buildroot}/etc/nim*.* %{buildroot}/etc/%{name}/
+# TODO: Should we do this?
+#test "x%{_libdir}" != x/usr/lib && mv %{buildroot}/usr/lib %{buildroot}%{_libdir}
 
 %files
 %defattr(-,root,root,-)
 %doc readme.txt contributors.txt copying.txt
 %doc examples doc web
 %{_bindir}/*
-#/usr/lib/%{name}
-%{_libdir}/%{name}
+/usr/lib/%{name}
+# TODO: Should we do this?
+#%{_libdir}/%{name}
 %{_datadir}/%{name}
-%config %{_sysconfdir}/%{name}/*
+%config %{_sysconfdir}/%{name}*.*
 
 %changelog
 * Sun Aug 16 2015 Satoru SATOH <ssato@redhat.com> - 0.11.2-1
