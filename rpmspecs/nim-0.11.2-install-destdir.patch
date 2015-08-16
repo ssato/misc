@@ -1,0 +1,84 @@
+diff -up nim-0.11.2/install.sh.destdir nim-0.11.2/install.sh
+--- nim-0.11.2/install.sh.destdir	2015-08-16 14:24:14.014157932 +0900
++++ nim-0.11.2/install.sh	2015-08-16 14:37:27.158679156 +0900
+@@ -3,7 +3,7 @@
+ 
+ set -e
+ 
+-if [ $# -eq 1 ] ; then
++if [ $# -ge 1 ] ; then
+   if test -f bin/nim
+   then 
+     echo "Nim build detected"
+@@ -11,47 +11,52 @@ if [ $# -eq 1 ] ; then
+     echo "Please build Nim before installing it"
+     exit 1
+   fi
++  if [ $# -eq 2 ] ; then destdir=$2; else destdir=''; fi
+   case $1 in
+     "--help"|"-h"|"help"|"h")
+       echo "Nim installation script"
+-      echo "Usage: [sudo] sh install.sh DIR"
++      echo "Usage: [sudo] sh install.sh DIR DESTDIR"
+       echo "Where DIR may be:"
+       echo "  /usr/bin"
+       echo "  /usr/local/bin"
+       echo "  /opt"
+       echo "  <some other dir> (treated like '/opt')"
++      echo "and DESTDIR may be: /home/foo, '' (empty, not set)"
+       echo "To deinstall, use the command:"
+       echo "sh deinstall.sh DIR"
+       exit 1
+       ;;
+     "/usr/bin")
+-      bindir=/usr/bin
+-      configdir=/etc
+-      libdir=/usr/lib/nim
+-      docdir=/usr/share/nim/doc
+-      datadir=/usr/share/nim/data
++      bindir=$destdir/usr/bin
++      configdir=$destdir/etc
++      libdir=$destdir/usr/lib/nim
++      docdir=$destdir/usr/share/nim/doc
++      datadir=$destdir/usr/share/nim/data
+       ;;
+     "/usr/local/bin")
+-      bindir=/usr/local/bin
+-      configdir=/etc
+-      libdir=/usr/local/lib/nim
+-      docdir=/usr/local/share/nim/doc
+-      datadir=/usr/local/share/nim/data
++      bindir=$destdir/usr/local/bin
++      configdir=$destdir/etc
++      libdir=$destdir/usr/local/lib/nim
++      docdir=$destdir/usr/local/share/nim/doc
++      datadir=$destdir/usr/local/share/nim/data
+       ;;
+     *)
+-      bindir="$1/nim/bin"
+-      configdir="$1/nim/config"
+-      libdir="$1/nim/lib"
+-      docdir="$1/nim/doc"
+-      datadir="$1/nim/data"
++      bindir="$destdir/$1/nim/bin"
++      configdir="$destdir/$1/nim/config"
++      libdir="$destdir/$1/nim/lib"
++      docdir="$destdir/$1/nim/doc"
++      datadir="$destdir/$1/nim/data"
+       
+-      mkdir -p $1/nim
+-      mkdir -p $bindir
+-      mkdir -p $configdir
++      mkdir -p $destdir/$1/nim
++      mkdir -p $destdir/$bindir
++      mkdir -p $destdir/$configdir
+       ;;
+   esac
++  mkdir -p $bindir
++  mkdir -p $configdir
+   mkdir -p $libdir
+   mkdir -p $docdir
++  mkdir -p $datadir
+   echo "copying files..."
+   mkdir -p $libdir/system
+   mkdir -p $libdir/core
