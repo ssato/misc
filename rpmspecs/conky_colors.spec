@@ -6,7 +6,7 @@ License:        GPLv3+
 URL:            https://github.com/helmuthdu/conky_colors
 #Source0:        https://github.com/helmuthdu/conky_colors/archive/master.zip
 Source0:        %{name}-master.zip
-Patch1:         conky_colors-master-Makefile-destdir.patch
+Patch1:         conky_colors-Makefile-ct.patch
 #BuildRequires:  gmp-devel
 Requires:  conky
 
@@ -15,7 +15,7 @@ Conky_colors is an easier way to configure Conky.
 
 %prep
 %setup -q -n %{name}-master
-%patch1 -p1 -b .destdir
+%patch1 -p1 -b .ct
 
 %build
 make
