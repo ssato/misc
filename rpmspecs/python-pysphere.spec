@@ -3,6 +3,7 @@
 %global srcname %{pkgname}
 %global sumtxt  Python API for interacting with the vSphere Web Services SDK
 %global desc    Python API for interacting with the vSphere Web Services SDK.
+# I'm not sure that pysphere works with py3k.
 %global with_py3k 0
 
 Name:           python-%{pkgname}
@@ -11,7 +12,8 @@ Release:        1%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Libraries
 License:        BSD
-URL:            https://github.com/argos83/%{srcname}
+#URL:            https://github.com/argos83/%{srcname}
+URL:            https://pysphere.googlecode.com/files/%{srcname}-%{version}.zip
 Source0:        %{srcname}-%{version}.zip
 BuildArch:      noarch
 BuildRequires:  python2-devel
