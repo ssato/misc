@@ -3,8 +3,8 @@
 %global srcname %{pkgname}
 %global sumtxt  Python API for interacting with the vSphere Web Services SDK
 %global desc    Python API for interacting with the vSphere Web Services SDK.
-# I'm not sure that pysphere works with py3k.
-%global with_py3k 0
+# I'm not sure that pysphere works with python3.
+%global with_python3 0
 
 Name:           python-%{pkgname}
 Version:        0.1.8
@@ -18,7 +18,7 @@ Source0:        %{srcname}-%{version}.zip
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if 0%{?with_py3k}
+%if 0%{?with_python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 %endif
@@ -33,7 +33,7 @@ Summary:        %{sumtxt}
 %description -n python2-%{pkgname}
 %{desc}
 
-%if 0%{?with_py3k}
+%if 0%{?with_python3}
 %package     -n python3-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python3-%{srcname}}
@@ -44,24 +44,33 @@ Summary:        %{sumtxt}
 
 %prep
 %setup -q -n %{srcname}-%{version}
+%if 0%{?with_python3}
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+%endif
 
 %build
-%if 0%{?with_py3k}
-%py3_build
+%{__python} setup.py build
+%if 0%{?with_python3}
+pushd %{py3dir}
+%{__python3} setup.py build
+popd
 %endif
-%py2_build
 
 %install
-%if 0%{?with_py3k}
-%py3_install
+%if 0%{?with_python3}
+pushd %{py3dir}
+%{__python3} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+popd
 %endif
-%py2_install
+%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+
 
 %files -n python2-%{pkgname}
 %doc README
 %{python2_sitelib}/*
 
-%if 0%{?with_py3k}
+%if 0%{?with_python3}
 %files -n python3-%{pkgname}
 %doc README
 %{python3_sitelib}/*
