@@ -1,3 +1,7 @@
+%{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_l
+ib; print get_python_lib()")}
+%{!?python2_version: %global python2_version %(%{__python} -c "import sys ; print sys.version[:3]")}
+
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
 %global pkgname pysphere
 %global srcname %{pkgname}
