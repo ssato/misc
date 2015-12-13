@@ -9,7 +9,7 @@
 %global pkgname memory_profiler
 
 Name:           python-%{pkgname}
-Version:        0.32
+Version:        0.39
 Release:        1%{?dist}
 Summary:        A module for monitoring memory usage of a python program
 License:        BSD
@@ -83,5 +83,8 @@ popd
 %endif
 
 %changelog
+* Sun Dec 13 2015 Satoru SATOH <ssato@redhat.com> - 0.39-1
+- Latest upstream release
+
 * Wed Jan 28 2015 Satoru SATOH <ssato@redhat.com> - 0.32-1
 - Initial packaging
