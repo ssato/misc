@@ -2,16 +2,17 @@
 %global pkgname pylru
 %global srcname pylru
 %global sumtxt  A LRU cache for python
+%global with_python3 0
 
 Name:           python-%{pkgname}
-# TBD: check PyPI page
-Version:        0.0.1
-Release:        git.eca0254.1%{?dist}
+Version:        1.0.9
+Release:        1%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Libraries
 License:        GPLv2
-URL:            https://github.com/jlhutch/%{srcname}
-Source0:        %{srcname}-master.zip
+#URL:            https://github.com/jlhutch/%{srcname}
+URL:            https://pypi.python.org/packages/source/p/pylru/%{pkgname}-%{version}.tar.gz
+Source0:        %{srcname}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python2-devel python3-devel
 BuildRequires:  python-setuptools python3-setuptools
@@ -52,7 +53,7 @@ supported. Pylru also provides classes to wrap functions in a similar way,
 including a function decorator.
 
 %prep
-%setup -q -n %{srcname}-master
+%setup -qn %{srcname}-%{version}
 
 %build
 %py3_build
@@ -71,5 +72,5 @@ including a function decorator.
 %{python3_sitelib}/*
 
 %changelog
-* Wed Feb  3 2016 Satoru SATOH <ssato@redhat.com> - 0.0.1-git.eca0254.1
+* Thu Feb  4 2016 Satoru SATOH <ssato@redhat.com> - 1.0.9-1
 - Initial packaging
