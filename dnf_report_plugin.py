@@ -98,9 +98,8 @@ class ReportPlugin(dnf.Plugin):
     def config(self):
         cfg = self.read_config(self.base.conf, PLUGIN_CONF)
         if cfg.has_section('main') and cfg.has_option('main', 'report_path'):
-            self.report_path = cfg.get('main', 'report_path')
-            if "{}" in self.report_path:
-                self.report_path = self.report_path.format(str(uuid.uuid4()))
+            report_path = cfg.get('main', 'report_path')
+            self.report_path = report_path.format(str(uuid.uuid4()))
 
     def resolved_itr(self):
         """
