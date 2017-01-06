@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Satoru SATOH <ssato@redhat.com> -->
+<component type="addon">
+    <id>vim-rust</id>
+    <extends>gvim.desktop</extends>
+    <name>vim-rust</name>
+    <summary>Rust development plugin for Vim</summary>
+    <url type="homepage">https://github.com/rust-lang/rust.vim</url>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>ASL 2.0 or MIT</project_license>
+    <updatecontact>ssato@redhat.com</updatecontact>
+</component>
