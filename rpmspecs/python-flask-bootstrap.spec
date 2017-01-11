@@ -1,16 +1,16 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
 %global pkgname flask-bootstrap
-%global srcname Flask-Bootstrap
+%global srcname flask-bootstrap
 %global sumtxt  Flask extension to include Bootstrap in your project
 
 Name:           python-%{pkgname}
-Version:        3.3.5.6
+Version:        3.3.7.0
 Release:        1%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Libraries
 License:        MIT
-URL:            https://github.com/Knio/%{srcname}
-Source0:        %{srcname}-%{version}.tar.gz
+URL:            https://github.com/mbr/%{srcname}
+Source0:        https://github.com/mbr/%{srcname}/archive/%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python2-devel python3-devel
 BuildRequires:  python-setuptools python3-setuptools
@@ -64,5 +64,8 @@ CDN and works with no boilerplate code in your application.
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 22 2016 Satoru SATOH <ssato@redhat.com> - 3.3.7.0-1
+- New upstream release
+
 * Tue Sep 29 2015 Satoru SATOH <ssato@redhat.com> - 3.3.5.6-1
 - Initial packaging
