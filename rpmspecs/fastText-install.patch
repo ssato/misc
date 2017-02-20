@@ -1,0 +1,17 @@
+diff -up fastText-master/Makefile.inst fastText-master/Makefile
+--- fastText-master/Makefile.inst	2017-02-21 02:24:49.566105126 +0900
++++ fastText-master/Makefile	2017-02-21 02:26:43.789015778 +0900
+@@ -42,5 +42,13 @@ fasttext.o: src/fasttext.cc src/*.h
+ fasttext: $(OBJS) src/fasttext.cc
+ 	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
+ 
++DESTDIR ?=
++BINDIR ?= /usr/bin
++install: fasttext
++	install -d $(DESTDIR)$(BINDIR)/
++	install -m 755 $< $(DESTDIR)$(BINDIR)/
++
+ clean:
+ 	rm -rf *.o fasttext
++
++.PHONY: install clean
