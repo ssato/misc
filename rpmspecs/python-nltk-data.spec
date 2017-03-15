@@ -1,4 +1,4 @@
-Name:           python-nltk
+Name:           python-nltk-data
 Version:        20170315
 Release:        1%{?dist}
 Summary:        NLTK corpora data
