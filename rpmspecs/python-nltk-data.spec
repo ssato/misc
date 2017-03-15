@@ -33,7 +33,7 @@ cp -a ./* $RPM_BUILD_ROOT%{_datadir}/nltk_data/
 %{_datadir}/nltk_data/
 
 %changelog
-* Wed Mar 15 2016 Satoru SATOH <ssato@redhat.com> - 20170315-1
+* Wed Mar 15 2017 Satoru SATOH <ssato@redhat.com> - 20170315-1
 - Update data
 
 * Mon Feb 29 2016 Satoru SATOH <ssato@redhat.com> - 20160229-1
