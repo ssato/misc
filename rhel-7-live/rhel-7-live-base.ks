@@ -15,7 +15,8 @@ xconfig --startxonboot
 zerombr
 clearpart --all
 part / --size 5120 --fstype ext4
-services --enabled=NetworkManager --disabled=sshd
+#services --enabled=NetworkManager --disabled=sshd
+services --enabled=NetworkManager,sshd
 network --bootproto=dhcp --device=link --activate
 shutdown
 
