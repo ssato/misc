@@ -22,12 +22,10 @@ shutdown
 %include rhel-7-repo.ks
 
 %packages --ignoremissing
-@base-x
+@x11
 @guest-desktop-agents
-@standard
 @core
 @fonts
-@hardware-support
 #
 # Basic tools
 bash-completion
@@ -56,7 +54,6 @@ kernel
 
 # The point of a live image is to install
 anaconda
-@anaconda-tools
 
 # Need aajohan-comfortaa-fonts for the SVG rnotes images
 aajohan-comfortaa-fonts
@@ -65,9 +62,6 @@ aajohan-comfortaa-fonts
 dracut-live
 grub2-efi
 syslinux
-
-# anaconda needs the locales available to run for different locales
-glibc-all-langpacks
 %end
 
 %post
