@@ -21,7 +21,7 @@ shutdown
 
 %include rhel-7-repo.ks
 
-%packages
+%packages --ignoremissing
 @base-x
 @guest-desktop-agents
 @standard
@@ -53,8 +53,6 @@ httpd
 # Explicitly specified here:
 # <notting> walters: because otherwise dependency loops cause yum issues.
 kernel
-kernel-modules
-kernel-modules-extra
 
 # The point of a live image is to install
 anaconda
