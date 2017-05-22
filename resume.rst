@@ -26,8 +26,9 @@ And these days, I've been interested and take some time to work as a kind of
 people management role to build a strong team to accomplish the business goal,
 and have some experience with it.
 
-Also, I've been lead some OSS projects [#]_ personally and have knowledge of
-modern development process and familiar with recent development trends.
+Also, I've been lead some OSS projects [#]_ personally and have some knowledge
+of modern development process and familiar with recent development trends, I
+think.
 
 .. [#] https://github.com/ssato/python-anyconfig for example.
 
