@@ -7,12 +7,16 @@
 #
 set -ex
 
+copr_project=ssato/python-anyconfig
+
 curdir=${0%/*}
 topdir=${curdir}/../
-srpmdir=${topdir}/dist
+srpm=$1
 
-copr_project=ssato/python-anyconfig
-srpm=$(ls -1 ${srpmdir:?}/*.src.rpm | sort -Vr | head -n 1)  # FIXME
+if test "x${srpm}" = "x"; then
+    echo "Usage: $0 SRPM_PATH"
+    exit -1
+fi
 
 test -f ~/.config/copr
 copr-cli build ${copr_project:?} ${srpm:?}
