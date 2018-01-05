@@ -5,17 +5,27 @@
 
 Name:           python-%{pkgname}
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            https://bitbucket.org/bodhisnarkva/cbor
 Source0:        %{pkgname}-%{version}.tar.gz
-# Available from https://github.com/brianolson/cbor_py.
-#Source1:        README.md
-#BuildArch:      noarch
-BuildRequires:  python2-devel python3-devel
-BuildRequires:  python-setuptools python3-setuptools
+
+%if 0%{?fedora} || 0%{?rhel} > 7
+%bcond_without python3
+%else
+%bcond_with python3
+%endif
+
+# Available from https://bitbucket.org/bodhisnarkva/cbor/.
+Source1:        README.md
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+%if %{with python3}
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+%endif
 
 %description
 %{desctxt}
@@ -27,15 +37,17 @@ Summary:        %{sumtxt}
 %description -n python2-%{pkgname}
 %{desctxt}
 
+%if %{with python3}
 %package     -n python3-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname}
 %{desctxt}
+%endif
 
 %prep
-%setup -q -n %{pkgname}-%{version}
+%autosetup -n %{pkgname}-%{version}
 cat << EOF > README.md
 # From https://github.com/brianolson/cbor_py
 Concise Binary Object Representation (CBOR) is a superset of JSON's schema
@@ -46,36 +58,34 @@ that's faster and more compact.
 
 This Python implementation provides loads()/dumps() like the json standard
 library.
-
-Compare to Python 2.7.5's standard library implementation of json:
-
-```
-serialized 50000 objects into 1163097 cbor bytes in 0.05 seconds (1036613.48/s) and 1767001 json bytes in 0.22 seconds (224772.48/s)
-compress to 999179 bytes cbor.gz and 1124500 bytes json.gz
-load 50000 objects from cbor in 0.07 secs (763708.80/sec) and json in 0.32 (155348.97/sec)
-```
-
-There is also a pure-python implementation which gets about 1/3 the speed of
-json's C augmented speed.
 EOF
 
 
 %build
-%py3_build
 %py2_build
+%if %{with python3}
+%py3_build
+%endif
 
 %install
-%py3_install
 %py2_install
+%if %{with python3}
+%py3_install
+%endif
 
 %files -n python2-%{pkgname}
 %doc README.md
 %{python2_sitearch}/*
 
+%if %{with python3}
 %files -n python3-%{pkgname}
 %doc README.md
 %{python3_sitearch}/*
+%endif
 
 %changelog
+* Thu Jan 04 2018 Satoru SATOH <ssato@redhat.com> - 1.0.0-2
+- Clean up the RPM SPEC
+
 * Fri Feb 24 2017 Satoru SATOH <ssato@redhat.com> - 1.0.0-1
 - Initial packaging
