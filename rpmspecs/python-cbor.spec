@@ -69,7 +69,11 @@ cp %{SOURCE1} ./
 
 %files -n python2-%{pkgname}
 %doc README.md
+%if 0%{?rhel} == 7
+%{python_sitearch}/*
+%else
 %{python2_sitearch}/*
+%endif
 
 %if %{with python3}
 %files -n python3-%{pkgname}
