@@ -20,8 +20,13 @@ Source0:        %{pkgname}-%{version}.tar.gz
 
 # Available from https://bitbucket.org/bodhisnarkva/cbor/.
 Source1:        README.md
+%if 0%{?rhel} == 7
+BuildRequires:  python-devel
+BuildRequires:  python-setuptools
+%else
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+%endif
 %if %{with python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
