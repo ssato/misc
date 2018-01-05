@@ -8,7 +8,7 @@ loads()/dumps() like the json standard library.
 
 Name:           python-%{pkgname}
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Libraries
 License:        ASL 2.0
@@ -82,7 +82,10 @@ cp %{SOURCE1} ./
 %endif
 
 %changelog
-* Thu Jan 04 2018 Satoru SATOH <ssato@redhat.com> - 1.0.0-2
+* Sat Jan  6 2018 Satoru SATOH <ssato@redhat.com> - 1.0.0-3
+- Some more clean ups in the RPM SPEC
+
+* Thu Jan  4 2018 Satoru SATOH <ssato@redhat.com> - 1.0.0-2
 - Clean up the RPM SPEC
 
 * Fri Feb 24 2017 Satoru SATOH <ssato@redhat.com> - 1.0.0-1
