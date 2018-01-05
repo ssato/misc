@@ -1,7 +1,10 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
 %global pkgname cbor
 %global sumtxt  CBOR loader and dumper for Python
-%global desctxt Concise Binary Object Representation (CBOR) is a superset of JSON's schema that's faster and more compact. This package provides python library provides loads()/dumps() like the json standard library.
+%global desctxt \
+Concise Binary Object Representation (CBOR) is a superset of JSON's schema\
+that's faster and more compact. This package provides python library provides\
+loads()/dumps() like the json standard library.
 
 Name:           python-%{pkgname}
 Version:        1.0.0
@@ -32,23 +35,20 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 %endif
 
-%description
-%{desctxt}
+%description    %{desctxt}
 
 %package     -n python2-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python2-%{pkgname}}
 
-%description -n python2-%{pkgname}
-%{desctxt}
+%description -n python2-%{pkgname} %{desctxt}
 
 %if %{with python3}
 %package     -n python3-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python3-%{pkgname}}
 
-%description -n python3-%{pkgname}
-%{desctxt}
+%description -n python3-%{pkgname} %{desctxt}
 %endif
 
 %prep
