@@ -53,18 +53,7 @@ Summary:        %{sumtxt}
 
 %prep
 %autosetup -n %{pkgname}-%{version}
-cat << EOF > README.md
-# From https://github.com/brianolson/cbor_py
-Concise Binary Object Representation (CBOR) is a superset of JSON's schema
-that's faster and more compact.
-
-* http://tools.ietf.org/html/rfc7049
-* http://cbor.io/
-
-This Python implementation provides loads()/dumps() like the json standard
-library.
-EOF
-
+cp %{SOURCE1} ./
 
 %build
 %py2_build
