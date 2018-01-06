@@ -39,10 +39,6 @@ BuildRequires:  python2-setuptools
 %install
 %py2_install
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files -n python2-%{pkgname}
 %defattr(-,root,root,-)
 %doc README TODO testdata
