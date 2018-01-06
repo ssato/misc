@@ -33,6 +33,7 @@ BuildRequires:  python2-setuptools
 %prep
 %autosetup -n %{pkgname}-%{version}
 rm -f pyjavaproperties_test.py  # Remove to avoid it'll be installed.
+sed -i '1d' pyjavaproperties.py  # It's not executable.
 
 %build
 %py2_build
