@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:           python-%{orgname}
 Version:        0.6
 Release:        1%{?dist}
