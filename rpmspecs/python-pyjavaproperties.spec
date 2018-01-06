@@ -22,7 +22,6 @@ Group:          Development/Languages
 License:        Python
 URL:            http://pypi.python.org/pypi/%{pkgname}
 Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%{version}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
