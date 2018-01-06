@@ -13,16 +13,8 @@ Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%
 BuildArch:      noarch
 
 %global desctxt \
-This module is designed to be a python equivalent to the java.util.Properties\
-class. Currently, the basic input/output methods are supported, and there are\
-plans to add the XML input/output methods found in J2SE 5.0.\
-\
-Fundamentally, this module is designed so that users can easily parse and\
-manipulate Java Properties files - that's it. There's a fair number of us\
-pythonistas who work in multi-language shops, and constantly writing your own\
-parsing mechanism is just painful. Not to mention Java guys are notoriously\
-unwilling to use anything which is cross-language for configuration, unless\
-it's XML, which is a form of self-punishment. :)
+This is a python library to parse and manipulate Java properties files like\
+java.util.Properties does.
 
 %description %{desctxt}
 
