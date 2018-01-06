@@ -1,13 +1,14 @@
 %global debug_package %{nil}
+%global pkgname pyjavaproperties
 
-Name:           python-%{orgname}
+Name:           python-%{pkgname}
 Version:        0.6
 Release:        1%{?dist}
 Summary:        Python replacement for java.util.Properties
 Group:          Development/Languages
 License:        Python
-URL:            http://pypi.python.org/pypi/%{orgname}
-Source0:        http://pypi.python.org/packages/source/p/%{orgname}/%{orgname}-%{version}.tar.gz
+URL:            http://pypi.python.org/pypi/%{pkgname}
+Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -28,7 +29,7 @@ it's XML, which is a form of self-punishment. :)
 
 
 %prep
-%setup -q -n %{orgname}-%{version}
+%setup -q -n %{pkgname}-%{version}
 
 
 %build
