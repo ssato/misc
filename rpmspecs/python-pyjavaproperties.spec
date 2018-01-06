@@ -44,7 +44,6 @@ BuildRequires:  python2-setuptools
 %doc README TODO testdata
 %{python_sitelib}/*
 
-
 %changelog
 * Sun Jul 22 2012 Satoru SATOH <ssato@redhat.com> - 0.6-1
 - Initial packaging.
