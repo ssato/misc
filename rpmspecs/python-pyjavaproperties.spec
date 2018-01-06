@@ -2,6 +2,16 @@
 %global pkgname pyjavaproperties
 %global sumtxt Python library to parse and manipulate Java properties files
 
+Name:           python-%{pkgname}
+Version:        0.6
+Release:        1%{?dist}
+Summary:        %{sumtxt}
+Group:          Development/Languages
+License:        Python
+URL:            http://pypi.python.org/pypi/%{pkgname}
+Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%{version}.tar.gz
+BuildArch:      noarch
+
 %global desctxt \
 This module is designed to be a python equivalent to the java.util.Properties\
 class. Currently, the basic input/output methods are supported, and there are\
@@ -13,16 +23,6 @@ pythonistas who work in multi-language shops, and constantly writing your own\
 parsing mechanism is just painful. Not to mention Java guys are notoriously\
 unwilling to use anything which is cross-language for configuration, unless\
 it's XML, which is a form of self-punishment. :)
-
-Name:           python-%{pkgname}
-Version:        0.6
-Release:        1%{?dist}
-Summary:        %{sumtxt}
-Group:          Development/Languages
-License:        Python
-URL:            http://pypi.python.org/pypi/%{pkgname}
-Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%{version}.tar.gz
-BuildArch:      noarch
 
 %description %{desctxt}
 
