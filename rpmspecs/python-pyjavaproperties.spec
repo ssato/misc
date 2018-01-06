@@ -41,18 +41,11 @@ BuildRequires:  python2-setuptools
 %prep
 %autosetup -n %{pkgname}-%{version}
 
-
 %build
-# Remove CFLAGS=... for noarch packages (unneeded)
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
-
+%py2_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
-
-rm -rf $RPM_BUILD_ROOT/pyjavaproperties.egg-info/
- 
+%py2_install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
