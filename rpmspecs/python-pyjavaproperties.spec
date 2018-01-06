@@ -1,7 +1,3 @@
-# sitelib for noarch packages, sitearch for others (remove the unneeded one)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%define orgname pyjavaproperties
-
 Name:           python-%{orgname}
 Version:        0.6
 Release:        1%{?dist}
