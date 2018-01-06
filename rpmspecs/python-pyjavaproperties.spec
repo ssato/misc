@@ -24,6 +24,8 @@ URL:            http://pypi.python.org/pypi/%{pkgname}
 Source0:        http://pypi.python.org/packages/source/p/%{pkgname}/%{pkgname}-%{version}.tar.gz
 BuildArch:      noarch
 
+%description %{desctxt}
+
 %if 0%{?rhel} == 7
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
@@ -31,8 +33,6 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 %endif
-
-%description %{desctxt}
 
 %prep
 %setup -q -n %{pkgname}-%{version}
