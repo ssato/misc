@@ -26,6 +26,8 @@ BuildArch:      noarch
 
 %description %{desctxt}
 
+%package     -n python2-%{pkgname}
+Summary:        %{sumtxt}
 %if 0%{?rhel} == 7
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
@@ -33,6 +35,8 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 %endif
+
+%description -n python2-%{pkgname} %{desctxt}
 
 %prep
 %setup -q -n %{pkgname}-%{version}
@@ -54,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT/pyjavaproperties.egg-info/
 rm -rf $RPM_BUILD_ROOT
 
 
-%files
+%files -n python2-%{pkgname}
 %defattr(-,root,root,-)
 %doc README TODO testdata
 %{python_sitelib}/*
