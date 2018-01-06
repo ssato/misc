@@ -4,7 +4,7 @@
 
 Name:           python-%{pkgname}
 Version:        0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        %{sumtxt}
 Group:          Development/Languages
 License:        Python
@@ -38,6 +38,7 @@ BuildRequires:  python2-setuptools
 
 %install
 %py2_install
+rm -f %{buildroot}%{python_sitelib}/pyjavaproperties_test.py*
 
 %files -n python2-%{pkgname}
 %defattr(-,root,root,-)
@@ -45,5 +46,8 @@ BuildRequires:  python2-setuptools
 %{python_sitelib}/*
 
 %changelog
+* Sat Jan  6 2018 Satoru SATOH <ssato@redhat.com> - 0.6-2
+- Cleanup and simplify this RPM SPEC to comply w/ the current Fedora guidelines
+
 * Sun Jul 22 2012 Satoru SATOH <ssato@redhat.com> - 0.6-1
 - Initial packaging.
