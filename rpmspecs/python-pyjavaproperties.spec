@@ -32,13 +32,13 @@ BuildRequires:  python2-setuptools
 
 %prep
 %autosetup -n %{pkgname}-%{version}
+rm -f pyjavaproperties_test.py  # Remove to avoid it'll be installed.
 
 %build
 %py2_build
 
 %install
 %py2_install
-rm -f %{buildroot}%{python_sitelib}/pyjavaproperties_test.py*
 
 %files -n python2-%{pkgname}
 %defattr(-,root,root,-)
