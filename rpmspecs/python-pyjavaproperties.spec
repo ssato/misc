@@ -39,7 +39,7 @@ BuildRequires:  python2-setuptools
 %description -n python2-%{pkgname} %{desctxt}
 
 %prep
-%setup -q -n %{pkgname}-%{version}
+%autosetup -n %{pkgname}-%{version}
 
 
 %build
