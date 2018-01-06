@@ -1,10 +1,23 @@
 %global debug_package %{nil}
 %global pkgname pyjavaproperties
+%global sumtxt Python library to parse and manipulate Java properties files
+
+%global desctxt \
+This module is designed to be a python equivalent to the java.util.Properties\
+class. Currently, the basic input/output methods are supported, and there are\
+plans to add the XML input/output methods found in J2SE 5.0.\
+\
+Fundamentally, this module is designed so that users can easily parse and\
+manipulate Java Properties files - that's it. There's a fair number of us\
+pythonistas who work in multi-language shops, and constantly writing your own\
+parsing mechanism is just painful. Not to mention Java guys are notoriously\
+unwilling to use anything which is cross-language for configuration, unless\
+it's XML, which is a form of self-punishment. :)
 
 Name:           python-%{pkgname}
 Version:        0.6
 Release:        1%{?dist}
-Summary:        Python replacement for java.util.Properties
+Summary:        %{sumtxt}
 Group:          Development/Languages
 License:        Python
 URL:            http://pypi.python.org/pypi/%{pkgname}
@@ -14,19 +27,7 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 
-
-%description
-This module is designed to be a python equivalent to the java.util.Properties
-class. Currently, the basic input/output methods are supported, and there are
-plans to add the XML input/output methods found in J2SE 5.0.
-
-Fundamentally, this module is designed so that users can easily parse and
-manipulate Java Properties files - that's it. There's a fair number of us
-pythonistas who work in multi-language shops, and constantly writing your own
-parsing mechanism is just painful. Not to mention Java guys are notoriously
-unwilling to use anything which is cross-language for configuration, unless
-it's XML, which is a form of self-punishment. :)
-
+%description %{desctxt}
 
 %prep
 %setup -q -n %{pkgname}-%{version}
