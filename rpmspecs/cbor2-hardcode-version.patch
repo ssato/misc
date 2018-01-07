@@ -1,0 +1,25 @@
+diff -up cbor2-4.0.1/setup.py.st_scm cbor2-4.0.1/setup.py
+--- cbor2-4.0.1/setup.py.st_scm	2018-01-05 23:29:42.036026080 +0900
++++ cbor2-4.0.1/setup.py	2018-01-05 23:31:35.055830654 +0900
+@@ -10,10 +10,7 @@ readme = open(readme_path).read()
+ 
+ setup(
+     name='cbor2',
+-    use_scm_version={
+-        'version_scheme': 'post-release',
+-        'local_scheme': 'dirty-tag'
+-    },
++    version='4.0.1',
+     description='Pure Python CBOR (de)serializer with extensive tag support',
+     long_description=readme,
+     author=u'Alex Grönholm',
+@@ -34,9 +31,6 @@ setup(
+     keywords='serialization cbor',
+     license='MIT',
+     packages=find_packages(exclude=['tests']),
+-    setup_requires=[
+-        'setuptools_scm'
+-    ],
+     extras_require={
+         'testing': ['pytest', 'pytest-cov']
+     }
