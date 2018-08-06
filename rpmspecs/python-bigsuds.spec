@@ -14,9 +14,10 @@ Python library for F5 Networks iControl API
 
 Name:           python-%{pkgname}
 Version:        1.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python library for F5 Networks iControl API
-License:        Commercial
+# PyPI page says EULA is required but github page says its license is MIT.
+License:        MIT
 URL:            https://github.com/F5Networks/bigsuds
 Source0:        %{url}/archive/RELEASE_%{version}.tar.gz
 BuildArch:      noarch
@@ -78,5 +79,8 @@ Requires:       python3-setuptools
 %endif
 
 %changelog
+* Mon Aug  6 2018 Satoru SATOH <ssato@redhat.com> - 1.0.6-2
+- Fix license
+
 * Tue Jul 31 2018 Satoru SATOH <ssato@redhat.com> - 1.0.6-1
 - Initial packaging
