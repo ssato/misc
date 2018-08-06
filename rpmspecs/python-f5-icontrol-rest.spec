@@ -1,11 +1,12 @@
 %global pkgname f5-icontrol-rest
+%global srcname f5-icontrol-rest-python
 
 %global desc \
 Generic python library used by the F5 SDK and other F5 projects to communicate \
 with BIG-IP(R) via the REST API.
 
 Name:           python-%{pkgname}
-Version:        1.3.10
+Version:        1.3.11
 Release:        1%{?dist}
 Summary:        Python library to communicate with F5 Big-IP REST API
 License:        ASL 2.0
@@ -28,7 +29,7 @@ Requires:       python2-setuptools
 %description -n python2-%{pkgname} %{desc}
 
 %prep
-%autosetup -n %{pkgname}-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %build
 %py2_build
@@ -45,5 +46,8 @@ Requires:       python2-setuptools
 %endif
 
 %changelog
+* Mon Aug  6 2018 Satoru SATOH <ssato@redhat.com> - 1.3.11-1
+- New upstream
+
 * Tue Jul 31 2018 Satoru SATOH <ssato@redhat.com> - 1.3.10-1
 - Initial packaging
