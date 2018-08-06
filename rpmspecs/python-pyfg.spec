@@ -23,9 +23,11 @@ BuildArch:      noarch
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+BuildRequires:  python2-pip
 %if %{with python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 %endif
 
 %description    %{desc}
