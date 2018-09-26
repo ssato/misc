@@ -14,12 +14,13 @@ Python API library for FortiOS or how to turn FortiOS into JunOS
 
 Name:           python-%{pkgname}
 Version:        0.50
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API library for FortiOS
 License:        ASL 2.0
 URL:            https://github.com/spotify/pyfg
 Source0:        %{url}/archive/RELEASE_%{version}.tar.gz
 BuildArch:      noarch
+Patch0:         0001-enhancement-add-support-to-configure-channel-timeout.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
@@ -49,7 +50,7 @@ Requires:       python3-paramiko
 %endif
 
 %prep
-%autosetup -n %{pkgname}-%{version}
+%autosetup -n %{pkgname}-%{version} -p1
 
 %build
 %py2_build
@@ -81,5 +82,8 @@ Requires:       python3-paramiko
 %endif
 
 %changelog
+* Wed Sep 26 2018 Satoru SATOH <ssato@redhat.com> - 0.50-2
+- Apply a custom patch to allow configuration of channel timeout
+
 * Mon Aug  6 2018 Satoru SATOH <ssato@redhat.com> - 0.50-1
 - Initial packaging
