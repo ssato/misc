@@ -46,6 +46,9 @@ gem unpack -V %{SOURCE0}
 %setup -q -D -T -n %{gem_name}-%{version}%{pre}
 gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
+# Hack!
+sed -i.save -r 's/~> 1.5.0.alpha.8/>= 0/g' %{gem_name}.gemspec
+
 %build
 gem build %{gem_name}.gemspec
 %gem_install -n %{gem_name}-%{version}%{pre}.gem
