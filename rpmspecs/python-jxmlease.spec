@@ -1,20 +1,18 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
-%global pkgname ncclient
-%global srcname ncclient
+%global pkgname jxmlease
+%global srcname jxmlease
 %global desctxt \
-ncclient is a Python library that facilitates client-side scripting \
-and application development around the NETCONF protocol
+A Python module for converting XML to intelligent Python data structures, \
+and converting Python data structures to XML
 
 Name:           python-%{pkgname}
-Version:        0.6.6
+Version:        1.0.1
 Release:        1%{?dist}
-Summary:        Python library for NETCONF clients
+Summary:        Python library converting XML from/to python objects
 Group:          Development/Libraries
-License:        ASL 2.0
-URL:            https://github.com/ncclient/ncclient
+License:        MIT
+URL:            https://github.com/Juniper/jxmlease
 Source0:        %{srcname}-%{version}.tar.gz
-# TODO:
-# Patch10:        ncclient-0.6.6-readme-md.patch
 BuildArch:      noarch
 
 %if 0%{?fedora} || 0%{?rhel} > 7
@@ -32,16 +30,10 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 %endif
-Requires:       python2-paramiko
-Requires:       python2-lxml
-Requires:       python2-six
 %endif
 %if %{with python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-Requires:       python3-paramiko
-Requires:       python3-lxml
-Requires:       python3-six
 %endif
 
 %description    %{desctxt}
@@ -83,8 +75,8 @@ Summary:        %{sumtxt}
 
 %if %{with python2}
 %files -n python2-%{pkgname}
-%doc README*
-%doc docs examples
+%doc README.rst
+%doc docs
 %if 0%{?rhel} == 7
 %{python_sitelib}/*
 %else
@@ -94,11 +86,11 @@ Summary:        %{sumtxt}
 
 %if %{with python3}
 %files -n python3-%{pkgname}
-%doc README*
-%doc docs examples
+%doc README.rst
+%doc docs
 %{python3_sitelib}/*
 %endif
 
 %changelog
-* Mon Jul 15 2019 Satoru SATOH <ssato@redhat.com> - 0.6.6-1
+* Mon Jul 15 2019 Satoru SATOH <ssato@redhat.com> - 1.0.1-1
 - Initial packaging
