@@ -10,7 +10,7 @@ set -e
 curdir=${0%/*}
 topdir=${curdir}/../
 srpm=$1
-copr_project=${2:-ssato/python-anyconfig}
+copr_project=${2:-ssato/extras}
 
 if test "x${srpm}" = "x"; then
     echo "Usage: $0 SRPM_PATH [COPR_PROJECT]"
