@@ -104,6 +104,8 @@ cat <<EOF >> setup.cfg
 [files]
 data_files =
     %{python3_sitelib}/%{pkgname}/cookiecutter = molecule/cookiecutter/*
+    %{python3_sitelib}/%{pkgname}/provisioner/ansible/playbooks = molecule/provisioner/ansible/playbooks/*
+    %{python3_sitelib}/%{pkgname}/provisioner/ansible/plugins = molecule/provisioner/ansible/plugins/*
 EOF
 
 %build
