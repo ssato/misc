@@ -1,0 +1,11 @@
+diff -up molecule-2.20.2/setup.py.missing molecule-2.20.2/setup.py
+--- molecule-2.20.2/setup.py.missing	2019-07-17 23:45:26.065983661 +0900
++++ molecule-2.20.2/setup.py	2019-07-17 23:45:42.498106463 +0900
+@@ -23,5 +23,6 @@ import setuptools
+ setuptools.setup(
+     packages=setuptools.find_packages(),
+     pbr=True,
+-    setup_requires=['pbr']
++    setup_requires=['pbr'],
++    include_package_data=True
+ )

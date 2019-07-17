@@ -1,0 +1,12 @@
+diff -up molecule-2.20.2/molecule/verifier/testinfra.py.pytest molecule-2.20.2/molecule/verifier/testinfra.py
+--- molecule-2.20.2/molecule/verifier/testinfra.py.pytest	2019-07-17 23:50:50.834410730 +0900
++++ molecule-2.20.2/molecule/verifier/testinfra.py	2019-07-17 23:50:58.697469492 +0900
+@@ -160,7 +160,7 @@ class Testinfra(base.Base):
+         verbose_flag = util.verbose_flag(options)
+         args = verbose_flag + self.additional_files_or_dirs
+ 
+-        self._testinfra_command = sh.Command('py.test').bake(
++        self._testinfra_command = sh.Command('py.test-3').bake(
+             options,
+             self._tests,
+             *args,
