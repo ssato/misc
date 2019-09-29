@@ -1,0 +1,7 @@
+diff -up molecule-3.0a3/MANIFEST.in.data_files molecule-3.0a3/MANIFEST.in
+--- molecule-3.0a3/MANIFEST.in.data_files	2019-09-30 00:23:34.143067534 +0900
++++ molecule-3.0a3/MANIFEST.in	2019-09-30 00:24:29.697517957 +0900
+@@ -1 +1,3 @@
+ prune asset
++recursive-include molecule .ansible-lint *.bash *.j2 *.json *.md *.rst *.yaml .yamllint *.yml
++
