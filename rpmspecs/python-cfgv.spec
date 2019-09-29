@@ -1,17 +1,14 @@
-%global pkgname gilt
+%global pkgname cfgv
 %global desctxt \
-Gilt is a GIT layering tool to overlay a remote repository into the \
-destination provided.
+Validate configuration and produce human readable error messages.
 
 Name:           python-%{pkgname}
-Version:        1.2.1
+Version:        2.0.1
 Release:        2%{?dist}
-Summary:        A GIT layering tool
+Summary:        Python library to validate configuration files
 License:        MIT
-URL:            https://github.com/metacloud/gilt/
+URL:            https://github.com/asottile/cfgv
 Source0:        %{url}/archive/RELEASE_%{version}.tar.gz
-# pbr brings many troubles so I want to disable it.
-Patch0:         gilt-1.2.1-disable-pbr.patch
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -20,13 +17,7 @@ BuildRequires:  python3-setuptools
 
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
-Requires:       python3-click
-Requires:       python3-colorama
-Requires:       python3-fasteners
-Requires:       python3-pyyaml
-# It's not in Fedora repo but available from my copr repo,
-# https://copr.fedorainfracloud.org/coprs/ssato/extras/
-Requires:       python3-git-url-parse
+Requires:       python3-six
 %{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname} %{desctxt}
@@ -41,12 +32,12 @@ Requires:       python3-git-url-parse
 %py3_install
 
 %files -n python3-%{pkgname}
-%doc *.rst
+%doc README.md
 %{python3_sitelib}/*
 
 %changelog
 * Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.2.2-2
 - fix summary text
 
-* Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.2.1-1
+* Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 2.0.1-1
 - Initial packaging

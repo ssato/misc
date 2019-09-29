@@ -4,7 +4,7 @@ A simple GIT URL parser similar to giturlparse.py
 
 Name:           python-%{pkgname}
 Version:        1.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A simple GIT URL parser
 License:        MIT
 URL:            https://github.com/coala/git-url-parse
@@ -17,7 +17,7 @@ BuildRequires:  python3-setuptools
 %description   %desctxt
 
 %package     -n python3-%{pkgname}
-Summary:        %{sumtxt}
+Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname} %{desctxt}
@@ -36,5 +36,8 @@ Summary:        %{sumtxt}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.2.2-2
+- fix summary text
+
 * Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.2.2-1
 - Initial packaging
