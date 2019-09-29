@@ -10,6 +10,7 @@ Summary:        A GIT layering tool
 License:        MIT
 URL:            https://github.com/metacloud/gilt/
 Source0:        %{url}/archive/RELEASE_%{version}.tar.gz
+# pbr brings many troubles so I want to disable it.
 Patch0:         gilt-1.2.1-disable-pbr.patch
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -22,6 +23,8 @@ Summary:        %{sumtxt}
 Requires:       python3-click
 Requires:       python3-colorama
 Requires:       python3-fasteners
+# It's not in Fedora repo but available from my copr repo,
+# https://copr.fedorainfracloud.org/coprs/ssato/extras/
 Requires:       python3-git-url-parse
 Requires:       python3-pyyaml
 %{?python_provide:%python_provide python3-%{pkgname}}
