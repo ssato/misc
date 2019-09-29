@@ -1,0 +1,61 @@
+diff -up gilt-1.2.1/gilt/__init__.py.pbr gilt-1.2.1/gilt/__init__.py
+--- gilt-1.2.1/gilt/__init__.py.pbr	2019-09-29 10:06:28.121299590 +0900
++++ gilt-1.2.1/gilt/__init__.py	2019-09-29 10:06:51.013485194 +0900
+@@ -20,7 +20,4 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ # THE SOFTWARE.
+ 
+-import pbr.version
+-
+-version_info = pbr.version.VersionInfo('python-gilt')  # noqa
+-__version__ = version_info.release_string()
++__version__ = "1.2.1"
+diff -up gilt-1.2.1/setup.cfg.pbr gilt-1.2.1/setup.cfg
+--- gilt-1.2.1/setup.cfg.pbr	2019-09-29 09:43:28.724115749 +0900
++++ gilt-1.2.1/setup.cfg	2019-09-29 10:00:59.629636260 +0900
+@@ -1,5 +1,6 @@
+ [metadata]
+ name = python-gilt
++version = attr: gilt.__version__
+ summary = gilt - A GIT layering tool.
+ description-file = README.rst
+ author = John Dewey
+@@ -22,15 +23,6 @@ classifier =
+     Topic :: System :: Systems Administration
+     Topic :: Utilities
+ 
+-[pbr]
+-skip_authors = True
+-skip_changelog = True
+-warnerrors = True
+-
+-[global]
+-setup-hooks =
+-    pbr.hooks.setup_hook
+-
+ [entry_points]
+ console_scripts =
+     gilt = gilt.shell:main
+@@ -43,3 +35,13 @@ packages =
+ all_files = 1
+ build-dir = doc/build
+ source-dir = doc/source
++
++[options]
++include_package_data = True
++packages = find:
++
++[options.packages.find]
++where = .
++exclude =
++    test
++
+diff -up gilt-1.2.1/setup.py.pbr gilt-1.2.1/setup.py
+--- gilt-1.2.1/setup.py.pbr	2019-09-29 09:52:33.606533541 +0900
++++ gilt-1.2.1/setup.py	2019-09-29 09:52:40.499589427 +0900
+@@ -22,4 +22,4 @@
+ 
+ import setuptools
+ 
+-setuptools.setup(setup_requires=['pbr'], pbr=True)
++setuptools.setup()

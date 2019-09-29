@@ -1,0 +1,56 @@
+diff -up git-url-parse-1.2.2/giturlparse/__init__.py.pbr git-url-parse-1.2.2/giturlparse/__init__.py
+--- git-url-parse-1.2.2/giturlparse/__init__.py.pbr	2019-09-29 11:04:07.486347337 +0900
++++ git-url-parse-1.2.2/giturlparse/__init__.py	2019-09-29 11:06:33.596531965 +0900
+@@ -22,10 +22,7 @@
+ 
+ from giturlparse import parser
+ 
+-import pbr.version
+-
+-version_info = pbr.version.VersionInfo('git-url-parse')
+-__version__ = version_info.release_string()
++__version__ = "1.2.2"
+ 
+ 
+ def parse(url):  # pragma: no cover
+diff -up git-url-parse-1.2.2/setup.cfg.pbr git-url-parse-1.2.2/setup.cfg
+--- git-url-parse-1.2.2/setup.cfg.pbr	2019-09-29 11:03:59.053278963 +0900
++++ git-url-parse-1.2.2/setup.cfg	2019-09-29 11:05:35.514061043 +0900
+@@ -1,5 +1,6 @@
+ [metadata]
+ name = git-url-parse
++version = attr: giturlparse.__version__
+ summary = git-url-parse - A simple GIT URL parser.
+ description-file = README.rst
+ author = John Dewey
+@@ -24,14 +25,14 @@ classifier =
+     Topic :: System :: Systems Administration
+     Topic :: Utilities
+ 
+-[pbr]
+-skip_authors = True
+-skip_changelog = True
+-warnerrors = True
++[options]
++include_package_data = True
++packages = find:
+ 
+-[global]
+-setup-hooks =
+-    pbr.hooks.setup_hook
++[options.packages.find]
++where = .
++exclude =
++    test
+ 
+ [files]
+ packages =
+diff -up git-url-parse-1.2.2/setup.py.pbr git-url-parse-1.2.2/setup.py
+--- git-url-parse-1.2.2/setup.py.pbr	2019-09-29 11:03:53.326232530 +0900
++++ git-url-parse-1.2.2/setup.py	2019-09-29 11:04:28.586518411 +0900
+@@ -22,4 +22,4 @@
+ 
+ import setuptools
+ 
+-setuptools.setup(setup_requires=['pbr'], pbr=True)
++setuptools.setup()
