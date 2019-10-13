@@ -15,7 +15,7 @@ supports.
 
 Name: python-%{pkgname}
 Version: 3.0a3
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Molecule is designed to aid in the development and testing of Ansible roles
 
 # Most of the package is MIT licensed.
@@ -67,7 +67,7 @@ Requires: python3-colorama >= 0.3.9
 Requires: python3-cookiecutter >= 1.6.0
 Requires: python3-jinja2 >= 2.10.1
 Requires: python3-paramiko >= 2.5.0
-Requires: python3-pexpect >= 4.6.0
+Requires: python3-pexpect >= 4.6
 Requires: python3-pluggy >= 0.7.1
 Requires: python3-pyyaml >= 5.1
 Requires: python3-sh >= 1.12.14
@@ -101,6 +101,15 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 %{setup_flags} %{py3_install}
 
+# Dirty Hack for https://github.com/ansible/molecule/issues/1851
+install -d %{buildroot}/%{python3_sitelib}/molecule/provisioner/ansible/plugins/{filter,modules}/
+for f in molecule/provisioner/ansible/plugins/filter/*.py; do
+  install -m 644 $f %{buildroot}/%{python3_sitelib}/molecule/provisioner/ansible/plugins/filter/
+done
+for f in molecule/provisioner/ansible/plugins/modules/*.py; do
+  install -m 644 $f %{buildroot}/%{python3_sitelib}/molecule/provisioner/ansible/plugins/modules/
+done
+
 %check
 # FIXME: library pathing issues causing tests to fail
 # X{setup_flags} X{__python3} setup.py test
@@ -115,6 +124,10 @@ rm -rf html/.{doctrees,buildinfo}
 %doc docs/html
 
 %changelog
+* Sun Oct 06 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.0a3-2
+- Workaround for https://github.com/ansible/molecule/issues/1851
+- Workaround that python-pexpect == 4.6.0 is not available but 4.6
+
 * Sun Sep 29 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.0a3-1
 - update to 3.0a3
 
