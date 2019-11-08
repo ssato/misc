@@ -14,8 +14,8 @@ supports.
 %{?python_disable_dependency_generator}
 
 Name: python-%{pkgname}
-Version: 3.0a3
-Release: 2%{?dist}
+Version: 3.0a4
+Release: 1%{?dist}
 Summary: Molecule is designed to aid in the development and testing of Ansible roles
 
 # Most of the package is MIT licensed.
@@ -42,6 +42,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm >= 1.15.0
 BuildRequires:  python3-setuptools_scm_git_archive >= 1.0
 BuildRequires:  python3-sphinx
+BuildRequires:  python3-sphinx_rtd_theme
 
 %description    %desctxt
 
@@ -56,7 +57,7 @@ Recommends: python-%{pkgname}-doc = %{version}-%{release}
 Recommends: python3-docker
 # https://bugzilla.redhat.com/show_bug.cgi?id=1614358
 # https://github.com/ansible/molecule/blob/master/setup.cfg
-Requires: ansible-python3 >= 2.5
+Requires: ansible
 Requires: python3-ansible-lint >= 4.0.2
 Requires: python3-anyconfig >= 0.9.10
 Requires: python3-flake8 >= 3.6.0
@@ -124,6 +125,10 @@ done
 %doc docs/html
 
 %changelog
+* Fri Nov 08 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.0a4-1
+- New upstream pre-release
+- change dependency to ansible instead of ansible-python3 to avoid conflicts
+
 * Sun Oct 06 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.0a3-2
 - Workaround for https://github.com/ansible/molecule/issues/1851
 - Workaround that python-pexpect == 4.6.0 is not available but 4.6
