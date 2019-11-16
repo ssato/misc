@@ -1,3 +1,6 @@
+# Forked from:
+# https://apps.fedoraproject.org/packages/python-gensim/sources/
+
 # Conditional for release and snapshot builds. Uncomment for release-builds.
 %global rel_build 1
 
@@ -37,10 +40,9 @@ multiple cores.                                                         \
 %global                 pypi_name gensim
 
 Name:                   python-%{pypi_name}
-Version:                0.10.0
-Release:                21%{?gitrel}%{?dist}
+Version:                3.8.1
+Release:                1%{?dist}
 Summary:                Python framework for fast Vector Space Modelling
-
 License:                LGPLv2
 URL:                    http://radimrehurek.com/%{pypi_name}/
 # Sources for release-builds.
@@ -51,59 +53,53 @@ URL:                    http://radimrehurek.com/%{pypi_name}/
 # Fix doc generation with latest sphinx
 # Fixed upstream:
 # https://github.com/RaRe-Technologies/gensim/commit/f44d3a98d6a68ea30326a553b1ee2116a5c459b6
-Patch0: fix-docs-build.patch
+#Patch0: fix-docs-build.patch
+BuildRequires:          fdupes
+BuildRequires:          gcc
+BuildRequires:          python3-Cython
+BuildRequires:          python3-devel
+BuildRequires:          python3-nose
+BuildRequires:          python3-numpy
+BuildRequires:          python3-scipy
+BuildRequires:          python3-setuptools
+BuildRequires:          python3-six
+BuildRequires:          python3-sphinx
+BuildRequires:          python3-sphinxcontrib-programoutput
+BuildRequires:          python3-sphinxcontrib-napoleon
+BuildRequires:          python3-smart_open
+BuildRequires:          python3-Pyro4
+BuildRequires:          python3-annoy
+BuildRequires:          python3-scikit-learn
+BuildRequires:          texlive-dvipng
+BuildRequires:          texlive-latex
+BuildRequires:          texlive-amscls
+BuildRequires:          texlive-anyfontsize
 
 %description %common_description
 
 %package doc
 Summary:                Documentation for %{name}
 BuildArch:              noarch
-BuildRequires:          python3-sphinx
 
 %description doc
 This package provides the documentation for %{name}.
 
-%package -n python3-%{pypi_name}-addons
-Summary:                Highly optimized version of word2vec for %{pypi_name}
-BuildRequires:          python3-Cython
-BuildRequires:          gcc
-BuildRequires:          fdupes
-Requires:               python3-numpy%{?_isa}
-Requires:               python3-%{pypi_name}            == %{version}-%{release}
-Requires:               python3-scipy%{?_isa}
-%{?python_provide:%python_provide python3-%{pypi_name}-addons}
-
-%description -n python3-%{pypi_name}-addons
-This package contains the highly optimized version of word2vec from
-%{pypi_name}.  It is highly recommend to use this.  If you don't need
-the highly optimized version of word2vec, it is sufficient to install
-the "%{name}-core"-package.
-
-%package -n python3-%{pypi_name}-core
+%package -n python3-%{pypi_name}
 Summary:                Python framework for fast Vector Space Modelling
-BuildArch:              noarch
-BuildRequires:          python3-devel
-BuildRequires:          python3-numpy
-BuildRequires:          python3-scipy
-BuildRequires:          python3-setuptools
-BuildRequires:          python3-six
 Requires:               python3-numpy
 Requires:               python3-scipy
 Requires:               python3-six
-%{?python_provide:%python_provide python3-%{pypi_name}-core}
+Requires:               python3-smart_open
+Requires:               python3-Pyro4
+Requires:               python3-annoy
+Requires:               python3-scikit-learn
+%{?python_provide:%python_provide python3-%{pypi_name}}
 
-%description -n python3-%{pypi_name}-core
-This package contains the pure Python implementation of %{pypi_name}.
-If you don't need the highly optimized version of word2vec, it is
-sufficient to install this package.  Otherwise installing the
-"%{name}-addons"-package is strongly recommended.
+%description -n python3-%{pypi_name} %common_description
 
 %package -n python3-%{pypi_name}-test
 Summary:                Testsuite for %{name}
-BuildArch:              noarch
-BuildRequires:          python3-nose
 Requires:               python3-%{pypi_name}            == %{version}-%{release}
-Requires:               python3-%{pypi_name}-addons     == %{version}-%{release}
 Requires:               python3-nose
 %{?python_provide:%python_provide python3-%{pypi_name}-test}
 
@@ -115,35 +111,23 @@ for everyday usage.
 %prep
 %setup -q%{?rel_build:n %{pypi_name}-%{version}}%{!?rel_build:n %{pypi_name}-%{commit}}
 
-# Clean-up examples for packaging.
-find %{pypi_name}/examples -type f -name '*.addons' -print0 | xargs -0 rm -f
-
 # Fix EOL-encodings.
 _file="docs/src/_static/js/jquery-migrate-1.1.1.min.js" &&              \
 sed -i.orig -e 's!\r$!!g' ${_file} &&                                   \
 touch -r ${_file}.orig ${_file} && rm -rf ${_file}.orig
 
 # Remove hashbangs
-for _file in `find . -type f -name '*.py'`
-do
-  sed '1{\@^#!/usr/bin/env python@d}' ${_file} > ${_file}.new &&        \
-  touch -r ${_file} ${_file}.new &&                                     \
-  mv -f ${_file}.new ${_file}
+for _file in `find . -type f -name '*.py'`; do
+  sed -i.new -r '
+s/program-output:: python/&3/g
+1{\@^#!/usr/bin/env python@d}
+' $_file
 done
 
-# Fix too strict version of setuptools in ez_setup for epel7.
-sed -i -e 's!^DEFAULT_VERSION = "1.3.2"!DEFAULT_VERSION = "0.9"!' ez_setup.py
-
-# Bump version in setup.py
-%{!?rel_build:sed -i -e 's!0\.9\.1!%{version}!' setup.py}
-
-
-%patch0 -p1
-
 %build
-# Build the Python3-version.
 %py3_build
-
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" \
+  %{__python3} %{py_setup} %{?py_setup_args} build_ext
 
 %install
 %py3_install
@@ -154,6 +138,10 @@ find %{buildroot} -type f -name '*.pyx' -print0 | xargs -0 rm -f
 # Build the autodocs.  We need the PYTHONPATH for this.
 export PYTHONPATH="%{buildroot}%{python3_sitelib}:%{buildroot}%{python3_sitearch}"
 pushd docs/src
+cat << EOF >> conf.py
+sys.path.insert(0, "%{buildroot}%{python3_sitelib}")
+sys.path.insert(0, "%{buildroot}%{python3_sitearch}")
+EOF
 make html
 rm -f _build/html/.buildinfo
 %fdupes _build/html
@@ -162,7 +150,7 @@ popd
 
 %check
 export PYTHONPATH="%{buildroot}%{python3_sitelib}:%{buildroot}%{python3_sitearch}"
-pushd %{buildroot}%{python3_sitelib}/%{pypi_name}
+pushd %{buildroot}%{python3_sitearch}/%{pypi_name}
 nosetests-%{python3_version} -v -e testLargeMmap -e testPersistence || :
 popd
 
@@ -170,26 +158,29 @@ popd
 %doc CHANGELOG* COPYING* README*
 %doc docs/src/_build/html %{pypi_name}/examples
 
-%files -n python3-%{pypi_name}-addons
-%{python3_sitearch}/%{pypi_name}_addons
-%{python3_sitearch}/%{pypi_name}_addons-%{version}-py%{python3_version}.egg-info
-
-%files -n python3-%{pypi_name}-core
+%files -n python3-%{pypi_name}
 %doc CHANGELOG* COPYING* README*
-%dir %{python3_sitelib}/%{pypi_name}
-%exclude %{python3_sitelib}/%{pypi_name}/nosy.py
-%exclude %{python3_sitelib}/%{pypi_name}/__pycache__/nosy*
-%exclude %{python3_sitelib}/%{pypi_name}/test
-%{python3_sitelib}/%{pypi_name}/*
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%dir %{python3_sitearch}/%{pypi_name}
+%exclude %{python3_sitearch}/%{pypi_name}/nosy.py
+%exclude %{python3_sitearch}/%{pypi_name}/__pycache__/nosy*
+%exclude %{python3_sitearch}/%{pypi_name}/test
+%{python3_sitearch}/%{pypi_name}/*
+%{python3_sitearch}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
 
 %files -n python3-%{pypi_name}-test
-%{python3_sitelib}/%{pypi_name}/nosy.py
-%{python3_sitelib}/%{pypi_name}/__pycache__/nosy*
-%{python3_sitelib}/%{pypi_name}/test
+%{python3_sitearch}/%{pypi_name}/nosy.py
+%{python3_sitearch}/%{pypi_name}/__pycache__/nosy*
+%{python3_sitearch}/%{pypi_name}/test
 
 
 %changelog
+* Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.8.1-1
+- Forked and cleanup the RPM SPEC
+- New upstream
+- Rename python3-gensim{-core,} to resolve rhbz#1693064 and rhbz#1770829
+- Subpackage python3-gensim-addons has been removed
+- Added runtime and build time dependency
+
 * Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 0.10.0-21
 - Rebuilt for Python 3.8.0rc1 (#1748018)
 
