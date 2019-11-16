@@ -49,9 +49,8 @@ Requires:   python3-pockets
 %files -n python3-%{pypi_name}
 %license LICENSE
 %doc README.rst
-%{python3_sitelib}/sphinxcontrib_napoleon*
 %{python3_sitelib}/sphinxcontrib/napoleon
-%{python3_sitelib}/sphinxcontrib_napoleon-%{version}-py?.?.egg-info
+%{python3_sitelib}/sphinxcontrib_napoleon*
 
 %changelog
 * Fri Nov 15 2019 Satoru SATOH <satoru.satoh@gmail.com> - 0.7-1
