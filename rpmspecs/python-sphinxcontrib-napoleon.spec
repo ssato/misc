@@ -16,12 +16,10 @@ License:        BSD
 URL:            https://sphinxcontrib-napoleon.readthedocs.io
 Source0:        https://files.pythonhosted.org/packages/source/s/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
-
-BuildRequires:  python3-sphinx
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
 BuildRequires:  python3-sphinx
-BuildRequires:  python3-setuptools
 
 %description %common_desc
 
