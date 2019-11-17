@@ -50,10 +50,6 @@ URL:                    http://radimrehurek.com/%{pypi_name}/
 # Sources for snapshot-builds.
 %{!?rel_build:Source0:  https://github.com/piskvorky/%{pypi_name}/archive/%{commit}.tar.gz#/%{gittar}}
 
-# Fix doc generation with latest sphinx
-# Fixed upstream:
-# https://github.com/RaRe-Technologies/gensim/commit/f44d3a98d6a68ea30326a553b1ee2116a5c459b6
-#Patch0: fix-docs-build.patch
 BuildRequires:          fdupes
 BuildRequires:          gcc
 BuildRequires:          python3-Cython
@@ -65,15 +61,16 @@ BuildRequires:          python3-setuptools
 BuildRequires:          python3-six
 BuildRequires:          python3-sphinx
 BuildRequires:          python3-sphinxcontrib-programoutput
-BuildRequires:          python3-sphinxcontrib-napoleon
 BuildRequires:          python3-smart_open
 BuildRequires:          python3-Pyro4
 BuildRequires:          python3-annoy
+BuildRequires:          python3-plotly
 BuildRequires:          python3-scikit-learn
 BuildRequires:          texlive-dvipng
 BuildRequires:          texlive-latex
 BuildRequires:          texlive-amscls
 BuildRequires:          texlive-anyfontsize
+BuildRequires:          texlive-ucs
 
 %description %common_description
 
@@ -92,6 +89,7 @@ Requires:               python3-six
 Requires:               python3-smart_open
 Requires:               python3-Pyro4
 Requires:               python3-annoy
+Requires:               python3-plotly
 Requires:               python3-scikit-learn
 %{?python_provide:%python_provide python3-%{pypi_name}}
 
@@ -118,10 +116,11 @@ touch -r ${_file}.orig ${_file} && rm -rf ${_file}.orig
 
 # Remove hashbangs
 for _file in `find . -type f -name '*.py'`; do
+  grep -q python $_file 2>/dev/null >/dev/null && \
   sed -i.new -r '
 s/program-output:: python/&3/g
 1{\@^#!/usr/bin/env python@d}
-' $_file
+' $_file || :
 done
 
 %build
@@ -138,10 +137,10 @@ find %{buildroot} -type f -name '*.pyx' -print0 | xargs -0 rm -f
 # Build the autodocs.  We need the PYTHONPATH for this.
 export PYTHONPATH="%{buildroot}%{python3_sitelib}:%{buildroot}%{python3_sitearch}"
 pushd docs/src
-cat << EOF >> conf.py
-sys.path.insert(0, "%{buildroot}%{python3_sitelib}")
-sys.path.insert(0, "%{buildroot}%{python3_sitearch}")
-EOF
+sed -i.save -r '
+s/sphinxcontrib.napoleon/sphinx.ext.napoleon/
+/sys.path.insert/a \
+sys.path.insert(0, "%{buildroot}%{python3_sitelib}")\nsys.path.insert(0, "%{buildroot}%{python3_sitearch}")' conf.py
 make html
 rm -f _build/html/.buildinfo
 %fdupes _build/html
