@@ -1,0 +1,20 @@
+[Unit]
+Description=Iperf3 running on server mode
+Documentation=man:iperf(3)
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/iperf3
+ExecStart=/usr/bin/iperf3 --server $IPERF3_OPTIONS
+
+# Hardening options:
+PrivateDevices=true
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_INET6
+# .. note:: These are not available in RHEL =< 8.
+#MemoryDenyWriteExecute=yes
+#PrivateMounts=true
+#RestrictRealtime=yes
+#RestrictSUIDSGID=yes
+#ProtectControlGroups=true
