@@ -1,56 +1,46 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
 %global pkgname amazon-ion
-%global srcname amazon.ion
-%global sumtxt Python library to load and dump Amazon Ion data
+%global srcname ion-python
 %global desctxt \
 Amazon Ion is a richly-typed, self-describing, hierarchical data serialization\
 format offering interchangeable binary and text representations. This python\
 library adds support of loading and dumping Amazon Ion data.
 
+%bcond_without python2
+
 Name:           python-%{pkgname}
-Version:        0.2.0
+Version:        0.6.0
 Release:        1%{?dist}
-Summary:        %{sumtxt}
+Summary:        Python library to load and dump Amazon Ion data
 Group:          Development/Libraries
 License:        ASL 2.0
 #URL:            https://pypi.python.org/pypi/amazon.ion/
 URL:            https://github.com/amzn/ion-python
 Source0:        %{srcname}-%{version}.tar.gz
 BuildArch:      noarch
-
-%if 0%{?fedora} || 0%{?rhel} > 7
-%bcond_without python3
-%else
-%bcond_with python3
-%endif
-
-%if 0%{?rhel} == 7
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-%else
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-%endif
-%if %{with python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+
+%if %{with python2}
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
 %endif
 
 %description    %{desctxt}
 
+%if %{with python2}
 %package     -n python2-%{pkgname}
-Summary:        %{sumtxt}
+Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pkgname}}
 
 %description -n python2-%{pkgname} %{desctxt}
+%endif
 
-%if %{with python3}
 %package     -n python3-%{pkgname}
-Summary:        %{sumtxt}
+Summary:        %{sum}
 %{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname} %{desctxt}
-%endif
 
 %prep
 %autosetup -n %{srcname}-%{version}
@@ -68,31 +58,31 @@ See also:
 EOF
 
 %build
+%if %{with python2}
 %py2_build
-%if %{with python3}
-%py3_build
 %endif
+%py3_build
 
 %install
+%if %{with python2}
 %py2_install
-%if %{with python3}
-%py3_install
 %endif
+%py3_install
 
+%if %{with python2}
 %files -n python2-%{pkgname}
 %doc README.Fedora
-%if 0%{?rhel} == 7
-%{python_sitelib}/*
-%else
 %{python2_sitelib}/*
 %endif
 
-%if %{with python3}
 %files -n python3-%{pkgname}
 %doc README.Fedora
 %{python3_sitelib}/*
-%endif
 
 %changelog
+* Thu Apr 30 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.6.0-1
+- New upstream
+- eanble py3 instead of py2 and do not build py2 by default
+
 * Tue Jan  9 2018 Satoru SATOH <ssato@redhat.com> - 0.2.0-1
 - Initial packaging
