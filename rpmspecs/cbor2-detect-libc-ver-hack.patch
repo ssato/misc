@@ -1,0 +1,23 @@
+diff -up /tmp/cbor2-5.1.0/setup.py.libc_ver /tmp/cbor2-5.1.0/setup.py
+--- /tmp/cbor2-5.1.0/setup.py.libc_ver	2020-05-01 10:15:00.702558528 +0900
++++ /tmp/cbor2-5.1.0/setup.py	2020-05-01 11:58:01.220921791 +0900
+@@ -1,3 +1,4 @@
++import os
+ import sys
+ import platform
+ from pkg_resources import parse_version
+@@ -7,8 +8,12 @@ cpython = platform.python_implementation
+ is_glibc = platform.libc_ver()[0] == 'glibc'
+ windows = sys.platform.startswith('win')
+ if is_glibc:
+-    glibc_ver = platform.libc_ver()[1]
+-    libc_ok = parse_version(glibc_ver) >= parse_version('2.9')
++    # https://bugs.python.org/issue35389#msg330953
++    try:
++        glibc_ver = os.confstr('CS_GNU_LIBC_VERSION').split()[1]
++        libc_ok = parse_version(glibc_ver) >= parse_version('2.9')
++    except ValueError:
++        libc_ok = True  # It should be OK with recent versions.
+ else:
+     libc_ok = not windows
+ min_win_version = windows and sys.version_info >= (3, 5)
