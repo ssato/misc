@@ -1,87 +1,78 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
 %global pkgname cbor
-%global sumtxt  CBOR loader and dumper for Python
 %global desctxt \
 Concise Binary Object Representation (CBOR) is a superset of JSON's schema\
 that's faster and more compact. This package provides python library provides\
 loads()/dumps() like the json standard library.
 
+%bcond_without python2
+
 Name:           python-%{pkgname}
 Version:        1.0.0
-Release:        3%{?dist}
-Summary:        %{sumtxt}
+Release:        4%{?dist}
+Summary:        CBOR loader and dumper for Python
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            https://bitbucket.org/bodhisnarkva/cbor
 Source0:        %{pkgname}-%{version}.tar.gz
-
-%if 0%{?fedora} || 0%{?rhel} > 7
-%bcond_without python3
-%else
-%bcond_with python3
-%endif
-
 # Available from https://bitbucket.org/bodhisnarkva/cbor/.
 Source1:        README.md
-%if 0%{?rhel} == 7
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-%else
+%if %{with python2}
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
-%endif
-%if %{with python3}
+%else
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 %endif
+BuildRequires:  gcc
 
 %description    %{desctxt}
 
+%if %{with python2}
 %package     -n python2-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python2-%{pkgname}}
 
 %description -n python2-%{pkgname} %{desctxt}
+%endif
 
-%if %{with python3}
 %package     -n python3-%{pkgname}
 Summary:        %{sumtxt}
 %{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname} %{desctxt}
-%endif
 
 %prep
 %autosetup -n %{pkgname}-%{version}
 cp %{SOURCE1} ./
 
 %build
+%if %{with python2}
 %py2_build
-%if %{with python3}
-%py3_build
 %endif
+%py3_build
 
 %install
+%if %{with python2}
 %py2_install
-%if %{with python3}
-%py3_install
 %endif
+%py3_install
 
+%if %{with python2}
 %files -n python2-%{pkgname}
 %doc README.md
-%if 0%{?rhel} == 7
-%{python_sitearch}/*
-%else
 %{python2_sitearch}/*
 %endif
 
-%if %{with python3}
 %files -n python3-%{pkgname}
 %doc README.md
 %{python3_sitearch}/*
-%endif
 
 %changelog
+* Fri May  1 2020 Satoru SATOH <satoru.satoh@gmail.com> - 1.0.0-4
+- Enable py3 build by default instead of py2
+- Fix build time dependencies lacks gcc
+
 * Sat Jan  6 2018 Satoru SATOH <ssato@redhat.com> - 1.0.0-3
 - Some more clean ups in the RPM SPEC
 
