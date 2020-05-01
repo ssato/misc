@@ -5,7 +5,7 @@ Pure python library provides (de)serializer with extensive tag support for\
 the Concise Binary Object Representation (CBOR) (RFC 7049) serialization\
 format.
 
-%bcond_without python2
+%bcond_with python2
 
 Name:           python-%{pkgname}
 Version:        5.1.0
