@@ -7,8 +7,8 @@ A python module to generate HTML/XML from a python program.
 
 Name:           python-%{pkgname}
 Version:        1.14
-Release:        1%{?dist}
-Summary:        Pure Python CBOR (de)serializer with extensive tag support
+Release:        2%{?dist}
+Summary:        Python module to generate HTML/XML from a python program
 Group:          Development/Libraries
 License:        MIT
 URL:            https://tylerbakke.github.io/MarkupPy/
@@ -38,5 +38,8 @@ Summary:        %{summary}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Nov 15 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.14-2
+- Fix the summary
+
 * Fri Nov 15 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.14-1
 - Initial packaging

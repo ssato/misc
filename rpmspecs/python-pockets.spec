@@ -6,7 +6,7 @@ I’ve found useful over the years.
 
 Name:           python-%{pkgname}
 Version:        0.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library provides many of the python helper functions
 Group:          Development/Libraries
 License:        BSD
@@ -38,5 +38,8 @@ Summary:        %{summary}
 %{python3_sitelib}/*
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.9.1-2
+- Rebuild
+
 * Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 0.9.1-1
 - Initial packaging
