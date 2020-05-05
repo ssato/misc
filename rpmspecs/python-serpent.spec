@@ -8,7 +8,7 @@ ast.literal_eval(), the serialized data is safe to transport to other \
 machines (over the network for instance) and de-serialize it there.
 
 Name:           python-%{pkgname}
-Version:        1.28
+Version:        1.30.2
 Release:        1%{?dist}
 Summary:        A simple serialization library based on ast.literal_eval
 Group:          Development/Libraries
@@ -41,5 +41,8 @@ Summary:        %{summary}
 %{python3_sitelib}/*
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 1.30.2-1
+- New upstream
+
 * Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.28-1
 - Initial packaging
