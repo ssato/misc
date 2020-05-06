@@ -5,22 +5,15 @@
 
 Summary: A set of Asciidoctor extensions to add diagrams
 Name: rubygem-%{gem_name}
-Version: 1.5.16
+Version: 2.0.2
 Release: 1%{?dist}
 License: MIT
 URL: https://github.com/asciidoctor/asciidoctor-diagram
 Source0: https://rubygems.org/gems/%{gem_name}-%{version}%{pre}.gem
-%if 0%{?el7}
-Requires: ruby(release)
-BuildRequires: ruby(release)
-%endif
 BuildRequires: rubygems-devel
 BuildRequires: ruby(rubygems)
 BuildArch: noarch
 Provides: %{gem_name} = %{version}
-%if 0%{?el7}
-Provides: rubygem(%{gem_name}) = %{version}
-%endif
 
 %if %{?pre:1}
 %global gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}%{pre}
@@ -37,7 +30,6 @@ PlantUML, Shaape, SvgBob, Syntrax, UMLet, Vega, Vega-Lite and WaveDrom.
 %package doc
 Summary: Documentation for %{name}
 Requires: %{name} = %{version}-%{release}
-BuildArch: noarch
 
 %description doc
 Documentation for %{name}
@@ -54,10 +46,7 @@ gem build %{gem_name}.gemspec
 
 %check
 pushd .%{gem_instdir}
-%if 0%{?el7}
-%else
 LANG=C.UTF-8 ruby -I"lib:test" -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
-%endif
 popd
 
 %install
@@ -84,5 +73,8 @@ cp -a .%{gem_dir}/* %{buildroot}%{gem_dir}/
 %doc %{gem_docdir}
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <ssato@redhat.com> - 2.0.2-1
+- New upstream
+
 * Thu May 23 2019 Satoru SATOH <ssato@redhat.com> - 1.5.16-1
 - Initial package

@@ -5,36 +5,17 @@
 Generic python library used by the F5 SDK and other F5 projects to communicate \
 with BIG-IP(R) via the REST API.
 
-%if 0%{?fedora} || 0%{?rhel} > 7
-%bcond_without python2
-%else
-%bcond_with python2
-%endif
-
 Name:           python-%{pkgname}
-Version:        1.3.13
+Version:        1.3.15
 Release:        1%{?dist}
 Summary:        Python library to communicate with F5 Big-IP REST API
 License:        ASL 2.0
 URL:            https://github.com/F5Networks/f5-icontrol-rest-python
-Source0:        %{url}/archive/RELEASE_%{version}.tar.gz
+#Source0:        %%{url}/archive/RELEASE_%%{version}.tar.gz
+Source0:        %{srcname}-%{version}.tar.gz
 BuildArch:      noarch
 
 %description    %{desc}
-
-%if %{with python2}
-%package -n     python2-%{pkgname}
-Summary:        %{summary}
-Requires:       PyYAML
-Requires:       python2-six
-Requires:       python2-requests
-Requires:       python2-setuptools
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-%{?python_provide:%python_provide python2-%{pkgname}}
-
-%description -n python2-%{pkgname} %{desc}
-%endif
 
 %package -n     python3-%{pkgname}
 Summary:        %{summary}
@@ -52,28 +33,21 @@ BuildRequires:  python3-setuptools
 %autosetup -n %{srcname}-%{version}
 
 %build
-%if %{with python2}
-%py2_build
-%endif
 %py3_build
 
 %install
-%if %{with python2}
-%py2_install
-%endif
 %py3_install
 
-%if %{with python2}
-%files -n       python2-%{pkgname}
-%doc README.rst
-%{python2_sitelib}/*
-%endif
-
 %files -n       python3-%{pkgname}
-%doc README.rst
+%doc README.rst *.md
+%license LICENSE
 %{python3_sitelib}/*
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 1.3.15-1
+- New upstream
+- Drop py2 support
+
 * Sun Oct 13 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.3.13-1
 - New upstream
 - Add py3 sub package and make py2 sub package optional

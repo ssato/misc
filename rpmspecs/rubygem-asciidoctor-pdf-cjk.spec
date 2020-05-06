@@ -6,21 +6,14 @@
 Summary: Asciidoctor PDF CJK extension
 Name: rubygem-%{gem_name}
 Version: 0.1.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 URL: https://github.com/chloerei/asciidoctor-pdf-cjk
 Source0: https://rubygems.org/gems/%{gem_name}-%{version}%{pre}.gem
-%if 0%{?el7}
-Requires: ruby(release)
-BuildRequires: ruby(release)
-%endif
 BuildRequires: rubygems-devel
 BuildRequires: ruby(rubygems)
 BuildArch: noarch
 Provides: %{gem_name} = %{version}
-%if 0%{?el7}
-Provides: rubygem(%{gem_name}) = %{version}
-%endif
 
 %if %{?pre:1}
 %global gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}%{pre}
@@ -55,10 +48,7 @@ gem build %{gem_name}.gemspec
 
 %check
 pushd .%{gem_instdir}
-%if 0%{?el7}
-%else
 LANG=C.UTF-8 ruby -I"lib:test" -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
-%endif
 popd
 
 %install
@@ -85,5 +75,8 @@ cp -a .%{gem_dir}/* %{buildroot}%{gem_dir}/
 %doc %{gem_docdir}
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.1.3-2
+- Drop rhel7 support
+
 * Fri May 24 2019 Satoru SATOH <ssato@redhat.com> - 0.1.3-1
 - Initial package
