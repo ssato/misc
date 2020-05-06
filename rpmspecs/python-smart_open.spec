@@ -11,7 +11,7 @@ anything open can (100% compatible, falls back to native open wherever \
 possible), plus lots of nifty extra stuff on top.
 
 Name:           python-%{pkgname}
-Version:        1.9.0
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Library for efficient streaming of very large files from/to storages
 Group:          Development/Libraries
@@ -24,10 +24,12 @@ BuildRequires:  python3-setuptools
 
 %description %{desctxt}
 
+# TODO: split aws and gcp support from the core package.
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
 Requires:       python3-boto
 Requires:       python3-boto3
+Requires:       python3-google-cloud-storage
 Requires:       python3-requests
 %{?python_provide:%python_provide python3-%{pkgname}}
 
@@ -48,5 +50,9 @@ Requires:       python3-requests
 %{python3_sitelib}/*
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 2.0.0-1
+- New upstream
+- Add dependency to google-cloud-storage to support gcp
+
 * Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.9.0-1
 - Initial packaging
