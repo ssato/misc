@@ -37,11 +37,12 @@ Summary:        %{summary}
 %py3_install
 
 %files -n python3-%{pkgname}
-%doc README* RELEASE* examples
+%doc README*
+%license LICENSE
 %{python3_sitearch}/*
 
 %changelog
-* Tue May  5 2020 Satoru SATOH <satoru.satoh@gmail.com> - 1.16.3-1
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 1.16.3-1
 - New upstream release
 - Add some more documents, examples/, etc.
 
