@@ -1,12 +1,9 @@
 # Ref. https://fedoraproject.org/wiki/Packaging:Python
-%global arcname plotly.py
 %global pkgname plotly
 %global desctxt \
 The plotly Python library (plotly.py) is an interactive, open-source plotting \
 library that supports over 40 unique chart types covering a wide range of \
 statistical, financial, geographic, scientific, and 3-dimensional use-cases.
-
-%define py_setup packages/python/plotly/setup.py
 
 Name:           python-%{pkgname}
 Version:        4.6.0
@@ -15,8 +12,8 @@ Summary:        Python graphing library makes interactive, publication-quality g
 Group:          Development/Libraries
 License:        MIT
 URL:            https://plot.ly/python/
-Source0:        %{arcname}-%{version}.tar.gz
-#Patch0:         plotly-4.3.0-jupyter-sysconfdir.patch
+Source0:        %{pkgname}-%{version}.tar.gz
+Patch0:         plotly-4.3.0-jupyter-sysconfdir.patch
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -32,7 +29,7 @@ Requires:       python3-six
 %description -n python3-%{pkgname} %{desctxt}
 
 %prep
-%autosetup -n %{arcname}-%{version}
+%autosetup -n %{pkgname}-%{version}
 
 %build
 %py3_build
@@ -42,6 +39,7 @@ Requires:       python3-six
 
 %files -n python3-%{pkgname}
 %doc README.md
+%license LICENSE.txt
 %{python3_sitelib}/*
 %{_sysconfdir}/jupyter/nbconfig/notebook.d/*.json
 %{_datadir}/jupyter/nbextensions/plotlywidget/*.js
