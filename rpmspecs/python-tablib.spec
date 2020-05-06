@@ -2,10 +2,9 @@
 %global modname tablib
 
 Name:             python-tablib
-Version:          0.14.0
+Version:          1.1.0
 Release:          1%{?dist}
 Summary:          Format agnostic tabular data library (XLS, JSON, YAML, CSV)
-
 License:          MIT
 URL:              http://github.com/kennethreitz/tablib
 Source0:          https://files.pythonhosted.org/packages/source/t/tablib/%{modname}-%{version}.tar.gz
@@ -14,6 +13,7 @@ Source0:          https://files.pythonhosted.org/packages/source/t/tablib/%{modn
 #Patch001:         fix-openpyxl-2.5.x-compat-pr-296.patch
 #Patch002:         tablib-0.13.0-print-as-function.patch
 #Patch003:         tablib-0.13.0-remove-py2-dependency.patch
+Patch001:         tablib-1.1.0_disable_setuptools_scm.patch
 BuildArch:        noarch
 
 BuildRequires: /usr/bin/2to3
@@ -51,6 +51,9 @@ Requires: python3-openpyxl
 Requires: python3-pyyaml
 Requires: python3-xlrd
 Requires: python3-xlwt
+Requires: python3-pandas
+Requires: python3-pyyaml
+Requires: python3-tabulate
 
 %description -n python3-tablib
 Tablib is a format-agnostic tabular dataset library, written in Python.
@@ -94,6 +97,9 @@ sed -i "/\(xlwt\|odf\|xlrd\|openpyxl\|openpyxl\..*\|yaml\)'/d" setup.py
 
 
 %changelog
+* Wed May  6 2019 Satoru SATOH <satoru.satoh@gmail.com> - 1.1.0-1
+- New upstream
+
 * Fri Nov 15 2019 Satoru SATOH <satoru.satoh@gmail.com> - 0.14.0-1
 - New upstream
 - Cleanup this RPM SPEC
