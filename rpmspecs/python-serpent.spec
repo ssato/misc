@@ -38,6 +38,7 @@ Summary:        %{summary}
 
 %files -n python3-%{pkgname}
 %doc README.md
+%license LICENSE
 %{python3_sitelib}/*
 
 %changelog

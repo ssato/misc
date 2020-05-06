@@ -7,7 +7,7 @@ Python method calls to call objects on other machines. Pyro is a pure Python \
 library so it runs on many different platforms and Python versions.
 
 Name:           python-%{pkgname}
-Version:        4.77
+Version:        4.80
 Release:        1%{?dist}
 Summary:        Library enables python objects can talk to eachother over the network
 Group:          Development/Libraries
@@ -42,5 +42,8 @@ Requires:       python3-serpent
 %{_bindir}/*
 
 %changelog
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 4.80-1
+- New upstream
+
 * Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 4.77-1
 - Initial packaging
