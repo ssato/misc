@@ -40,8 +40,8 @@ multiple cores.                                                         \
 %global                 pypi_name gensim
 
 Name:                   python-%{pypi_name}
-Version:                3.8.1
-Release:                1%{?dist}
+Version:                3.8.3
+Release:                2%{?dist}
 Summary:                Python framework for fast Vector Space Modelling
 License:                LGPLv2
 URL:                    http://radimrehurek.com/%{pypi_name}/
@@ -49,28 +49,42 @@ URL:                    http://radimrehurek.com/%{pypi_name}/
 %{?rel_build:Source0:   https://github.com/piskvorky/%{pypi_name}/archive/%{version}.tar.gz#/%{gittar}}
 # Sources for snapshot-builds.
 %{!?rel_build:Source0:  https://github.com/piskvorky/%{pypi_name}/archive/%{commit}.tar.gz#/%{gittar}}
+Patch0:                 gensim-3.8.3_loosen_cython_ver.patch
 
 BuildRequires:          fdupes
 BuildRequires:          gcc
+BuildRequires:          gcc-c++
 BuildRequires:          python3-Cython
 BuildRequires:          python3-devel
 BuildRequires:          python3-nose
-BuildRequires:          python3-numpy
-BuildRequires:          python3-scipy
-BuildRequires:          python3-setuptools
-BuildRequires:          python3-six
-BuildRequires:          python3-sphinx
-BuildRequires:          python3-sphinxcontrib-programoutput
-BuildRequires:          python3-smart_open
+# distributed_env, N/A in fedora:
 BuildRequires:          python3-Pyro4
-BuildRequires:          python3-annoy
-BuildRequires:          python3-plotly
+# docs_testenv -------------------------------------------
+BuildRequires:          python3-sphinx
+BuildRequires:          python3-sphinxcontrib-napoleon
+BuildRequires:          python3-sphinxcontrib-programoutput
+BuildRequires:          python3-matplotlib
 BuildRequires:          python3-scikit-learn
+BuildRequires:          python3-nltk
+BuildRequires:          python3-testfixtures
+BuildRequires:          python3-statsmodels
+BuildRequires:          python3-pyemd
+BuildRequires:          python3-pandas
+# N/A in Fedora:
+BuildRequires:          python3-sphinx-gallery
+BuildRequires:          python3-plotly
+BuildRequires:          python3-memory_profiler
+BuildRequires:          python3-annoy
+# end: docs_testenv --------------------------------------
+# Others not specified explicitely
+BuildRequires:          python3-pillow
 BuildRequires:          texlive-dvipng
 BuildRequires:          texlive-latex
 BuildRequires:          texlive-amscls
 BuildRequires:          texlive-anyfontsize
 BuildRequires:          texlive-ucs
+# N/A in Fedora:
+BuildRequires:          python3-smart_open
 
 %description %common_description
 
@@ -86,11 +100,17 @@ Summary:                Python framework for fast Vector Space Modelling
 Requires:               python3-numpy
 Requires:               python3-scipy
 Requires:               python3-six
-Requires:               python3-smart_open
-Requires:               python3-Pyro4
-Requires:               python3-annoy
-Requires:               python3-plotly
-Requires:               python3-scikit-learn
+Requires:               python3-smart-open
+# Indirected dependencies via smart_open, boto, boto3, ...
+#Requires:               python3-certifi
+#Requires:               python3-urllib3
+#Requires:               python3-idna
+#Requires:               python3-chardet
+#Requires:               python3-jmespath
+#Requires:               python3-botocore
+#Requires:               python3-s3transfer
+#Requires:               python3-dateutil
+#Requires:               python3-docuitls
 %{?python_provide:%python_provide python3-%{pypi_name}}
 
 %description -n python3-%{pypi_name} %common_description
@@ -105,9 +125,8 @@ Requires:               python3-nose
 This package provides the testsuite for %{name}.  You don't need it
 for everyday usage.
 
-
 %prep
-%setup -q%{?rel_build:n %{pypi_name}-%{version}}%{!?rel_build:n %{pypi_name}-%{commit}}
+%autosetup -%{?rel_build:n %{pypi_name}-%{version}}%{!?rel_build:n %{pypi_name}-%{commit}}
 
 # Fix EOL-encodings.
 _file="docs/src/_static/js/jquery-migrate-1.1.1.min.js" &&              \
@@ -173,6 +192,11 @@ popd
 
 
 %changelog
+* Thu May  7 2020 Satoru SATOH <satoru.satoh@gmail.com> - 3.8.3-2
+- New upstream
+- Re-organize build and runtime dependencies
+- Fix some build time dependency not documented clearly
+
 * Sat Nov 16 2019 Satoru SATOH <satoru.satoh@gmail.com> - 3.8.1-1
 - Forked and cleanup the RPM SPEC
 - New upstream

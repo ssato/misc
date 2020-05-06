@@ -1,8 +1,11 @@
 %global pkgname memory_profiler
+%global desctxt \
+This is a python module for monitoring memory consumption of a process as well \
+as line-by-line analysis of memory consumption for python programs.
 
-Name:           python3-%{pkgname}
+Name:           python-%{pkgname}
 Version:        0.57.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        A module for monitoring memory usage of a python program
 License:        BSD
 Group:          Development/Languages
@@ -11,11 +14,15 @@ Source0:        https://pypi.python.org/packages/source/m/%{pkgname}/%{pkgname}-
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-Requires:       python3-psutil
 
-%description
-This is a python module for monitoring memory consumption of a process as well
-as line-by-line analysis of memory consumption for python programs.
+%description %{desctxt}
+
+%package     -n python3-%{pkgname}
+Summary:        %{summary}
+Requires:       python3-psutil
+%{?python_provide:%python_provide python3-%{pkgname}}
+
+%description -n python3-%{pkgname} %{desctxt}
 
 %prep
 %autosetup -n %{pkgname}-%{version}
@@ -26,12 +33,18 @@ as line-by-line analysis of memory consumption for python programs.
 %install
 %py3_install
 
-%files
+%files -n python3-%{pkgname}
 %doc README.rst
 %{python3_sitelib}/*
 %{_bindir}/*
 
 %changelog
+* Thu May  7 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.57.0-3
+- Build python3-... package
+
+* Wed May  6 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.57.0-3
+- cleanup this RPM SPEC more
+
 * Wed Feb 26 2020 Satoru SATOH <satoru.satoh@gmail.com> - 0.57.0-1
 - new upstream release
 - cleanup the RPM SPEC and only support python3
