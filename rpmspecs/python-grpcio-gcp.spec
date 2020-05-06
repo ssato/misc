@@ -20,6 +20,7 @@ BuildRequires:  python3-setuptools
 %package     -n python3-%{pkgname}
 Summary:        %{summary}
 Requires:       python3-grpcio
+%{?python_provide:%python_provide python3-%{pkgname}}
 
 %description -n python3-%{pkgname} %{desctxt}
 
