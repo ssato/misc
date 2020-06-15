@@ -39,7 +39,11 @@ Requires:       python3-setuptools
 
 %build
 %py3_build
-make -C docs/ html
+# generate html docs
+# PYTHONPATH=build/lib/ sphinx-build-3 docs html
+make -C docs html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
 
 %install
 %py3_install
