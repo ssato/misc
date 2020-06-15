@@ -28,7 +28,7 @@ Requires:       python3-ipykernel
 Requires:       python3-traitlets
 Requires:       python3-nbformat
 Requires:       python3-numpy
-# NA but it does not look required. 
+# NA but it does not look required.
 #Requires:       python3-widgetsnbextension
 %{?python_provide:%python_provide python3-%{pkgname}}
 
