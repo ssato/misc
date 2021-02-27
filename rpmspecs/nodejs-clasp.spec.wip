@@ -1,0 +1,48 @@
+%global npm_org_name @google/clasp
+%global npm_name clasp
+
+Name:           nodejs-%{npm_name}
+Version:        2.3.0
+Release:        1%{?dist}
+Summary:        Command line Google App Script tool
+License:        ASL 2.0
+URL:            https://github.com/google/clasp
+Source0:        http://registry.npmjs.org/%{npm_org_name}/-/%{npm_name}-%{version}.tgz
+BuildArch:      noarch
+ExclusiveArch:  %{nodejs_arches} noarch
+BuildRequires:  nodejs-devel
+BuildRequires:  nodejs-typescript
+BuildRequires:  npm
+
+%description
+Clasp stands for Command Line App Script Project, and it helps to develop and
+manage Google Apps Script projects from your terminal rather than the Apps
+Script editor.
+
+%prep
+%setup -qn package
+
+%build
+npm run build
+
+%install
+mkdir -p %{buildroot}%{nodejs_sitelib}/%{npm_name}
+cp -pr package.json bin/ lib/ %{buildroot}%{nodejs_sitelib}/%{npm_name}
+
+# Symlink tsc executable file to _bindir
+mkdir -p %{buildroot}%{_bindir}
+ln -s %{nodejs_sitelib}/%{npm_name}/bin/clasp %{buildroot}%{_bindir}
+
+%check
+%nodejs_symlink_deps --check
+%{__nodejs} -e 'require("./")'
+
+%files
+%{_bindir}/tsc
+%{nodejs_sitelib}/%{npm_name}
+%doc README.md docs
+%license LICENSE.txt
+
+%changelog
+* Sat Feb 27 2021 Satoru SATOH <satoru.satoh@gmail.com> - 2.3.0-1
+- Initial package
