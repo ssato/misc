@@ -1,8 +1,8 @@
-r"""Do Do Suko ^ 3 && Love injection!
+# SPDX-License-Identifier: MIT
+# pylint: disable=missing-function-docstring
+r"""Find sequence.
 
 .. seealso:: https://twitter.com/Sheeeeepla/status/1554028833942441984
-
-SPDX-License-Identifier: MIT
 
 Example:
 
@@ -38,7 +38,6 @@ import click
 
 
 def sequence_(*keys: str) -> str:
-    """Get an word from given words randomely."""
     while True:
         yield random.choice(keys)
 
