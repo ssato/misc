@@ -1,13 +1,40 @@
-"""Do Do Suko ^ 3 && Love injection!
+r"""Do Do Suko ^ 3 && Love injection!
 
 .. seealso:: https://twitter.com/Sheeeeepla/status/1554028833942441984
 
 SPDX-License-Identifier: MIT
+
+Example:
+
+ssato@fedora% python3 sequence_finder.py --help
+Usage: sequence_finder.py [OPTIONS]
+
+  entry point.
+
+Options:
+  --needle TEXT    A sequence of words separated with ' ' (a space) to search
+  --haystack TEXT  A list of words separated with ' ' (a space) to search from
+  --msg TEXT       A message to print if it was found
+  -v, --verbose    Verbose mode
+  --help           Show this message and exit.
+ssato@fedora% python3 sequence_finder.py
+スコ スコ スコ スコ ドド ドド スコ スコ ドド スコ スコ ドド スコ ドド ドド スコ スコ スコ
+ラブ注入♡
+ssato@fedora% python3 sequence_finder.py -v
+スコ スコ スコ スコ ドド ドド スコ スコ ドド ドド ドド スコ スコ スコ
+ラブ注入♡  (at: 11)
+ssato@fedora% python3 sequence_finder.py --needle 'G A T C' \
+> --haystack 'G G A A T T C C G A G A T C' \
+> --msg 'Found the gene pattern' --verbose
+G G A A T T C C G A G A T C
+Found the gene pattern  (at: 11)
+ssato@fedora%
 """
-import click
 import os
 import random
 import typing
+
+import click
 
 
 def sequence_(*keys: str) -> str:
@@ -73,7 +100,8 @@ def main(
             print(f'{val}', end=' ')
             nitems += 1
 
-        print(f'{os.linesep}{msg}  ({nitems!s} times)')
+        pos: int = nitems - len(ndl) + 1
+        print(f'{os.linesep}{msg}  (at: {pos})')
     else:
         print(' '.join(vitr))
         print(msg)
