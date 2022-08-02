@@ -42,7 +42,7 @@ import typing
 import click
 
 
-def sequence_(*keys: str) -> str:
+def sequence_(*keys: str) -> typing.Iterator[str]:
     while True:
         yield random.choice(keys)
 
@@ -52,7 +52,7 @@ class FoundExc(Exception):
 
 
 def find_a_needle_in_a_haystack_itr(
-    haystack: typing.Iterator[str],
+    haystack: typing.Iterable[str],
     needle: list[str],
     acc: typing.Union[bool, list[str]] = False
 ) -> typing.Iterator[str]:
@@ -71,7 +71,7 @@ def find_a_needle_in_a_haystack_itr(
             if item == last and acc == lead:
                 raise FoundExc()
 
-            acc.append(item)
+            acc.append(item)  # type: ignore
 
 
 NEEDLE: str = 'ドド スコ スコ スコ'
