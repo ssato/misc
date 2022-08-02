@@ -28,6 +28,10 @@ ssato@fedora% python3 sequence_finder.py --needle 'G A T C' \
 > --msg 'Found the gene pattern' --verbose
 G G A A T T C C G A G A T C
 Found the gene pattern  (at: 11)
+ssato@fedora% python3 sequence_finder.py --needle 'G A T T C' \
+> --haystack 'G G A A T T C C G A G A T C'
+G G A A T T C C G A G A T C
+Not found: G A T T C
 ssato@fedora%
 """
 import os
