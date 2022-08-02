@@ -56,7 +56,6 @@ def find_a_needle_in_a_haystack_itr(
     needle: list[str],
     acc: typing.Union[bool, list[str]] = False
 ) -> typing.Iterator[str]:
-    """Find a needle ``needle`` in a haystack ``haystack``."""
     head: str = needle[0]
     last: str = needle[-1]
     lead: list[str] = needle[:-1]
@@ -100,7 +99,6 @@ def main(
     msg: str = MSG,
     verbose: bool = False
 ) -> None:
-    """entry point."""
     ndl = needle.split()
     hstk = haystack.split() if haystack else sequence_(*set(ndl))
     vitr = find_a_needle_in_a_haystack_itr(hstk, ndl)
