@@ -11,11 +11,22 @@ outdir=${curdir}/out
 suffix="-thumb.png"
 
 # seealso: https://support.system76.com/articles/fix-raw-image-previews/
+function rawtherapee_cli () {
+    rawtherapee-cli -n -Y -f -c $1 -o $2
+}
+
+# seealso: `raw-thumbnailer -h`
+function raw_thumbnailer () {
+    raw-thumbnailer -s 128 $1 $2
+}
+
 #
 # todo: exiv2; It has no any options to specify output file path, AFAIK.
+# function exiv2 () { ... }
+
 declare -a thumbnailers=(
-    "rawtherapee-cli -n -Y -f -o OUTPUT -c INPUT"
-    "raw-thumbnailer -s 128 INPUT OUTPUT"
+    "rawtherapee_cli"
+    "raw_thumbnailer"
 )
 
 usage="
@@ -43,15 +54,14 @@ function benchmark () {
     mkdir -p ${outdir}
 
     for i in ${!thumbnailers[@]}; do
-        cmd_fmt="${thumbnailers[$i]}"
-	echo "## ${cmd_fmt}"
+	thumbnailer_fn="${thumbnailers[$i]}"
+	echo "## ${thumbnailer_fn}"
         time {
             for f in $files; do
                 bfn=${f##*/}
                 bfn_wo_ext=${bfn%.*}
                 out=${outdir}/${bfn_wo_ext}${suffix}
-                cmd="${cmd_fmt/INPUT/${f}}"; cmd="${cmd/OUTPUT/${out}}"
-                eval "${cmd} 2>&1 > ${out}.log"
+                eval "${thumbnailer_fn} $f $out 2>&1 > ${out}.log"
 		echo -ne "."
             done
         }
@@ -59,4 +69,4 @@ function benchmark () {
     done
 }
 
-[[ $# -gt 0 ]] && benchmark $@
+[[ $# -gt 0 ]] && benchmark $@ || { echo "$usage"; exit 1; }
