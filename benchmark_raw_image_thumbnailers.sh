@@ -6,12 +6,13 @@
 #
 set -e -o pipefail
 
-
 curdir=${0%/*}
 outdir=${curdir}/out
 suffix="-thumb.png"
 
-# TODO: exiv2 (no output option)
+# seealso: https://support.system76.com/articles/fix-raw-image-previews/
+#
+# todo: exiv2; It has no any options to specify output file path, AFAIK.
 declare -a thumbnailers=(
     "rawtherapee-cli -n -Y -f -o OUTPUT -c INPUT"
     "raw-thumbnailer -s 128 INPUT OUTPUT"
