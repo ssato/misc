@@ -55,14 +55,14 @@ function benchmark () {
 
     for i in ${!thumbnailers[@]}; do
 	thumbnailer_fn="${thumbnailers[$i]}"
-	echo "## ${thumbnailer_fn}"
+	echo -n "${thumbnailer_fn/_/-}: "
         time {
             for f in $files; do
                 bfn=${f##*/}
                 bfn_wo_ext=${bfn%.*}
                 out=${outdir}/${bfn_wo_ext}${suffix}
                 eval "${thumbnailer_fn} $f $out 2>&1 > ${out}.log"
-		echo -ne "."
+		echo -n "."
             done
         }
 	echo ""
